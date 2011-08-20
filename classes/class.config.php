@@ -62,7 +62,15 @@ class config {
         $this->addToDebugLog("---------------------------------- begin of session ".date("D M j G:i:s T Y")." -------------------------------------------\n");
 
         global $global_source_config;
-        $this->sourcelist = $global_source_config;
+        $this->sourcelist = array();
+        foreach ($global_source_config as $type => $providers){
+            $this->sourcelist[$type] = array();
+            foreach ($providers as $provider => $languages){
+                $languages[] = "uncategorized";
+                $this->sourcelist[$type][$provider] = $languages;
+            }
+        }
+
     }
 
     function __destruct(){

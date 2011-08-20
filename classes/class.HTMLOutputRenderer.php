@@ -80,7 +80,7 @@ class HTMLOutputRenderer{
         $this->addDividerTitle($source);
         foreach ($languages as $language)
             $this->writeNiceHTMLPage( $source, $language );
-        $this->addUncategorizedListLink( $source );
+        //$this->addUncategorizedListLink( $source );
         $this->renderGroupingHints( $source );
         $this->addCompleteListLink( $source );
         $this->renderUnconfirmedChannels( $source );
@@ -258,6 +258,7 @@ class HTMLOutputRenderer{
                 "</h2>\n".
                 "<h3>VDR channel format</h3>\n<pre".$prestyle.">";
             $x = new channelIterator( $shortenSource = true);
+            print $source. "/" . $cols["x_label"]."\n";
             $x->init1($cols["x_label"], $source, $orderby = "UPPER(name) ASC");
             while ($x->moveToNextChannel() !== false){
                 if ($html_table == ""){

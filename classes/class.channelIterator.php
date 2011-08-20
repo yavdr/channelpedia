@@ -43,7 +43,9 @@ class channelIterator{
     public function init1( $label, $source, $orderby = "frequency, modulation, provider, name ASC"){
         $where = array();
         $where["source"] = $source;
-        if ($label != "_complete")
+        if ($label == "uncategorized")
+            $where["x_label"] = "";
+        else if ($label != "_complete")
             $where["x_label"] = $label;
         $this->result = $this->db->query2("SELECT * FROM channels", $where, true, $orderby);
     }

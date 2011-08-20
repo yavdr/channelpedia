@@ -81,6 +81,8 @@ class channelgroupsResource extends Resource {
                             $jsonarray["result"] = $temp;
                     }
                 }
+                $y = new channelListWriter( "uncategorized", $source );
+
                 $response->body .= json_encode($jsonarray)."\n";
             }
             else{

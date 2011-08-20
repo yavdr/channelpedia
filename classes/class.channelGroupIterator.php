@@ -28,7 +28,8 @@ class channelGroupIterator{
         $db,
         $result = false,
         $channelgroup = false,
-        $count = 0;
+        $count = 0,
+        $uncategorizedGroupAdded = false;
 
     function __construct(){
         $this->db = dbConnection::getInstance();
@@ -48,8 +49,19 @@ class channelGroupIterator{
             //FIXME: encapsulate access to result fetch
             $this->channelgroup = $this->result->fetch(PDO::FETCH_ASSOC);
         }
-        if ($this->channelgroup === false){
+        if ($this->channelgroup === false && $this->uncategorizedGroupAdded === true){
             $exists = false;
+        }
+        else if ($this->channelgroup === false && $this->uncategorizedGroupAdded === false){
+            $exists = true;
+            $this->channelgroup['lang'] = "undefined language";
+            $this->channelgroup['sortstring'] = "";
+            $this->channelgroup['friendlyname'] = "uncategorized";
+            $this->channelgroup["x_label"] = "uncategorized";
+            $this->count++;
+            $this->channelgroup['id'] = $this->count;
+            $this->channelgroup['channelcount'] = 10; // FIXME: we don't have this information here
+            $this->uncategorizedGroupAdded = true;
         }
         else{
             $exists = true;
