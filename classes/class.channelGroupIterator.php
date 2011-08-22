@@ -41,6 +41,8 @@ class channelGroupIterator{
             "WHERE source = ".$this->db->quote($source)." AND x_label LIKE ".$this->db->quote($language."%")." ".
             "GROUP BY x_label ORDER BY x_label"
         );
+        if ($language != "uncategorized")
+           $this->uncategorizedGroupAdded = true;
     }
 
     public function moveToNextChannelGroup(){
