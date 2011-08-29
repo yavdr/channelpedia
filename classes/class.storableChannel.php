@@ -155,7 +155,7 @@ class storableChannel extends channel{
                     );
                     $query = $this->db->insert( "channel_update_log",
                         array(
-                            "combined_id"        => $this->getUniqueID(),
+                            "combined_id"        => $this->longUniqueID,
                             "name"               => $this->params["name"],
                             "update_description" => implode("\n",$changes),
                             "timestamp"          => $this->metaData->getTimestamp(),
