@@ -59,6 +59,14 @@ class AustriaSatEssentials extends ruleBase{
             array(
                 "title" => "Private",
                 "outputSortPriority" => 3,
+                "caidMode" => self::caidModeScrambled,
+                "mediaType" => self::mediaTypeHDTV,
+                "customwhere" => "AND ". AUSTRIA. "AND ". DE_PRIVATE_PRO7_RTL
+            ),
+
+            array(
+                "title" => "Private",
+                "outputSortPriority" => 4,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
                 "languageOverrule" => "", // needed for RTL2
@@ -67,7 +75,7 @@ class AustriaSatEssentials extends ruleBase{
 
             array(
                 "title" => "Private",
-                "outputSortPriority" => 4,
+                "outputSortPriority" => 5,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
                 "languageOverrule" => "", // needed for RTL2
@@ -76,7 +84,7 @@ class AustriaSatEssentials extends ruleBase{
 
             array(
                 "title" => "Diverse",
-                "outputSortPriority" => 5,
+                "outputSortPriority" => 6,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeHDTV,
                 "customwhere" => " AND (UPPER(provider) = 'SERVUSTV' OR ".AUSTRIA.")"
@@ -84,11 +92,13 @@ class AustriaSatEssentials extends ruleBase{
 
             array(
                 "title" => "Diverse",
-                "outputSortPriority" => 6,
+                "outputSortPriority" => 7,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
                 "customwhere" => " AND (UPPER(provider) = 'SERVUSTV' OR ".AUSTRIA.")"
             ),
+
+            //radio
 
             array(
                 "title" => "ORF",
