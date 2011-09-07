@@ -22,6 +22,9 @@
 *
 */
 
+
+DEFINE("NL_PROVIDERS", " AND ( UPPER(provider) = 'CANALDIGITAAL' OR UPPER(provider) = 'TV VLAANDEREN' ) ");
+
 class NetherlandsSatEssentials  extends ruleBase {
 
     function __construct(){
@@ -45,7 +48,8 @@ class NetherlandsSatEssentials  extends ruleBase {
                 "outputSortPriority" => 1,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeHDTV,
-                "customwhere" =>  ""
+                "languageOverrule" => "",
+                "customwhere" => NL_PROVIDERS
             ),
 
             array(
@@ -53,7 +57,8 @@ class NetherlandsSatEssentials  extends ruleBase {
                 "outputSortPriority" => 2,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
-                "customwhere" =>  ""
+                "languageOverrule" => "",
+                "customwhere" =>  NL_PROVIDERS
             ),
 
             array(
@@ -61,7 +66,8 @@ class NetherlandsSatEssentials  extends ruleBase {
                 "outputSortPriority" => 3,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeHDTV,
-                "customwhere" =>  ""
+                "languageOverrule" => "",
+                "customwhere" =>  NL_PROVIDERS
             ),
 
             array(
@@ -69,7 +75,8 @@ class NetherlandsSatEssentials  extends ruleBase {
                 "outputSortPriority" => 4,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
-                "customwhere" =>  ""
+                "languageOverrule" => "",
+                "customwhere" =>  NL_PROVIDERS
             ),
 
             array(
@@ -77,7 +84,8 @@ class NetherlandsSatEssentials  extends ruleBase {
                 "outputSortPriority" => 5,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeRadio,
-                "customwhere" => ""
+                "languageOverrule" => "",
+                "customwhere" => NL_PROVIDERS
             ),
 
             array(
@@ -85,7 +93,8 @@ class NetherlandsSatEssentials  extends ruleBase {
                 "outputSortPriority" => 6,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeRadio,
-                "customwhere" => ""
+                "languageOverrule" => "",
+                "customwhere" => NL_PROVIDERS
             ),
         );
     }
