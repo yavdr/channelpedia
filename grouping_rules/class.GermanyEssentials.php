@@ -55,8 +55,8 @@ class GermanyEssentials  extends ruleBase{
                 "mediaType" => self::mediaTypeSDTV,
                 "customwhere" =>
                     "AND ( ".
-                    "(provider = 'ARD' AND ( UPPER(name) LIKE '%ERSTE%' OR UPPER(name) LIKE '%EINS%' OR UPPER(name) LIKE '%ARTE%' OR UPPER(name) LIKE '%PHOENIX%' )) ".
-                    " OR provider = 'ZDFvision' OR provider = 'ZDF vision'".
+                    "(".DE_PROVIDER_ARD." AND ( UPPER(name) LIKE '%ERSTE%' OR UPPER(name) LIKE '%EINS%' OR UPPER(name) LIKE '%ARTE%' OR UPPER(name) LIKE '%PHOENIX%' )) ".
+                    " OR provider LIKE 'ZDF%'".
                     ") "
             ),
 
@@ -66,7 +66,7 @@ class GermanyEssentials  extends ruleBase{
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
                 "customwhere" =>
-                    "AND provider = 'ARD' AND NOT ( UPPER(name) LIKE '%ERSTE%' OR UPPER(name) LIKE '%EINS%' OR UPPER(name) LIKE '%ARTE%' OR UPPER(name) LIKE '%PHOENIX%' OR UPPER(name) LIKE '%TEST%') "
+                    "AND ".DE_PROVIDER_ARD." AND NOT ( UPPER(name) LIKE '%ERSTE%' OR UPPER(name) LIKE '%EINS%' OR UPPER(name) LIKE '%ARTE%' OR UPPER(name) LIKE '%PHOENIX%' OR UPPER(name) LIKE '%TEST%') "
             ),
 
             array(
