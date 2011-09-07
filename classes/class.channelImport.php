@@ -141,14 +141,14 @@ class channelImport extends channelFileIterator{
                 $provider = "C[".$this->metaData->getPresentNonSatProvider("C")."]";
                 $labeller->updateAllLabelsOfSource( $provider );
                 $rawOutput->writeRawOutputForSingleSource( "C", $provider, $languages);
-                $htmlOutput->renderPagesOfSingleSource($provider, $languages);
+                $htmlOutput->renderPagesOfSingleSource("C[$provider]", $languages);
             }
             if ($this->metaData->getPresentNonSatProvider("T") != ""){
                 $languages = $this->config->getLanguageGroupsOfSource( "DVB-T", $this->metaData->getPresentNonSatProvider("T"));
                 $provider = "T[".$this->metaData->getPresentNonSatProvider("T")."]";
                 $labeller->updateAllLabelsOfSource( $provider );
                 $rawOutput->writeRawOutputForSingleSource( "T", $provider, $languages);
-                $htmlOutput->renderPagesOfSingleSource($provider, $languages);
+                $htmlOutput->renderPagesOfSingleSource("T[$provider]", $languages);
             }
             $htmlOutput->writeGeneralChangelog();
         }
