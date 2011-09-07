@@ -37,6 +37,7 @@ require_once PATH_TO_CLASSES . '../grouping_rules/class.SpainSatEssentials.php';
 require_once PATH_TO_CLASSES . '../grouping_rules/class.PolandSatEssentials.php';
 require_once PATH_TO_CLASSES . '../grouping_rules/class.FranceSatEssentials.php';
 require_once PATH_TO_CLASSES . '../grouping_rules/class.NetherlandsSatEssentials.php';
+require_once PATH_TO_CLASSES . '../grouping_rules/class.BelgiumSatEssentials.php';
 
 define("HD_CHANNEL"," UPPER(name) LIKE '% HD%' ");
 
@@ -86,6 +87,7 @@ class channelGroupingManager{
             "PolandSatEssentials"      => new PolandSatEssentials(),
             "FranceSatEssentials"      => new FranceSatEssentials(),
             "NetherlandsSatEssentials" => new NetherlandsSatEssentials(),
+            "BelgiumSatEssentials"     => new BelgiumSatEssentials(),
         );
     }
 

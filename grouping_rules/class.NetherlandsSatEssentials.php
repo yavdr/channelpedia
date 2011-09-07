@@ -23,7 +23,7 @@
 */
 
 
-DEFINE("NL_PROVIDERS", " AND ( UPPER(provider) = 'CANALDIGITAAL' OR UPPER(provider) = 'TV VLAANDEREN' ) ");
+DEFINE("NL_PROVIDERS", " AND UPPER(provider) = 'CANALDIGITAAL' ");
 
 class NetherlandsSatEssentials  extends ruleBase {
 

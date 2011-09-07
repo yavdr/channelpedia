@@ -45,6 +45,6 @@ $query = $db->exec("CREATE TABLE upload_log(
 );");
 */
 
-$query = $db->exec("ALTER TABLE channels ADD column x_utf8;");
+//$query = $db->exec("ALTER TABLE channels ADD column x_utf8;");
 
 ?>
