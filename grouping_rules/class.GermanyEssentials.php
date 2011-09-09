@@ -82,7 +82,7 @@ class GermanyEssentials  extends ruleBase{
                 "outputSortPriority" => 11,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeHDTV,
-                "customwhere" => "AND NOT (" . AUSTRIA." OR ".SWITZERLAND.") AND (UPPER(provider) = 'BETADIGITAL' OR UPPER(provider) = 'CBC' OR UPPER(provider) = 'PROSIEBENSAT.1' )"
+                "customwhere" => "AND NOT (" . AUSTRIA." OR ".SWITZERLAND.") AND (UPPER(provider) = 'BETADIGITAL' OR UPPER(provider) = 'CBC' OR UPPER(provider) = 'PROSIEBENSAT.1' OR UPPER(provider) = 'MTV NETWORKS')"            
             ),
 
             array(
