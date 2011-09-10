@@ -237,7 +237,8 @@ class HTMLOutputRenderer{
             <p>Last updated on: ". date("D M j G:i:s T Y")."</p>\n";
         $nice_html_body = "";
         $nice_html_linklist = "";
-
+        //FIXME timestamp only needs to be determined once per source, not for every language again and again
+        $timestamp = $this->getLastConfirmedTimestamp($source);
         $groupIterator = new channelGroupIterator();
         $groupIterator->init($source, $language);
         while ($groupIterator->moveToNextChannelGroup() !== false){
@@ -268,7 +269,12 @@ class HTMLOutputRenderer{
                     }
                     $html_table .= "</tr>\n";
                 }
-                $nice_html_body .= htmlspecialchars( $x->getCurrentChannelObject()->getChannelString() )."\n";
+                //check if channel might be outdated, if so, apply additional css class
+                if ( $x->getCurrentChannelObject()->getXLastConfirmed() < $timestamp)
+                    $nice_html_body .= "<span class=\"outdated\">".htmlspecialchars( $x->getCurrentChannelObject()->getChannelString() )."</span>\n";
+                else
+                    $nice_html_body .= htmlspecialchars( $x->getCurrentChannelObject()->getChannelString() )."\n";
+
                 $html_table .= "<tr".$prestyle.">\n";
                 //FIXME use channel object here
                 foreach ($x->getCurrentChannelObject()->getAsArray() as $param => $value){
@@ -368,6 +374,16 @@ class HTMLOutputRenderer{
         file_put_contents($this->exportpath . $filename, $nice_html_output );
     }
 
+    private function getLastConfirmedTimestamp($source){
+        $timestamp = 0;
+        $sqlquery = "SELECT x_last_confirmed FROM channels WHERE source = ".$this->db->quote($source)." ORDER BY x_last_confirmed DESC LIMIT 1";
+        $result = $this->db->query($sqlquery);
+        $timestamp_raw = $result->fetchAll();
+        if (isset($timestamp_raw[0][0]))
+            $timestamp = intval($timestamp_raw[0][0]);
+        return $timestamp;
+    }
+
     private function renderUnconfirmedChannels($source){
         $pagetitle = "Unconfirmed channels on $source / likely to be outdated";
         $nice_html_output =
@@ -375,14 +391,7 @@ class HTMLOutputRenderer{
             '<h1>'.htmlspecialchars( $pagetitle ).'</h1>
             <p>Last updated on: '. date("D M j G:i:s T Y").'</p>';
         $html_table = "";
-
-        $sqlquery = "SELECT x_last_confirmed FROM channels WHERE source = ".$this->db->quote($source)." ORDER BY x_last_confirmed DESC LIMIT 1";
-        $result = $this->db->query($sqlquery);
-        $timestamp = $result->fetchAll();
-        if (isset($timestamp[0][0]))
-            $timestamp = intval($timestamp[0][0]);
-        else
-            $timestamp = 0;
+        $timestamp = intval($this->getLastConfirmedTimestamp($source));
         if ($timestamp != 0){
             $nice_html_output .= "<p>Looking for channels that were last confirmed before ". date("D, d M Y H:i:s", $timestamp). " ($timestamp)</p>\n";
 

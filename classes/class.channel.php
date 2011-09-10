@@ -134,6 +134,9 @@ class channel{
         return $this->longUniqueID;
     }
 
+    public function getXLastConfirmed(){
+        return $this->params["x_last_confirmed"];
+    }
 
     //FIXME temp
     public function getAsArray(){
