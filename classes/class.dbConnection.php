@@ -147,6 +147,5 @@ class dbConnection {
         return $this->dbh->quote( $string );
     }
 
-
 }
 ?>

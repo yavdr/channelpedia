@@ -1,0 +1,77 @@
+<?php
+
+
+require_once '../classes/class.config.php';
+
+$x = new updateFingerprintDB();
+
+class updateFingerprintDB {
+
+    private
+        $config,
+        $dbh = null;
+
+    public function __construct(){
+        $this->config = config::getInstance();
+        $channeldbfile = $this->config->getValue("userdata") . "channeldb.sqlite";
+
+        $fpdb = $this->config->getValue("exportfolder") . "/raw/fingerprintdb.sqlite";
+        if (file_exists($fpdb)) @unlink( $fpdb );
+        $this->dbh = new PDO( 'sqlite:'. $fpdb );
+
+        $fpsql = "
+
+        ATTACH DATABASE '".$channeldbfile."' AS chandb;
+
+        BEGIN EXCLUSIVE TRANSACTION;
+
+        DROP TABLE IF EXISTS fingerprints;
+        CREATE TABLE fingerprints (
+          source TEXT,
+          nid INTEGER,
+          frequency INTEGER,
+          symbolrate INTEGER
+        );
+
+        DROP TABLE IF EXISTS temp_channels;
+        CREATE TABLE temp_channels (
+          source TEXT,
+          nid INTEGER,
+          frequency INTEGER,
+          symbolrate INTEGER
+        );
+
+        INSERT INTO temp_channels
+        SELECT source, nid, frequency, symbolrate
+         FROM chandb.channels c1
+         WHERE NOT EXISTS (SELECT * FROM chandb.channels c2 WHERE c1.frequency = c2.frequency AND c1.nid = c2.nid AND c1.symbolrate = c2.symbolrate AND c1.source <> c2.source)
+         AND modulation NOT LIKE '%H%'
+         AND modulation NOT LIKE '%S1%'
+         GROUP BY source, nid, frequency, symbolrate;
+
+        INSERT INTO fingerprints
+        SELECT *
+        FROM temp_channels t1
+        WHERE t1.frequency = (
+          SELECT frequency
+          FROM temp_channels t2
+          WHERE t2.frequency IN (
+            SELECT DISTINCT frequency
+            FROM temp_channels t3
+            WHERE t3.source=t1.source
+          )
+          GROUP BY t2.frequency
+          ORDER BY COUNT(DISTINCT t2.source) DESC
+          LIMIT 1
+        );
+
+        DROP TABLE temp_channels;
+
+        COMMIT TRANSACTION;
+        ";
+
+        $query = $this->dbh->exec(  $fpsql);
+
+    }
+};
+?>

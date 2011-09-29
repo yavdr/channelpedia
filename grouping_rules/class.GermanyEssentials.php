@@ -61,12 +61,21 @@ class GermanyEssentials  extends ruleBase{
             ),
 
             array(
-                "title" => "Public_Regional",
+                "title" => "Public Regional",
                 "outputSortPriority" => 3,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
                 "customwhere" =>
                     "AND ".DE_PROVIDER_ARD." AND NOT ( UPPER(name) LIKE '%ERSTE%' OR UPPER(name) LIKE '%EINS%' OR UPPER(name) LIKE '%ARTE%' OR UPPER(name) LIKE '%PHOENIX%' OR UPPER(name) LIKE '%TEST%') "
+            ),
+
+            array(
+                "title" => "Public ARD-Test",
+                "outputSortPriority" => 4,
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeSDTV,
+                "customwhere" =>
+                    "AND ".DE_PROVIDER_ARD." AND UPPER(name) LIKE '%TEST%' "
             ),
 
             array(
@@ -82,7 +91,7 @@ class GermanyEssentials  extends ruleBase{
                 "outputSortPriority" => 11,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeHDTV,
-                "customwhere" => "AND NOT (" . AUSTRIA." OR ".SWITZERLAND.") AND (UPPER(provider) = 'BETADIGITAL' OR UPPER(provider) = 'CBC' OR UPPER(provider) = 'PROSIEBENSAT.1' OR UPPER(provider) = 'MTV NETWORKS')"            
+                "customwhere" => "AND NOT (" . AUSTRIA." OR ".SWITZERLAND.") AND (UPPER(provider) = 'BETADIGITAL' OR UPPER(provider) = 'CBC' OR UPPER(provider) = 'PROSIEBENSAT.1' OR UPPER(provider) = 'MTV NETWORKS')"
             ),
 
             array(

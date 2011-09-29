@@ -45,7 +45,7 @@ define("DE_PRIVATE_PRO7_RTL"," (provider = 'ProSiebenSat.1' OR provider='Pro7 & 
 define("DE_PROVIDER_ARD", "(provider LIKE 'ARD%' OR provider LIKE 'SWR'  OR provider LIKE 'BR') ");
 define("DE_PUBLIC_PROVIDER", " (".DE_PROVIDER_ARD." OR provider LIKE 'ZDF%') ");
 
-define("AUSTRIA", " (LOWER(name) LIKE '%sterreich' OR LOWER(name) LIKE '%austria%' OR UPPER(name) LIKE '% A'  OR UPPER(name) LIKE '%TIROL%' OR UPPER(provider)='ORF') ");
+define("AUSTRIA", " (LOWER(name) LIKE '%sterreich' OR LOWER(name) LIKE '%austria%' OR UPPER(name) LIKE '% A' OR UPPER(name) LIKE '% AUT' OR UPPER(name) LIKE '%TIROL%' OR UPPER(provider)='ORF') ");
 define("SWITZERLAND", " (UPPER(name) LIKE '% CH' OR LOWER(name) LIKE '% Schweiz' OR UPPER(name) LIKE 'SF%') ");
 define("FRANCE_CSAT", " (upper(provider)='CSAT') ");
 define("SPAIN_DIGITALPLUS", " (UPPER(provider) = 'DIGITAL +' OR UPPER(provider) = 'DIGITAL+') ");
