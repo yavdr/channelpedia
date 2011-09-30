@@ -61,8 +61,8 @@ class updateFingerprintDB {
           LIMIT 1
         );");
         $this->exec("COMMIT TRANSACTION;");
-/*        //workaround for problematic drop...
-        $this->exec("BEGIN EXCLUSIVE TRANSACTION;");
+        //workaround for problematic drop...
+        /*$this->exec("BEGIN EXCLUSIVE TRANSACTION;");
         $this->exec("DROP TABLE temp_channels;");
         $this->exec("COMMIT TRANSACTION;");*/
         print "Finished in time...";
@@ -75,8 +75,9 @@ class updateFingerprintDB {
             $errorcode =  $errorinfo[1];
             //print "<pre>ERROR: ". htmlspecialchars($statement) . "</br>". print_r($this->dbh->errorInfo(), true) . "</pre>";
         }
-        else
+        else{
             //print "<pre>OK: ". htmlspecialchars($statement) . "</pre>";
+        }
     }
 
 };
