@@ -1,5 +1,7 @@
 <?php
 
+ini_set("max_execution_time", 120);
+
 
 require_once '../classes/class.config.php';
 
@@ -14,33 +16,27 @@ class updateFingerprintDB {
     public function __construct(){
         $this->config = config::getInstance();
         $channeldbfile = $this->config->getValue("userdata") . "channeldb.sqlite";
-
         $fpdb = $this->config->getValue("exportfolder") . "/raw/fingerprintdb.sqlite";
         if (file_exists($fpdb)) @unlink( $fpdb );
         $this->dbh = new PDO( 'sqlite:'. $fpdb );
 
-        $fpsql = "
-
-        ATTACH DATABASE '".$channeldbfile."' AS chandb;
-
-        BEGIN EXCLUSIVE TRANSACTION;
-
-        DROP TABLE IF EXISTS fingerprints;
-        CREATE TABLE fingerprints (
+        $this->exec("ATTACH DATABASE '".$channeldbfile."' AS chandb;");
+        $this->exec("BEGIN EXCLUSIVE TRANSACTION;");
+        $this->exec("DROP TABLE IF EXISTS fingerprints;");
+        $this->exec("CREATE TABLE fingerprints (
           source TEXT,
           nid INTEGER,
           frequency INTEGER,
           symbolrate INTEGER
-        );
-
-        DROP TABLE IF EXISTS temp_channels;
-        CREATE TABLE temp_channels (
+        );");
+        $this->exec("DROP TABLE IF EXISTS temp_channels;");
+        $this->exec("CREATE TABLE temp_channels (
           source TEXT,
           nid INTEGER,
           frequency INTEGER,
           symbolrate INTEGER
-        );
-
+        );");
+        $this->exec("
         INSERT INTO temp_channels
         SELECT source, nid, frequency, symbolrate
          FROM chandb.channels c1
@@ -48,8 +44,8 @@ class updateFingerprintDB {
          AND modulation NOT LIKE '%H%'
          AND modulation NOT LIKE '%S1%'
          GROUP BY source, nid, frequency, symbolrate;
-
-        INSERT INTO fingerprints
+        ");
+        $this->exec("INSERT INTO fingerprints
         SELECT *
         FROM temp_channels t1
         WHERE t1.frequency = (
@@ -63,15 +59,25 @@ class updateFingerprintDB {
           GROUP BY t2.frequency
           ORDER BY COUNT(DISTINCT t2.source) DESC
           LIMIT 1
-        );
-
-        DROP TABLE temp_channels;
-
-        COMMIT TRANSACTION;
-        ";
-
-        $query = $this->dbh->exec(  $fpsql);
-
+        );");
+        $this->exec("COMMIT TRANSACTION;");
+/*        //workaround for problematic drop...
+        $this->exec("BEGIN EXCLUSIVE TRANSACTION;");
+        $this->exec("DROP TABLE temp_channels;");
+        $this->exec("COMMIT TRANSACTION;");*/
+        print "Finished in time...";
     }
+
+    private function exec( $statement ){
+        $result = $this->dbh->exec( $statement );
+        if ($result === false){
+            $errorinfo = $this->dbh->errorInfo();
+            $errorcode =  $errorinfo[1];
+            //print "<pre>ERROR: ". htmlspecialchars($statement) . "</br>". print_r($this->dbh->errorInfo(), true) . "</pre>";
+        }
+        else
+            //print "<pre>OK: ". htmlspecialchars($statement) . "</pre>";
+    }
+
 };
 ?>
