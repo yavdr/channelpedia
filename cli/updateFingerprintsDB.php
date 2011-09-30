@@ -14,6 +14,7 @@ class updateFingerprintDB {
         $dbh = null;
 
     public function __construct(){
+        $startime = time();
         $this->config = config::getInstance();
         $channeldbfile = $this->config->getValue("userdata") . "channeldb.sqlite";
         $fpdb = $this->config->getValue("exportfolder") . "/raw/fingerprintdb.sqlite";
@@ -61,11 +62,15 @@ class updateFingerprintDB {
           LIMIT 1
         );");
         $this->exec("COMMIT TRANSACTION;");
-        //workaround for problematic drop...
+        //FIXME: find workaround for problematic drop...
         /*$this->exec("BEGIN EXCLUSIVE TRANSACTION;");
         $this->exec("DROP TABLE temp_channels;");
         $this->exec("COMMIT TRANSACTION;");*/
-        print "Finished in time...";
+        $endtime = time();
+        $usedtime = $endtime  - $startime ;
+        print "Finished in time... (". $usedtime ." seconds)</br>\n";
+        //print "Memory used: emalloc: ". memory_get_usage(false) . " bytes / real: " . memory_get_usage( true) . " bytes\n<br/>";
+        print "Memory usage peak: emalloc: ". memory_get_peak_usage(false) . " bytes / real: " . memory_get_peak_usage( true) . " bytes\n<br/>";
     }
 
     private function exec( $statement ){
