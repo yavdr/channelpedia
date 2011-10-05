@@ -84,6 +84,7 @@ class HTMLOutputRenderer{
         $this->renderGroupingHints( $source );
         $this->addCompleteListLink( $source );
         $this->renderUnconfirmedChannels( $source );
+        $this->renderTransponderNIDCheck( $source );
         if (in_array("de", $languages)){
             $this->addEPGChannelmapLink( $source );
         }
@@ -432,7 +433,6 @@ class HTMLOutputRenderer{
         file_put_contents($this->exportpath . $filename, $nice_html_output );
     }
 
-
     private function renderGroupingHints($source){
         $pagetitle = "Grouping hints for unsorted channels of ".$source;
         $nice_html_output =
@@ -468,6 +468,73 @@ class HTMLOutputRenderer{
         $filename = "grouping_hints_".$source.".html";
 //        $this->addDividerTitle("Reports");
         $this->addToOverview( "Grouping hints", $filename );
+        file_put_contents($this->exportpath . $filename, $nice_html_output );
+    }
+
+    private function renderTransponderNIDCheck( $source ){
+        $pagetitle = htmlspecialchars($source) . " - Transponder plausibility check (checks for transponders with more than one NID)";
+        $nice_html_output =
+            $this->getHTMLHeader($pagetitle).
+            '<h1>'.htmlspecialchars( $pagetitle ).'</h1>
+            <p>Last updated on: '. date("D M j G:i:s T Y").'</p>
+            <p>This page only has content if the channel data provided on some transponders seems to be wrong / outdated. There should only be one NID per transponder.';
+        $result = $this->db->query(
+            "SELECT channels1.frequency as fre, channels1.modulation as mod, channels1.symbolrate as sym, channels1.nid, channels2.nid
+            FROM channels AS channels1
+            LEFT JOIN channels AS channels2 WHERE
+            channels1.source = ".$this->db->quote($source)." AND
+            channels1.source = channels2.source AND
+            channels1.frequency = channels2.frequency AND
+            channels1.symbolrate = channels2.symbolrate AND
+            channels1.modulation = channels2.modulation AND
+            channels1.nid != channels2.nid
+            GROUP BY channels1.source, channels1.frequency, channels1.modulation, channels1.symbolrate"
+        );
+        foreach ($result as $row) {
+            $nice_html_output .= "<h2>" .htmlspecialchars(
+                    $row["fre"]. " " .
+                    $row["mod"]. " " .
+                    $row["sym"]).
+                    "</h2>";
+            $x = new channelIterator( $shortenSource = true );
+            $x->init2( "SELECT * FROM channels WHERE ".
+                "source     = " . $this->db->quote( $source ) . " AND ".
+                "frequency  = " . $this->db->quote( $row["fre" ] ) . " AND " .
+                "modulation = " . $this->db->quote( $row["mod"] ) . " AND " .
+                "symbolrate = " . $this->db->quote( $row["sym"] )
+            );
+            $html_table = "";
+            $lastname = "";
+            while ($x->moveToNextChannel() !== false){
+                $carray = $x->getCurrentChannelObject()->getAsArray();
+                if ($lastname == ""){
+                    $html_table .= "<h3>Table view</h3>\n<div class=\"tablecontainer\"><table>\n<tr>";
+                    foreach ($x->getCurrentChannelArrayKeys() as $header){
+                        $html_table .= '<th class="'.htmlspecialchars($header).'">'.htmlspecialchars(ucfirst($header))."</th>\n";
+                    }
+                    $html_table .= "</tr>\n";
+                }
+                $html_table .= "<tr>\n";
+                foreach ($carray as $param => $value){
+                    if ($param == "apid" || $param == "caid"){
+                        $value = str_replace ( array(",",";"), ",<br/>", htmlspecialchars($value ));
+                    }
+                    elseif ($param == "x_last_changed"){
+                        $value = date("D, d M Y H:i:s", $value);
+                    }
+                    else
+                        $value = htmlspecialchars($value);
+                    $html_table .= '<td class="'.htmlspecialchars($param).'">'.$value."</td>\n";
+                }
+                $html_table .= "</tr>\n";
+                $lastname = $carray["name"];
+            }
+            $html_table .= "</table></div>\n";
+            $nice_html_output .= $html_table;
+        }
+        $nice_html_output .= $this->getHTMLFooter();
+        $filename = "transponder_nid_check_".$source.".html";
+        $this->addToOverview( "NID check", $filename );
         file_put_contents($this->exportpath . $filename, $nice_html_output );
     }
 

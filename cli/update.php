@@ -22,18 +22,26 @@
 *
 */
 
+$startime = time();
+
 //input: reads channel.conf from path and put channels into db
 require_once '../classes/class.config.php';
 
+ini_set("max_execution_time", 120); //workaround
+
 //set this to true to reparse all old channels.conf.old files of all users
 $forceReparsing = false;
-
 
 //if ( array_key_exists('SERVER_SOFTWARE',$_SERVER)) print "<pre>";
 
 importFromAllChannelSources( $forceReparsing );
 
 //if ( array_key_exists('SERVER_SOFTWARE',$_SERVER)) print "</pre>";
+
+$endtime = time();
+$usedtime = $endtime  - $startime ;
+print "Finished in time... (". $usedtime ." seconds)</br>\n";
+
 
 function importFromAllChannelSources($forceReparsing = false){
     $config = config::getInstance();
