@@ -26,32 +26,41 @@ class channelImportMetaData{
 
     private
         $timestamp,
-        //$usersNonSatProviders = array(), //provider names that the user offers to indicate what's in his channels conf
-        $usersPresentProviders , //provider names for channels actually present in the channels.conf including all satellite positions found
+        $usersAnnouncedProviders = array(), //names of the valid providers that are defined in the user config
+        $usersPresentProviders, //provider names for channels actually present in the channels.conf including all satellite positions found
         $numChanChecked = 0,
         $numChanAdded = 0,
         $numChanChanged = 0,
         $numChanIgnored = 0,
         $username,
-        $currentUserConfig;
+        $currentUserConfig,
+        $lastProviderName;
 
 
     public function __construct( $username ){
-        global $global_user_config;
-        if ( array_key_exists($username, $global_user_config) ){
-            $this->currentUserConfig = $global_user_config[ $username ];
-            //print_r($this->currentUserConfig);die();
-        }
-        else
-            $this->currentUserConfig = false;
-
+        $this->resetPresentProviders();
         $this->timestamp = time();
         $this->numChanChecked = 0;
         $this->numChanAdded   = 0;
         $this->numChanChanged = 0;
         $this->numChanIgnored = 0;
-        $this->resetPresentProviders();
         $this->username = $username;
+
+        global $global_user_config;
+        if ( array_key_exists($username, $global_user_config) ){
+            $this->currentUserConfig = $global_user_config[ $username ];
+
+            //prepare infos about providers
+            $this->usersAnnouncedProviders = array(
+                "C" => $this->checkAnnouncedNonSatProviderForType("C"),
+                "T" => $this->checkAnnouncedNonSatProviderForType("T"),
+                "A" => $this->checkAnnouncedNonSatProviderForType("A"),
+                "S" => $this->checkAnnouncedSatProviders()
+            );
+        }
+        else
+            $this->currentUserConfig = false;
+
     }
 
     public function userNameExists(){
@@ -66,17 +75,48 @@ class channelImportMetaData{
         return $this->username;
     }
 
-    public function getAnnouncedNonSatProvider( $type ){
-        $feedback = false;
-        if (array_key_exists( $type, $this->currentUserConfig["announcedProviders"] ))
-            $feedback = $this->currentUserConfig["announcedProviders"][$type];
-        return $feedback;
+    public function isValidNonSatSource( $type ){
+        if ( array_key_exists( $type, $this->usersAnnouncedProviders )){
+            $this->lastProviderName = $this->currentUserConfig["announcedProviders"][$type];
+            return $this->usersAnnouncedProviders[$type];
+        }
+        else{
+            return false;
+        }
     }
 
-    public function getAnnouncedNonSatProviders(){
+    public function getProviderNameForLastCheckedNonSatSource(){
+        return $this->lastProviderName;
+    }
+
+    public function isValidSatSource( $name ){
+        return in_array($name, $this->usersAnnouncedProviders["S"]);
+    }
+
+    private function checkAnnouncedNonSatProviderForType( $type ){
         $feedback = false;
-        if (in_array( "announcedProviders", $this->currentUserConfig ))
+        if ( array_key_exists( $type, $this->currentUserConfig["announcedProviders"] ) &&
+           is_string( $this->currentUserConfig["announcedProviders"][$type] ) &&
+           $this->currentUserConfig["announcedProviders"][$type] !== "none" &&
+           $this->currentUserConfig["announcedProviders"][$type] !== ""
+        )
+            $feedback = true;
+            return $feedback;
+    }
+/*
+    private function getAnnouncedNonSatProviders(){
+        $feedback = false;
+        if (in_array( "announcedProviders", $this->currentUserConfig ) && is_array( $this->currentUserConfig["announcedProviders"] ) )
             $feedback = $this->currentUserConfig["announcedProviders"];
+            return $feedback;
+    }
+*/
+    private function checkAnnouncedSatProviders(){
+        $feedback = array();
+        if (array_key_exists( "S", $this->currentUserConfig["announcedProviders"] ) &&
+            is_array( $this->currentUserConfig["announcedProviders"]["S"] )
+        )
+            $feedback = $this->currentUserConfig["announcedProviders"]["S"];
         return $feedback;
     }
 

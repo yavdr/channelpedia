@@ -141,7 +141,9 @@ class epg2vdrMapper{
                 "// Either the channels marked with [ ] don't exist \n".
                 "// in the portfolio of your provider\n".
                 "// or the channel detection script used is not good enough.\n".
-                "// Please help to improve it by checking channelpedia source code.\n".
+                "// Please help to improve it by checking channelpedia source code:\n".
+                "// https://github.com/yavdr/channelpedia/tree/master/epg_mappings\n".
+                "// See: https://bugs.yavdr.com/issues/647 \n".
                 "//\n".
                 "//  ".implode( "\n//  ", $notfoundlist)."\n".
                 "//\n".

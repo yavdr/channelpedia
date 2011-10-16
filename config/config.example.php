@@ -58,10 +58,13 @@ $default_lang_de_cable_provider = array("de");
  *  $global_source_config
  *
  *  associative array
- *  lists all sources that are valid within this channelpedia
- *  grouped by source type (DVB-S, DVB-T, DVB-C).
+ *  Lists all sources that are valid within this channelpedia.
+ *  Grouped by source type (DVB-S, DVB-T, DVB-C).
+ *  Order of providers determines the order of providers in the HTML menu output.
  *  For each source the available language/region groups are also being
  *  specified. Each language group must exist in the grouping_rules classes.
+ *  Even if no languages are assigned, "uncategorized" will always be added
+ *  automatically as a group for the remaining ungrouped channels.
  */
 
 $global_source_config = array(
@@ -89,23 +92,28 @@ $global_source_config = array(
     )
 );
 
+define("SOURCETYPE_INACTIVE", "none");
+
 $global_user_config = array(
 
 /*
     "username" => array(
         "ignoreSources" => array(),
         "announcedProviders" => array(
-            "C" => "none",
-            "T" => "none",
-            "A" => "none",
-            //"S" => array() //not mandatory
+            "C" => SOURCETYPE_INACTIVE,
+            "T" => SOURCETYPE_INACTIVE,
+            "A" => SOURCETYPE_INACTIVE,
+            "S" => array()
         ),
         "visibleName" => "",
 
         "password" => "",
-        "email" => "none"
+        "email" => "",
+        "trust_status" => 0,
+        "reupload_delay_timespan" => 0
     ),
 */
+
 );
 
 ?>

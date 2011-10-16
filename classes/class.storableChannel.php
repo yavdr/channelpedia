@@ -58,25 +58,37 @@ class storableChannel extends channel{
             case "C":
             case "T":
             case "A":
-                $nonSatProvider = $this->metaData->getAnnouncedNonSatProvider($this->source);
-                $this->sourceDB = $this->source . '[' . $nonSatProvider . ']';
-                if ( $this->metaData !== null)
+                if ( $this->metaData->isValidNonSatSource( $this->source ) ){
+                    $nonSatProvider = $this->metaData->getProviderNameForLastCheckedNonSatSource();
+                    $this->sourceDB = $this->source . '[' . $nonSatProvider . ']';
                     $this->metaData->addPresentNonSatProvider( $this->source, $nonSatProvider );
+                }
+                else{
+                    $this->markChannelAsInvalid();
+                }
                 break;
             case "I":
             case "P":
-                $this->config->addToDebugLog( "ignoring channels sourcetype: ". $this->source  ."\n");
-                $this->params = false;
+                $this->markChannelAsInvalid();
                 break;
             default:
+                $this->markChannelAsInvalid();
                 throw new Exception( "Unknown source type! " . $this->source );
             }
         }
         else{
-            $this->sourceDB = $this->source;
-            if ( $this->metaData !== null)
+            if ( $this->metaData->isValidSatSource( $this->source ) ){
+                $this->sourceDB = $this->source;
                 $this->metaData->addPresentSatProvider( $this->source );
+            }
+            else
+                $this->markChannelAsInvalid();
         }
+    }
+
+    protected function markChannelAsInvalid(){
+        $this->params = false;
+        $this->config->addToDebugLog( "Channel was marked as invalid. Source is not allowed: '". $this->source  ."'\n");
     }
 
     /*
@@ -86,32 +98,38 @@ class storableChannel extends channel{
      */
 
     public function insertIntoDB(){
-        //this only has to be added if native channel data is to be inserted to db
-        $this->params = $this->params + array(
-            "x_label"         => "",
-            "x_last_changed"  => $this->metaData->getTimestamp(),
-            "x_timestamp_added" => $this->metaData->getTimestamp(),
-            "x_last_confirmed" => 0
-        );
-        $this->params["source"] = $this->sourceDB;
-        $this->params["modulation"] = strtoupper( $this->params["modulation"] ); //w_scan has lower case, we don't want that
-
         $success = true;
-        $query = $this->db->insert( "channels", $this->params);
-        //19 = channel already exists, could'nt be inserted
-        if ($query != 19) {
-            if ( $this->metaData !== null)
-                $this->metaData->increaseAddedChannelCount();
-            $query = $this->db->insert( "channel_update_log", array(
-                "combined_id" => $this->longUniqueID,
-                "name" => $this->params["name"],
-                "update_description" => "New channel added: " . $this->getChannelString(),
-                "timestamp" => $this->metaData->getTimestamp(),
-                "importance" => "1"
-            ));
+        if ($this->isValid()){
+            //this only has to be added if native channel data is to be inserted to db
+            $this->params = $this->params + array(
+                "x_label"         => "",
+                "x_last_changed"  => $this->metaData->getTimestamp(),
+                "x_timestamp_added" => $this->metaData->getTimestamp(),
+                "x_last_confirmed" => 0
+            );
+            $this->params["source"] = $this->sourceDB;
+            $this->params["modulation"] = strtoupper( $this->params["modulation"] ); //w_scan has lower case, we don't want that
+
+            $query = $this->db->insert( "channels", $this->params);
+            //19 = channel already exists, couldn't be inserted
+            if ($query != 19) {
+                if ( $this->metaData !== null)
+                    $this->metaData->increaseAddedChannelCount();
+                $query = $this->db->insert( "channel_update_log", array(
+                    "combined_id" => $this->longUniqueID,
+                    "name" => $this->params["name"],
+                    "update_description" => "New channel added: " . $this->getChannelString(),
+                    "timestamp" => $this->metaData->getTimestamp(),
+                    "importance" => "1"
+                ));
+            }
+            else{
+                $this->updateInDB();
+                $success = false;
+            }
         }
         else{
-            $this->updateInDB();
+            $this->config->addToDebugLog( "Source is not allowed: '". $this->source  ."'. Channel not added to database.\n");
             $success = false;
         }
         return $success;
