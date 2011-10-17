@@ -103,14 +103,7 @@ class channelImportMetaData{
             $feedback = true;
             return $feedback;
     }
-/*
-    private function getAnnouncedNonSatProviders(){
-        $feedback = false;
-        if (in_array( "announcedProviders", $this->currentUserConfig ) && is_array( $this->currentUserConfig["announcedProviders"] ) )
-            $feedback = $this->currentUserConfig["announcedProviders"];
-            return $feedback;
-    }
-*/
+
     private function checkAnnouncedSatProviders(){
         $feedback = array();
         if (array_key_exists( "S", $this->currentUserConfig["announcedProviders"] ) &&
@@ -123,10 +116,6 @@ class channelImportMetaData{
     public function getTimestamp(){
         return $this->timestamp;
     }
-
-/*    public function getNonSatProviders(){
-        return $this->usersNonSatProviders;
-    }*/
 
     public function resetPresentProviders(){
         $this->usersPresentProviders = array();

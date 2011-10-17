@@ -83,10 +83,11 @@ class channel{
         elseif (is_string( $channelparams )){
             $this->params = $this->convertString2Array( $channelparams );
             $this->source = $this->params["source"];
-            $this->channelstring = $this->convertArray2String();
-            //compare channel strings to check if our conversion works fine
-            if ( $this->channelstring != $channelparams)
-                throw new Exception("Channelstrings don't match:\n".$this->channelstring ."\n". $channelparams );
+            //For debugging (slower): compare channel strings to check if our conversion works fine
+            //$this->channelstring = $this->convertArray2String();
+            //if ( $this->channelstring != $channelparams)
+            //    throw new Exception("Channelstrings don't match:\n".$this->channelstring ."\n". $channelparams );
+            $this->channelstring = $channelparams;
         }
         else
             throw new Exception("Channelparams are neither of type array nor of type string!");

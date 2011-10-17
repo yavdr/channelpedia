@@ -28,13 +28,15 @@ $startime = time();
 require_once '../classes/class.config.php';
 
 ini_set("max_execution_time", 120); //workaround
-
-//set this to true to reparse all old channels.conf.old files of all users
-$forceReparsing = false;
+$config = config::getInstance();
 
 //if ( array_key_exists('SERVER_SOFTWARE',$_SERVER)) print "<pre>";
 
-importFromAllChannelSources( $forceReparsing );
+try {
+    importFromAllChannelSources($config);
+} catch (Exception $e) {
+    $config->addToDebugLog( 'Caught exception: '. $e->getMessage() );
+}
 
 //if ( array_key_exists('SERVER_SOFTWARE',$_SERVER)) print "</pre>";
 
@@ -43,14 +45,22 @@ $usedtime = $endtime  - $startime ;
 print "Finished in time... (". $usedtime ." seconds)</br>\n";
 
 
-function importFromAllChannelSources($forceReparsing = false){
-    $config = config::getInstance();
+function importFromAllChannelSources($config){
+
+    //delete outdated logs to keep db small
+    $db = dbConnection::getInstance();
+    $twomonthsago = time() - (60 * 24 * 60 * 60);
+    $query = $db->exec( "BEGIN TRANSACTION" );
+    $query = $db->exec( "DELETE FROM channel_update_log WHERE timestamp <= " . $twomonthsago );
+    $query = $db->exec( "DELETE FROM upload_log WHERE timestamp <= " . $twomonthsago );
+    $query = $db->exec( "END TRANSACTION" );
+
     $dir = new DirectoryIterator( $config->getValue("userdata")."sources/" );
     foreach ($dir as $fileinfo) {
         if ( $fileinfo->isDir() && !$fileinfo->isDot()){
             $metaData = new channelImportMetaData( $fileinfo->getFilename() );
             if ( $metaData->userNameExists()){
-                $importer = new channelImport( $metaData, $forceReparsing );
+                $importer = new channelImport( $metaData, FORCE_REPARSING );
                 $importer->addToUpdateLog( "-", "Manually forced update: Checking for presence of unprocessed channels.conf to analyze.");
                 $importer->insertChannelsConfIntoDB();
                 //print "user account for folder " . $fileinfo->getFilename() . " does exist in global_user_data!\n";

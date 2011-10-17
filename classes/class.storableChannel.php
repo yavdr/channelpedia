@@ -77,6 +77,9 @@ class storableChannel extends channel{
             }
         }
         else{
+            //for sat sources, remove a redundant ".0", Example: Turn S9.0E into S9E
+            if (substr( $this->source, -3, 2 ) == ".0")
+                $this->source = substr( $this->source, 0, strlen( $this->source ) - 3 ) . substr( $this->source, -1, 1 );
             if ( $this->metaData->isValidSatSource( $this->source ) ){
                 $this->sourceDB = $this->source;
                 $this->metaData->addPresentSatProvider( $this->source );

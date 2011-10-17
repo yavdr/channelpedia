@@ -54,6 +54,7 @@ class dbConnection {
 
     public function connect(){
         $this->dbh = new PDO('sqlite:'.$this->dbfile);
+        //$this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
     }
 
     public function getDBHandle(){
@@ -99,10 +100,10 @@ class dbConnection {
     }
 
     public function query( $statement ){
-        //$this->config->addToDebugLog( "Query: $statement\n");
+        //$this->config->addToDebugLog( "DB-Query: $statement\n");
         $result = $this->dbh->query( $statement );
         if ($result === false)
-            die( "\nDB-Error: " . $this->dbh->errorCode() . " / " . $statement );
+            throw new Exception( $statement . "\n". print_r($this->dbh->errorInfo(), true) . "");
         return $result;
     }
 
@@ -114,14 +115,14 @@ class dbConnection {
     }
 
     public function exec( $statement ){
-        //print "Exec: $statement\n\n";
+        //$this->config->addToDebugLog( "DB-Exec: $statement\n");
         $errorcode = 0;
         $result = $this->dbh->exec( $statement );
         if ($result === false){
             $errorinfo = $this->dbh->errorInfo();
             $errorcode =  $errorinfo[1];
             if ($errorcode != 19)
-                die( "\nDB-Error: " . $this->dbh->errorCode() . " / " . $statement );
+                throw new Exception( $statement . "\n". print_r($this->dbh->errorInfo(), true) . "");
         }
         return $errorcode;
     }
@@ -137,8 +138,10 @@ class dbConnection {
                 $params[$key] = $this->dbh->quote( $value );
         $columns = implode( ", ", array_keys($params) );
         $values = implode( ", ", array_values($params) );
-
-        $result = $this->exec( "INSERT INTO $table ($columns) VALUES ($values)" );
+        $statement = "INSERT INTO $table ($columns) VALUES ($values)";
+        $result = $this->exec( $statement );
+        if ($result === false)
+            throw new Exception( $statement . "\n". print_r($this->dbh->errorInfo(), true) . "");
         return $result;
     }
 
