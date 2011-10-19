@@ -429,7 +429,7 @@ class HTMLOutputRenderer{
             $html_table .
             $this->getHTMLFooter();
         $filename = "unconfirmed_channels_".$source.".html";
-        $this->addToOverview( $pagetitle, $filename );
+        $this->addToOverview( "Unconfirmed/outdated", $filename );
         file_put_contents($this->exportpath . $filename, $nice_html_output );
     }
 

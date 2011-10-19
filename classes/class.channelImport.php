@@ -151,18 +151,16 @@ class channelImport extends channelFileIterator{
     }
 
     private function updateAffectedDataAndFilesForNonSatProvider( $type ){
-            $rawprovider = $this->metaData->getPresentNonSatProvider( $type );
-            if ($rawprovider != "" && $rawprovider != "none"){
-                $visibletype = ($type == "A") ? "ATSC" : "DVB-". $type;
-                $this->config->addToDebugLog( "updateAffectedDataAndFiles: Processing $visibletype: " . $rawprovider . ".\n");
-                $languages = $this->config->getLanguageGroupsOfSource( $visibletype, $rawprovider);
-                $provider = $type. "[".$rawprovider."]";
-                $this->labeller->updateAllLabelsOfSource( $provider );
-                $this->rawOutput->writeRawOutputForSingleSource( $type, $provider, $languages);
-                $this->htmlOutput->renderPagesOfSingleSource($provider, $languages);
-            }
+        $rawprovider = $this->metaData->getPresentNonSatProvider( $type );
+        if ($rawprovider != "" && $rawprovider != "none"){
+            $visibletype = ($type == "A") ? "ATSC" : "DVB-". $type;
+            $this->config->addToDebugLog( "updateAffectedDataAndFiles: Processing $visibletype: " . $rawprovider . ".\n");
+            $languages = $this->config->getLanguageGroupsOfSource( $visibletype, $rawprovider);
+            $provider = $type. "[".$rawprovider."]";
+            $this->labeller->updateAllLabelsOfSource( $provider );
+            $this->rawOutput->writeRawOutputForSingleSource( $type, $provider, $languages);
+            $this->htmlOutput->renderPagesOfSingleSource($provider, $languages);
+        }
     }
-
-
 }
 ?>

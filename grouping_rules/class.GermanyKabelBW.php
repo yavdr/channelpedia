@@ -22,7 +22,7 @@
 *
 */
 
-class GermanyKabelDeutschland  extends ruleBase{
+class GermanyKabelBW  extends ruleBase{
 
     function __construct(){
 
@@ -34,9 +34,7 @@ class GermanyKabelDeutschland  extends ruleBase{
             "lang" => "deu", //this is the language code used in the channels audio description
             "validForSatellites" => array(),
             "validForCableProviders" => array(
-                "C[de_KabelDeutschland_Speyer]",
-                "C[de_KabelDeutschland_Muenchen]",
-                "C[de_KabelDeutschland_Nuernberg]"
+                "C[de_KabelBW_Heidelberg]"
             ),
             "validForTerrProviders" => array(),//none
         );
@@ -45,20 +43,53 @@ class GermanyKabelDeutschland  extends ruleBase{
     function getGroups(){
         return array (
             array(
-                "title" => "DigitalFree Private",
+                "title" => "Private",
                 "outputSortPriority" => 5,
                 "caidMode" => self::caidModeScrambled,
+                "mediaType" => self::mediaTypeHDTV,
+                "languageOverrule" => "",
+                "customwhere" => "AND provider = 'HD'"
+            ),
+            array(
+                "title" => "Diverse Private",
+                "outputSortPriority" => 15,
+                "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => "AND provider = 'Digital Free'"
+                "customwhere" => "" //AND provider = 'Bonus'"
+            ),
+            array(
+                "title" => "Diverse Private",
+                "outputSortPriority" => 16,
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeSDTV,
+                //"languageOverrule" => "",
+                "customwhere" => "" //AND provider = 'Bonus'"
+            ),
+            array(
+                "title" => "Diverse",
+                "outputSortPriority" => 33,
+                "caidMode" => self::caidModeScrambled,
+                "mediaType" => self::mediaTypeRadio,
+                "languageOverrule" => "",
+                "customwhere" => "" // "AND provider = 'Bonus'"
+            ),
+            array(
+                "title" => "Diverse",
+                "outputSortPriority" => 34,
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeRadio,
+                //"languageOverrule" => "",
+                "customwhere" => "" // "AND provider = 'Bonus'"
             ),
 
+/*
             array(
                 "title" => "KDHome Private",
                 "outputSortPriority" => 6,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
                 "customwhere" => "AND provider = 'KD Home'"
-            )
+            )*/
         );
     }
 
