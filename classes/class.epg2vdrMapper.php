@@ -164,7 +164,7 @@ class epg2vdrMapper{
                 $map.
                 "//\n";
 
-            $gpath = $this->config->getValue("exportfolder")."/raw/channelmaps/";
+            $gpath = $this->config->getValue("exportfolder")."/";
             $filename = $source . '.' . $epgservice . '2vdr_channelmap.conf';
             $this->config->addToDebugLog("Writing channelmap $filename\n");
             file_put_contents($gpath . $filename, $map);

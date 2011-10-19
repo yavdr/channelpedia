@@ -67,7 +67,7 @@ class channelListWriter extends channelIterator{
 
     private function openFile(){
         $config = config::getInstance();
-        $gpath = $config->getValue("exportfolder")."/raw/";
+        $gpath = $config->getValue("exportfolder")."/";
 //        if (!is_dir( $gpath ))
 //            mkdir $gpath;
 //        $gpath .= "DVB-" . substr($source,0,1);

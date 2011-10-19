@@ -34,6 +34,7 @@ class HTMLOutputRenderer{
         $db,
         $exportpath,
         $config,
+        $craftedPath = "",
         $linklist = array(),
         $html_header_template = "",
         $html_footer_template = "";
@@ -41,7 +42,7 @@ class HTMLOutputRenderer{
     function __construct(){
         $this->db = dbConnection::getInstance();
         $this->config = config::getInstance();
-        $this->exportpath = $this->config->getValue("exportfolder")."/html/";
+        $this->exportpath = $this->config->getValue("exportfolder")."/";
     }
 
     public function renderAllHTMLPages(){
@@ -49,19 +50,19 @@ class HTMLOutputRenderer{
 
         $this->addDividerTitle("Satellite positions");
         foreach ($this->config->getValue("sat_positions") as $sat => $languages){
-            $this->renderPagesOfSingleSource($sat, $languages);
+            $this->renderPagesOfSingleSource( "S", $sat, $languages );
         }
         $this->closeHierarchy();
 
         $this->addDividerTitle("Cable providers");
         foreach ($this->config->getValue("cable_providers") as $cablep => $languages){
-            $this->renderPagesOfSingleSource("C[$cablep]", $languages);
+            $this->renderPagesOfSingleSource( "C", $cablep, $languages );
         }
         $this->closeHierarchy();
 
         $this->addDividerTitle("Terrestrial providers");
         foreach ($this->config->getValue("terr_providers") as $terrp => $languages){
-            $this->renderPagesOfSingleSource("T[$terrp]", $languages);
+            $this->renderPagesOfSingleSource( "T", $terrp, $languages );
         }
         $this->closeHierarchy();
 
@@ -76,7 +77,13 @@ class HTMLOutputRenderer{
         $this->renderIndexPage();
     }
 
-    public function renderPagesOfSingleSource($source, $languages){
+    public function renderPagesOfSingleSource($type, $puresource, $languages){
+        $visibletype = ($type == "A") ? "ATSC" : "DVB-". $type;
+        if ($type !== "S")
+            $source = $type . "[" . $puresource . "]";
+        else
+            $source = $puresource;
+        $this->craftedPath = $visibletype ."/". strtr(strtr( trim($puresource," _"), "/", ""),"_","/"). "/";
         $this->addDividerTitle($source);
         foreach ($languages as $language)
             $this->writeNiceHTMLPage( $source, $language );
@@ -95,12 +102,14 @@ class HTMLOutputRenderer{
     private function getHTMLHeader($pagetitle){
         if ( $this->html_header_template == ""){
             //prepare html header template + stylesheet include
-            $stylefile = "styles_". md5( file_get_contents( HTMLOutputRenderer::stylesheet ) ). ".css";
+            $stylefile = $this->exportpath . "styles_". md5( file_get_contents( HTMLOutputRenderer::stylesheet ) ). ".css";
             $this->html_header_template =
                 preg_replace( "/\[STYLESHEET\]/", $stylefile, file_get_contents( HTMLOutputRenderer::htmlHeaderTemplate));
             //TODO: delete old stylesheet files before copying new one
-            if (!file_exists($this->exportpath . $stylefile))
-                copy( HTMLOutputRenderer::stylesheet, $this->exportpath . $stylefile );
+            if (!file_exists( $stylefile))
+                copy( HTMLOutputRenderer::stylesheet, $stylefile );
+            $this->html_header_template =
+                preg_replace( "/\[INDEX\]/", $this->exportpath . "index.html", $this->html_header_template );
         }
         return preg_replace( "/\[PAGE_TITLE\]/", htmlspecialchars($pagetitle), $this->html_header_template );
     }
@@ -138,8 +147,18 @@ class HTMLOutputRenderer{
         $this->addToOverview( $title, "");
     }
 
-    private function addToOverview( $param, $value){
+    private function addToOverview( $param, $value ){
         $this->linklist[] = array( $param, $value);
+    }
+
+    private function addToOverviewAndSave( $link, $filename, $nice_html_output ){
+        $path = $this->exportpath . substr( $filename, 0, strrpos ( $filename , "/" ) );
+        $this->config->addToDebugLog( "HTMLOutputRenderer/addToOverviewAndSave: file '".$filename."', link: '$link'\n" );
+
+        if (!is_dir($path))
+            mkdir($path, 0777, true);
+        file_put_contents($this->exportpath . $filename, $nice_html_output );
+        $this->linklist[] = array( $link, $filename);
     }
 
     private function closeHierarchy(){
@@ -159,11 +178,12 @@ class HTMLOutputRenderer{
             $where[] = " combined_id LIKE ".$this->db->quote( $source."%" ) . " ";
             $pagetitle = 'Changelog for '.$source;
             $linktitle = 'Changelog';
+            $filename = $this->craftedPath . "changelog.html";
         }
         else{
-            $source = "all_sources";
             $pagetitle = 'Changelog for all sources';
             $linktitle = $pagetitle;
+            $filename = "changelog.html";
         }
         if ($importance === 1 ){
         	$where[] = " importance = $importance ";
@@ -198,9 +218,7 @@ class HTMLOutputRenderer{
             "</td></tr>\n";
         }
         $buffer .= "<table>\n".$this->getHTMLFooter();
-        $filename = "changelog_".$source.".html";
-        $this->addToOverview($linktitle, $filename);
-        file_put_contents($this->exportpath . $filename, $buffer );
+        $this->addToOverviewAndSave($linktitle, $filename, $buffer);
     }
 
     public function writeUploadLog(){
@@ -224,8 +242,7 @@ class HTMLOutputRenderer{
         }
         $buffer .= "<table>\n".$this->getHTMLFooter();
         $filename = "upload_log.html";
-        $this->addToOverview($pagetitle, $filename);
-        file_put_contents($this->exportpath . $filename, $buffer );
+        $this->addToOverviewAndSave($pagetitle, $filename, $buffer );
     }
 
 
@@ -323,10 +340,9 @@ class HTMLOutputRenderer{
             $nice_html_body.
             $this->getHTMLFooter();
 
-        $filename = "channels_".$language."_".$source.".html";
-        $this->addToOverview( $language, $filename );
-        $this->config->addToDebugLog( "HTMLOutputRenderer/writeNiceHTMLPage: writing to file ".$filename."\n" );
-        file_put_contents($this->exportpath . $filename, $nice_html_output );
+
+        $filename = $language.".html";
+        $this->addToOverviewAndSave($language, $this->craftedPath . $filename, $nice_html_output );
     }
 
     private function renderDEComparison(){
@@ -371,8 +387,7 @@ class HTMLOutputRenderer{
             $html_table .
             $this->getHTMLFooter();
         $filename = "parameter_comparison_de.html";
-        $this->addToOverview( "Comparison: Parameters of German public TV channels at different providers", $filename );
-        file_put_contents($this->exportpath . $filename, $nice_html_output );
+        $this->addToOverviewAndSave( "Comparison: Parameters of German public TV channels at different providers", $filename, $nice_html_output );
     }
 
     private function getLastConfirmedTimestamp($source){
@@ -428,9 +443,8 @@ class HTMLOutputRenderer{
         $nice_html_output .=
             $html_table .
             $this->getHTMLFooter();
-        $filename = "unconfirmed_channels_".$source.".html";
-        $this->addToOverview( "Unconfirmed/outdated", $filename );
-        file_put_contents($this->exportpath . $filename, $nice_html_output );
+        $filename = $this->craftedPath . "unconfirmed_channels.html";
+        $this->addToOverviewAndSave( "Unconfirmed/outdated", $filename, $nice_html_output );
     }
 
     private function renderGroupingHints($source){
@@ -465,10 +479,9 @@ class HTMLOutputRenderer{
             $html_table .
             $nice_html_body.
             $this->getHTMLFooter();
-        $filename = "grouping_hints_".$source.".html";
+        $filename = $this->craftedPath . "grouping_hints.html";
 //        $this->addDividerTitle("Reports");
-        $this->addToOverview( "Grouping hints", $filename );
-        file_put_contents($this->exportpath . $filename, $nice_html_output );
+        $this->addToOverviewAndSave( "Grouping hints", $filename, $nice_html_output );
     }
 
     private function renderTransponderNIDCheck( $source ){
@@ -533,9 +546,8 @@ class HTMLOutputRenderer{
             $nice_html_output .= $html_table;
         }
         $nice_html_output .= $this->getHTMLFooter();
-        $filename = "transponder_nid_check_".$source.".html";
-        $this->addToOverview( "NID check", $filename );
-        file_put_contents($this->exportpath . $filename, $nice_html_output );
+        $filename = $this->craftedPath . "transponder_nid_check.html";
+        $this->addToOverviewAndSave( "NID check", $filename, $nice_html_output );
     }
 
     private function renderIndexPage(){
@@ -560,6 +572,5 @@ class HTMLOutputRenderer{
         file_put_contents($this->exportpath . "index.html", $nice_html_output );
 
     }
-
 }
 ?>

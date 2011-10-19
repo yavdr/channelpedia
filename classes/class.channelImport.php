@@ -138,7 +138,7 @@ class channelImport extends channelFileIterator{
                 $languages = $this->config->getLanguageGroupsOfSource( "DVB-S", $sat);
                 $this->labeller->updateAllLabelsOfSource($sat);
                 $this->rawOutput->writeRawOutputForSingleSource( $sat, $sat, $languages);
-                $this->htmlOutput->renderPagesOfSingleSource($sat, $languages);
+                $this->htmlOutput->renderPagesOfSingleSource("S", $sat, $languages);
             }
             $this->updateAffectedDataAndFilesForNonSatProvider("C");
             $this->updateAffectedDataAndFilesForNonSatProvider("T");
@@ -159,7 +159,7 @@ class channelImport extends channelFileIterator{
             $provider = $type. "[".$rawprovider."]";
             $this->labeller->updateAllLabelsOfSource( $provider );
             $this->rawOutput->writeRawOutputForSingleSource( $type, $provider, $languages);
-            $this->htmlOutput->renderPagesOfSingleSource($provider, $languages);
+            $this->htmlOutput->renderPagesOfSingleSource( $type, $rawprovider, $languages);
         }
     }
 }
