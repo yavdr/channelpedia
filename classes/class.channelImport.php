@@ -26,8 +26,11 @@ class channelImport extends channelFileIterator{
 
     private
         $reparseOldFile = false,
-        $metaDate,
-        $username;
+        $metaData,
+        $username,
+        $htmlOutput,
+        $labeller,
+        $rawOutput;
 
     public function __construct( & $metaData, $forceReparsing = false ){
         parent::__construct();
@@ -125,36 +128,41 @@ class channelImport extends channelFileIterator{
      */
 
     public function updateAffectedDataAndFiles(){
-        $htmlOutput = new HTMLOutputRenderer();
-        $htmlOutput->writeUploadLog();
+        $this->htmlOutput = new HTMLOutputRenderer();
+        $this->htmlOutput->writeUploadLog();
         if ( $this->metaData->getAddedChannelCount() + $this->metaData->getChangedChannelCount() > 0){
-            $labeller = channelGroupingManager::getInstance();
-            $rawOutput = new rawOutputRenderer();
+            $this->labeller = channelGroupingManager::getInstance();
+            $this->rawOutput = new rawOutputRenderer();
             foreach ($this->metaData->getPresentSatProviders() as $sat => $dummy){
+                $this->config->addToDebugLog( "updateAffectedDataAndFiles: Processing DVB-S: " . $sat . ".\n");
                 $languages = $this->config->getLanguageGroupsOfSource( "DVB-S", $sat);
-                $labeller->updateAllLabelsOfSource($sat);
-                $rawOutput->writeRawOutputForSingleSource( $sat, $sat, $languages);
-                $htmlOutput->renderPagesOfSingleSource($sat, $languages);
+                $this->labeller->updateAllLabelsOfSource($sat);
+                $this->rawOutput->writeRawOutputForSingleSource( $sat, $sat, $languages);
+                $this->htmlOutput->renderPagesOfSingleSource($sat, $languages);
             }
-            if ($this->metaData->getPresentNonSatProvider("C") != ""){
-                $languages = $this->config->getLanguageGroupsOfSource( "DVB-C", $this->metaData->getPresentNonSatProvider("C"));
-                $provider = "C[".$this->metaData->getPresentNonSatProvider("C")."]";
-                $labeller->updateAllLabelsOfSource( $provider );
-                $rawOutput->writeRawOutputForSingleSource( "C", $provider, $languages);
-                $htmlOutput->renderPagesOfSingleSource("C[$provider]", $languages);
-            }
-            if ($this->metaData->getPresentNonSatProvider("T") != ""){
-                $languages = $this->config->getLanguageGroupsOfSource( "DVB-T", $this->metaData->getPresentNonSatProvider("T"));
-                $provider = "T[".$this->metaData->getPresentNonSatProvider("T")."]";
-                $labeller->updateAllLabelsOfSource( $provider );
-                $rawOutput->writeRawOutputForSingleSource( "T", $provider, $languages);
-                $htmlOutput->renderPagesOfSingleSource("T[$provider]", $languages);
-            }
-            $htmlOutput->writeGeneralChangelog();
+            $this->updateAffectedDataAndFilesForNonSatProvider("C");
+            $this->updateAffectedDataAndFilesForNonSatProvider("T");
+            $this->updateAffectedDataAndFilesForNonSatProvider("A");
+            $this->htmlOutput->writeGeneralChangelog();
         }
         else{
             $this->config->addToDebugLog( "No need for label update.\n");
         }
     }
+
+    private function updateAffectedDataAndFilesForNonSatProvider( $type ){
+            $rawprovider = $this->metaData->getPresentNonSatProvider( $type );
+            if ($rawprovider != "" && $rawprovider != "none"){
+                $visibletype = ($type == "A") ? "ATSC" : "DVB-". $type;
+                $this->config->addToDebugLog( "updateAffectedDataAndFiles: Processing $visibletype: " . $rawprovider . ".\n");
+                $languages = $this->config->getLanguageGroupsOfSource( $visibletype, $rawprovider);
+                $provider = $type. "[".$rawprovider."]";
+                $this->labeller->updateAllLabelsOfSource( $provider );
+                $this->rawOutput->writeRawOutputForSingleSource( $type, $provider, $languages);
+                $this->htmlOutput->renderPagesOfSingleSource($provider, $languages);
+            }
+    }
+
+
 }
 ?>

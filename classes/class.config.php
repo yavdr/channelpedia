@@ -58,7 +58,7 @@ class config {
 
         $debuglogfile = $this->getValue("exportfolder")."/raw/debuglog.txt";
         //@unlink($debuglogfile);
-        $this->debuglog = fopen( $debuglogfile, "w");
+        $this->debuglog = fopen( $debuglogfile, "a");
         $this->addToDebugLog("---------------------------------- begin of session ".date("D M j G:i:s T Y")." -------------------------------------------\n");
 
         global $global_source_config;

@@ -78,7 +78,9 @@ class channelImportMetaData{
     public function isValidNonSatSource( $type ){
         if ( array_key_exists( $type, $this->usersAnnouncedProviders )){
             $this->lastProviderName = $this->currentUserConfig["announcedProviders"][$type];
-            return $this->usersAnnouncedProviders[$type];
+            $this->usersPresentProviders[$type] = $this->lastProviderName;
+
+            return true;
         }
         else{
             return false;
@@ -90,7 +92,12 @@ class channelImportMetaData{
     }
 
     public function isValidSatSource( $name ){
-        return in_array($name, $this->usersAnnouncedProviders["S"]);
+        if( in_array($name, $this->usersAnnouncedProviders["S"])){
+            $this->usersPresentProviders["S"][$name] = true;
+            return true;
+        }
+        else
+           return false;
     }
 
     private function checkAnnouncedNonSatProviderForType( $type ){
@@ -122,19 +129,11 @@ class channelImportMetaData{
         $this->usersPresentProviders["S"] = array();
     }
 
-    public function addPresentNonSatProvider( $type, $provider ){
-        $this->usersPresentProviders[$type] = $provider;
-    }
-
     public function getPresentNonSatProvider( $type ){
         $result = "";
-        if (in_array($type, $this->usersPresentProviders))
+        if (array_key_exists($type, $this->usersPresentProviders))
             $result = $this->usersPresentProviders[$type];
         return $result;
-    }
-
-    public function addPresentSatProvider( $satposition ){
-        $this->usersPresentProviders["S"][$satposition] = true;
     }
 
     public function getPresentSatProviders(){

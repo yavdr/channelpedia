@@ -29,7 +29,6 @@ class channel{
         $config,
         $params,
 
-        $metaData,
         $channelstring = "",
         $uniqueID = "",
         $longUniqueID = "",

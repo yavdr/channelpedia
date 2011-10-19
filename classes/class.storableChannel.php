@@ -25,6 +25,7 @@
 class storableChannel extends channel{
 
     private
+        $metaData,
         $sourceDB; //needed for db
 
     public function __construct( $channelparams, & $metaDataObj ){
@@ -61,7 +62,6 @@ class storableChannel extends channel{
                 if ( $this->metaData->isValidNonSatSource( $this->source ) ){
                     $nonSatProvider = $this->metaData->getProviderNameForLastCheckedNonSatSource();
                     $this->sourceDB = $this->source . '[' . $nonSatProvider . ']';
-                    $this->metaData->addPresentNonSatProvider( $this->source, $nonSatProvider );
                 }
                 else{
                     $this->markChannelAsInvalid();
@@ -82,7 +82,6 @@ class storableChannel extends channel{
                 $this->source = substr( $this->source, 0, strlen( $this->source ) - 3 ) . substr( $this->source, -1, 1 );
             if ( $this->metaData->isValidSatSource( $this->source ) ){
                 $this->sourceDB = $this->source;
-                $this->metaData->addPresentSatProvider( $this->source );
             }
             else
                 $this->markChannelAsInvalid();
