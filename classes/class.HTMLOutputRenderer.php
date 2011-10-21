@@ -154,7 +154,6 @@ class HTMLOutputRenderer{
     private function addToOverviewAndSave( $link, $filename, $nice_html_output ){
         $path = $this->exportpath . substr( $filename, 0, strrpos ( $filename , "/" ) );
         $this->config->addToDebugLog( "HTMLOutputRenderer/addToOverviewAndSave: file '".$filename."', link: '$link'\n" );
-
         if (!is_dir($path))
             mkdir($path, 0777, true);
         file_put_contents($this->exportpath . $filename, $nice_html_output );

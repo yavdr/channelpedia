@@ -33,24 +33,24 @@ class rawOutputRenderer {
             $this->writeRawOutputForSingleSource( $sat, $sat, $languages);
         }
         foreach ($this->config->getValue("cable_providers") as $cablep => $languages){
-            $this->writeRawOutputForSingleSource( "C", "C[$cablep]", $languages);
+            $this->writeRawOutputForSingleSource( "C", $cablep, $languages);
         }
         foreach ($this->config->getValue("terr_providers") as $terrp => $languages){
-            $this->writeRawOutputForSingleSource( "T", "T[$terrp]", $languages);
+            $this->writeRawOutputForSingleSource( "T", $terrp, $languages);
         }
     }
 
-    public function writeRawOutputForSingleSource( $shortsource, $longsource, $languages){
+    public function writeRawOutputForSingleSource( $type, $longsource, $languages){
         //write unfiltered channels.conf lists to disc
-        $channelListWriter = new channelListWriter("_complete", $longsource);
+        $channelListWriter = new channelListWriter("_complete", $type, $longsource);
         $channelListWriter->writeFile();
         //$this->writeAllChannelSelections2Disk( $longsource );
-        $this->writeAllUncategorizedChannels2Disk( $longsource);
+        $this->writeAllUncategorizedChannels2Disk( $type, $longsource);
         //epgmappings only for German providers
         if (in_array("de", $languages)){
             $epgstuff = epg2vdrMapper::getInstance();
-            $epgstuff->writeEPGChannelmap( $shortsource, $longsource, "tvm");
-            $epgstuff->writeEPGChannelmap( $shortsource, $longsource, "epgdata");
+            $epgstuff->writeEPGChannelmap( $type, $longsource, "tvm");
+            $epgstuff->writeEPGChannelmap( $type, $longsource, "epgdata");
         }
     }
 
@@ -84,9 +84,9 @@ class rawOutputRenderer {
         }
     }
 
-    private function writeAllUncategorizedChannels2Disk( $source){
+    private function writeAllUncategorizedChannels2Disk( $shortsource, $longsource){
         //also write a complete channels.conf for this source grouped by transponders, containing all existing channels
-        $y = new channelListWriter( "uncategorized", $source );
+        $y = new channelListWriter( "uncategorized", $shortsource, $longsource );
         $y->writeFile();
         unset($y);
     }

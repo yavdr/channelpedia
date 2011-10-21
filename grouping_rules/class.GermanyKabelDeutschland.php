@@ -34,6 +34,7 @@ class GermanyKabelDeutschland  extends ruleBase{
             "lang" => "deu", //this is the language code used in the channels audio description
             "validForSatellites" => array(),
             "validForCableProviders" => array(
+                "C[de_KabelDeutschland_Flensburg]",
                 "C[de_KabelDeutschland_Speyer]",
                 "C[de_KabelDeutschland_Muenchen]",
                 "C[de_KabelDeutschland_Nuernberg]"

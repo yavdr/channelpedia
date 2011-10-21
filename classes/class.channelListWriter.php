@@ -30,7 +30,7 @@ class channelListWriter extends channelIterator{
         $addTransponderDelimiters = false,
         $config;
 
-    function __construct($label = "_complete", $source, $orderby = "UPPER(name) ASC"){
+    function __construct($label = "_complete", $type, $puresource, $orderby = "UPPER(name) ASC"){
         $this->config = config::getInstance();
         $xlabel = $label;
         if ($label == "_complete"){
@@ -44,9 +44,13 @@ class channelListWriter extends channelIterator{
             $xlabel="";
         }
         parent::__construct();
+        $visibletype = ($type == "A") ? "ATSC" : "DVB-". $type;
+        if ($type !== "S")
+            $source = $type . "[" . $puresource . "]";
+        else
+            $source = $puresource;
         $this->init1($xlabel, $source, $orderby);
-        $groupname = $source. '_' . $label;
-        $this->filename = 'channels_' . $groupname . '.conf';
+        $this->filename = $visibletype ."/". strtr(strtr( trim($puresource," _"), "/", ""),"_","/"). "/" . 'channels_' . $source. '_' . $label . '.conf';
     }
 
     public function writeFile(){
@@ -66,14 +70,13 @@ class channelListWriter extends channelIterator{
     }
 
     private function openFile(){
-        $config = config::getInstance();
-        $gpath = $config->getValue("exportfolder")."/";
-//        if (!is_dir( $gpath ))
-//            mkdir $gpath;
-//        $gpath .= "DVB-" . substr($source,0,1);
-        $config->addToDebugLog( "channelListWriter: writing to file $this->filename\n");
-        @unlink($gpath .  $this->filename);
-        $this->filehandle = fopen ($gpath .  $this->filename, "w");
+        $this->config->addToDebugLog( "channelListWriter: writing to file $this->filename\n");
+        $path = $this->config->getValue("exportfolder") . "/" . substr( $this->filename, 0, strrpos ( $this->filename , "/" ) );
+        if (!is_dir($path))
+            mkdir($path, 0777, true);
+        else
+            @unlink($gpath .  $this->filename);
+        $this->filehandle = fopen ( $this->config->getValue("exportfolder") . "/" .  $this->filename, "w");
     }
 
     private function closeFile(){
@@ -85,5 +88,4 @@ class channelListWriter extends channelIterator{
             $this->config->addToDebugLog( "channelListWriter: $this->filename was not written - it is empty!\n" );
     }
 }
-
 ?>

@@ -70,7 +70,6 @@ class config {
                 $this->sourcelist[$type][$provider] = $languages;
             }
         }
-
     }
 
     function __destruct(){

@@ -60,9 +60,14 @@ class epg2vdrMapper{
      * epgservice can be either epgdata or tvm
      */
 
-    public function writeEPGChannelmap( $shortsource, $source, $epgservice){
+    public function writeEPGChannelmap( $type, $puresource, $epgservice){
         if ( $epgservice != "epgdata" && $epgservice != "tvm")
-            throw("Illegal epgservice value!");
+            throw new Exception("Illegal epgservice value!");
+        $visibletype = ($type == "A") ? "ATSC" : "DVB-". $type;
+        if ($type !== "S")
+            $source = $type . "[" . $puresource . "]";
+        else
+            $source = $puresource;
         $map = "";
         $noepg_config = "";
         $notfoundlist = array();
@@ -96,7 +101,7 @@ class epg2vdrMapper{
             foreach ($result as $row){
                 $currentChannel = new channel($row);
                 //FIXME use channel object properly here
-                $idlist[] = $shortsource . "-" . $row["nid"] . "-" . $row["tid"] . "-" . $row["sid"];
+                $idlist[] = $type . "-" . $row["nid"] . "-" . $row["tid"] . "-" . $row["sid"];
                 $comments[] = $currentChannel->getChannelString();
             }
             if (count($idlist) > 0 ){
@@ -165,7 +170,7 @@ class epg2vdrMapper{
                 "//\n";
 
             $gpath = $this->config->getValue("exportfolder")."/";
-            $filename = $source . '.' . $epgservice . '2vdr_channelmap.conf';
+            $filename = $visibletype ."/". strtr(strtr( trim($puresource," _"), "/", ""),"_","/"). "/" . $source . '.' . $epgservice . '2vdr_channelmap.conf';
             $this->config->addToDebugLog("Writing channelmap $filename\n");
             file_put_contents($gpath . $filename, $map);
         }

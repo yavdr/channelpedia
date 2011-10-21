@@ -43,7 +43,7 @@ require_once PATH_TO_CLASSES . '../grouping_rules/class.BelgiumSatEssentials.php
 define("HD_CHANNEL"," UPPER(name) LIKE '% HD%' ");
 
 define("DE_PRIVATE_PRO7_RTL"," (provider = 'ProSiebenSat.1' OR provider='Pro7 & Sat.1' OR provider = 'RTL World' OR provider = 'RTL' OR provider='MTV Networks') ");
-define("DE_PROVIDER_ARD", "(provider LIKE 'ARD%' OR provider LIKE 'SWR'  OR provider LIKE 'BR') ");
+define("DE_PROVIDER_ARD", "(provider LIKE 'ARD%' OR provider LIKE 'SWR' OR provider LIKE 'BR' OR provider LIKE 'NDR') ");
 define("DE_PUBLIC_PROVIDER", " (".DE_PROVIDER_ARD." OR provider LIKE 'ZDF%') ");
 
 define("AUSTRIA", " (LOWER(name) LIKE '%sterreich' OR LOWER(name) LIKE '%austria%' OR UPPER(name) LIKE '% A' OR UPPER(name) LIKE '% AUT' OR UPPER(name) LIKE '%TIROL%' OR UPPER(provider)='ORF') ");
