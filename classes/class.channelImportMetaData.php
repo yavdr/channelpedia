@@ -76,10 +76,9 @@ class channelImportMetaData{
     }
 
     public function isValidNonSatSource( $type ){
-        if ( array_key_exists( $type, $this->usersAnnouncedProviders )){
+        if ( array_key_exists( $type, $this->usersAnnouncedProviders ) && $this->usersAnnouncedProviders[$type] === true){
             $this->lastProviderName = $this->currentUserConfig["announcedProviders"][$type];
             $this->usersPresentProviders[$type] = $this->lastProviderName;
-
             return true;
         }
         else{
@@ -106,9 +105,10 @@ class channelImportMetaData{
            is_string( $this->currentUserConfig["announcedProviders"][$type] ) &&
            $this->currentUserConfig["announcedProviders"][$type] !== "none" &&
            $this->currentUserConfig["announcedProviders"][$type] !== ""
-        )
+        ){
             $feedback = true;
-            return $feedback;
+        }
+        return $feedback;
     }
 
     private function checkAnnouncedSatProviders(){
