@@ -40,10 +40,11 @@ class AustriaSatEssentials extends ruleBase{
 
     function getGroups(){
         return array(
+
             array(
                 "title" => "ORF",
                 "outputSortPriority" => 1,
-                "caidMode" => self::caidModeScrambled,
+                "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeHDTV,
                 "customwhere" => "AND UPPER(provider) = 'ORF'"
             ),
@@ -52,13 +53,37 @@ class AustriaSatEssentials extends ruleBase{
                 "title" => "ORF",
                 "outputSortPriority" => 2,
                 "caidMode" => self::caidModeScrambled,
+                "mediaType" => self::mediaTypeHDTV,
+                "customwhere" => "AND UPPER(provider) = 'ORF'"
+            ),
+
+            array(
+                "title" => "ORF",
+                "outputSortPriority" => 3,
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeSDTV,
+                "customwhere" => "AND UPPER(provider) = 'ORF'"
+            ),
+
+            array(
+                "title" => "ORF",
+                "outputSortPriority" => 4,
+                "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
                 "customwhere" => "AND UPPER(provider) = 'ORF'"
             ),
 
             array(
                 "title" => "Private",
-                "outputSortPriority" => 3,
+                "outputSortPriority" => 5,
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeHDTV,
+                "customwhere" => "AND ". AUSTRIA
+            ),
+
+            array(
+                "title" => "Private",
+                "outputSortPriority" => 6,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeHDTV,
                 "customwhere" => "AND ". AUSTRIA. "AND ". DE_PRIVATE_PRO7_RTL
@@ -66,46 +91,39 @@ class AustriaSatEssentials extends ruleBase{
 
             array(
                 "title" => "Private",
-                "outputSortPriority" => 4,
+                "outputSortPriority" => 7,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
                 "languageOverrule" => "", // needed for RTL2
-                "customwhere" => "AND ". AUSTRIA. "AND (". DE_PRIVATE_PRO7_RTL . " OR UPPER(provider) LIKE '%AUSTRIA%')"
+                "customwhere" => "AND ". AUSTRIA . " AND ". DE_PRIVATE_PRO7_RTL
+            ),
+
+            array(
+                "title" => "Private2",
+                "outputSortPriority" => 8,
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeSDTV,
+                "customwhere" => "AND ". AUSTRIA
             ),
 
             array(
                 "title" => "Private",
-                "outputSortPriority" => 5,
+                "outputSortPriority" => 9,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
                 "languageOverrule" => "", // needed for RTL2
-                "customwhere" => "AND ". AUSTRIA. "AND (". DE_PRIVATE_PRO7_RTL . " OR UPPER(provider) LIKE '%AUSTRIA%')"
+                "customwhere" => "AND ". AUSTRIA
             ),
 
-            array(
-                "title" => "Diverse",
-                "outputSortPriority" => 6,
-                "caidMode" => self::caidModeFTA,
-                "mediaType" => self::mediaTypeHDTV,
-                "customwhere" => " AND (UPPER(provider) = 'SERVUSTV' OR ".AUSTRIA.")"
-            ),
-
-            array(
-                "title" => "Diverse",
-                "outputSortPriority" => 7,
-                "caidMode" => self::caidModeFTA,
-                "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => " AND (UPPER(provider) = 'SERVUSTV' OR ".AUSTRIA.")"
-            ),
 
             //radio
 
             array(
-                "title" => "ORF",
+                "title" => "ORF/ORS",
                 "outputSortPriority" => 10,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeRadio,
-                "customwhere" => "AND UPPER(provider) = 'ORF'"
+                "customwhere" => "AND UPPER(provider) = 'ORF' OR  UPPER(provider) = 'ORS'"
             ),
 
             array(
@@ -124,19 +142,6 @@ class AustriaSatEssentials extends ruleBase{
                 "customwhere" => " AND " . AUSTRIA
             ),
 
-/* FIXME: radio channels with language deu are already grabbed by the de list...
-                "X" => array(
-
-                    "caidMode" => self::caidModeFTA,
-                    "mediaType" => self::mediaTypeRadio,
-                ),
-
-                "Y" => array(
-
-                    "caidMode" => self::caidModeScrambled,
-                    "mediaType" => self::mediaTypeRadio,
-                ),
-*/
         );
     }
 
