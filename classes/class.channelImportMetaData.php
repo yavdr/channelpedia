@@ -31,6 +31,7 @@ class channelImportMetaData{
         $numChanChecked = 0,
         $numChanAdded = 0,
         $numChanChanged = 0,
+        $numChanSkipped = 0,
         $numChanIgnored = 0,
         $username,
         $currentUserConfig,
@@ -43,6 +44,7 @@ class channelImportMetaData{
         $this->numChanChecked = 0;
         $this->numChanAdded   = 0;
         $this->numChanChanged = 0;
+        $this->numChanSkipped = 0;
         $this->numChanIgnored = 0;
         $this->username = $username;
 

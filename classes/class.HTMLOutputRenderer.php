@@ -127,19 +127,14 @@ class HTMLOutputRenderer{
     }
 
     private function addCompleteListLink( $source ){
-        $filename = "../raw/channels_".$source."__complete.conf";
+        $filename = $this->craftedPath . $source."_complete.channels.conf";
         $this->addToOverview("Complete", $filename);
     }
 
-    private function addUncategorizedListLink( $source ){
-        $filename = "../raw/channels_".$source."_uncategorized.conf";
-        $this->addToOverview("uncategorized rest", $filename);
-    }
-
     private function addEPGChannelmapLink( $source ){
-        $filename = "../raw/channelmaps/".$source.".epgdata2vdr_channelmap.conf";
+        $filename = $this->craftedPath . $source.".epgdata2vdr_channelmap.conf";
         $this->addToOverview("epgdata2vdr Channelmap", $filename);
-        $filename = "../raw/channelmaps/".$source.".tvm2vdr_channelmap.conf";
+        $filename = $this->craftedPath . $source.".tvm2vdr_channelmap.conf";
         $this->addToOverview("tvm2vdr Channelmap", $filename);
     }
 
@@ -151,12 +146,12 @@ class HTMLOutputRenderer{
         $this->linklist[] = array( $param, $value);
     }
 
-    private function addToOverviewAndSave( $link, $filename, $nice_html_output ){
+    private function addToOverviewAndSave( $link, $filename, $filecontent ){
         $path = $this->exportpath . substr( $filename, 0, strrpos ( $filename , "/" ) );
         $this->config->addToDebugLog( "HTMLOutputRenderer/addToOverviewAndSave: file '".$filename."', link: '$link'\n" );
         if (!is_dir($path))
             mkdir($path, 0777, true);
-        file_put_contents($this->exportpath . $filename, $nice_html_output );
+        file_put_contents($this->exportpath . $filename, $filecontent );
         $this->linklist[] = array( $link, $filename);
     }
 
@@ -389,6 +384,7 @@ class HTMLOutputRenderer{
         $this->addToOverviewAndSave( "Comparison: Parameters of German public TV channels at different providers", $filename, $nice_html_output );
     }
 
+    //FIXME: this method is a duplicate of the one in channelImport.php
     private function getLastConfirmedTimestamp($source){
         $timestamp = 0;
         $sqlquery = "SELECT x_last_confirmed FROM channels WHERE source = ".$this->db->quote($source)." ORDER BY x_last_confirmed DESC LIMIT 1";

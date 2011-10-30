@@ -36,6 +36,7 @@ try {
     importFromAllChannelSources($config);
 } catch (Exception $e) {
     $config->addToDebugLog( 'Caught exception: '. $e->getMessage() );
+    print "An exception occured.\n";
 }
 
 //if ( array_key_exists('SERVER_SOFTWARE',$_SERVER)) print "</pre>";

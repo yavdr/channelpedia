@@ -30,7 +30,7 @@ class rawOutputRenderer {
 
     public function writeRawOutputForAllSources(){
         foreach ($this->config->getValue("sat_positions") as $sat => $languages){
-            $this->writeRawOutputForSingleSource( $sat, $sat, $languages);
+            $this->writeRawOutputForSingleSource( "S", $sat, $languages);
         }
         foreach ($this->config->getValue("cable_providers") as $cablep => $languages){
             $this->writeRawOutputForSingleSource( "C", $cablep, $languages);

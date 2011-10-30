@@ -50,7 +50,8 @@ class channelListWriter extends channelIterator{
         else
             $source = $puresource;
         $this->init1($xlabel, $source, $orderby);
-        $this->filename = $visibletype ."/". strtr(strtr( trim($puresource," _"), "/", ""),"_","/"). "/" . 'channels_' . $source. '_' . $label . '.conf';
+        $label = (substr($label, 0,1) == "_") ? $label : "_".$label;
+        $this->filename = $visibletype ."/". strtr(strtr( trim($puresource," _"), "/", ""),"_","/"). "/"  . $source. $label . '.channels.conf';
     }
 
     public function writeFile(){

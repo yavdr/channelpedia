@@ -27,16 +27,19 @@ class channelImport extends channelFileIterator{
     private
         $reparseOldFile = false,
         $metaData,
+        $textualSummary,
         $username,
         $htmlOutput,
         $labeller,
-        $rawOutput;
+        $rawOutput,
+        $lastConfirmedTimestamp = 0;
 
     public function __construct( & $metaData, $forceReparsing = false ){
         parent::__construct();
         $this->reparseOldFile = $forceReparsing;
         $this->metaData = $metaData;
         $this->username = $this->metaData->getUsername();
+        $this->textualSummary = "undefined";
         //$this->addToUpdateLog( "-", "Processing users channels.conf.");
     }
 
@@ -112,14 +115,56 @@ class channelImport extends channelFileIterator{
             if (file_exists($filename . ".old"))
                 unlink($filename . ".old");
             rename($filename, $filename . ".old");
-            $this->addToUpdateLog( "-", "Summary: ".
-                "Checked: " . $this->metaData->getCheckedChannelCount() .
-                " / Added: " . $this->metaData->getAddedChannelCount() .
-                " / Modified: " . $this->metaData->getChangedChannelCount() .
-                " / Ignored: "  . $this->metaData->getIgnoredChannelCount()
-            );
+            //now cleanup database content from outdated channels
+            //$this->deleteOutdatedChannels();
+            //summary
+            $this->updateTextualSummary();
+            $this->addToUpdateLog( "-", $this->textualSummary);
             unlink($sourcepath . 'lockfile.txt');
         }
+    }
+
+    private function updateTextualSummary(){
+        $this->textualSummary = "Summary: ".
+            "Checked: " . $this->metaData->getCheckedChannelCount() .
+            " / Added: " . $this->metaData->getAddedChannelCount() .
+            " / Modified: " . $this->metaData->getChangedChannelCount() .
+            " / Ignored: "  . $this->metaData->getIgnoredChannelCount();
+    }
+
+    public function deleteOutdatedChannels(){
+        $this->lastConfirmedTimestamp = $this->getLastConfirmedTimestamp($source);
+        foreach ($this->metaData->getPresentSatProviders() as $sat => $dummy){
+            $this->deleteOutdatedChannelsForSource( $sat );
+        }
+        $this->deleteOutdatedChannelsForNonSatProvider( "C" );
+        $this->deleteOutdatedChannelsForNonSatProvider( "T" );
+        $this->deleteOutdatedChannelsForNonSatProvider( "A" );
+    }
+
+    private function getLastConfirmedTimestamp($source){
+        $timestamp = 0;
+        $sqlquery = "SELECT x_last_confirmed FROM channels WHERE source = ".$this->db->quote($source)." ORDER BY x_last_confirmed DESC LIMIT 1";
+        $result = $this->db->query($sqlquery);
+        $timestamp_raw = $result->fetchAll();
+        if (isset($timestamp_raw[0][0]))
+            $timestamp = intval($timestamp_raw[0][0]);
+        return $timestamp;
+    }
+
+    private function deleteOutdatedChannelsForSource( $sat ){
+        //$this->lastConfirmedTimestamp
+    }
+
+    private function deleteOutdatedChannelsForNonSatProvider( $type ){
+        $rawprovider = $this->metaData->getPresentNonSatProvider( $type );
+        if ($rawprovider != "" && $rawprovider != "none"){
+            $this->deleteOutdatedChannelsForSource( $rawprovider );
+        }
+    }
+
+    public function getTextualSummary(){
+        return $this->textualSummary;
     }
 
     /*

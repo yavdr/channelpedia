@@ -46,6 +46,14 @@ class storableChannel extends channel{
             $this->params["x_utf8"] = 0;
         }
 
+        //FIXME: This should go into a method in the metadata class
+        //ignore changed channel names that should check if a channel is eclipsed
+        $checkignore= "[checkignore]";
+        if (substr($this->params["name"], 0, 13) == $checkignore){
+            $this->params["name"] = substr($this->params["name"], 13);
+            //$this->config->addToDebugLog("checkignore: " .$this->params["name"]."\n");
+        }
+
         //if a channel was read from a file the source of non-sat channels
         //need to be modified before they are being put into the db
         //this does not apply for channels read from the db

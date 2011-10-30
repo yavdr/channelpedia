@@ -42,24 +42,31 @@ class channelsupload extends Resource {
             $response->body .= "Error. File upload canceled: Invalid username.\n";
         else{
             if (isset($_FILES["channels"]["name"]) && $_FILES["channels"]["name"] == "channels.conf"){
-                $metaData = new channelImportMetaData($user);
-                if ( $metaData->userNameExists() && $metaData->isAuthenticated( $password ) ){
-                    $checkpath = $config->getValue("userdata"). "sources/$user/";
-                    if (move_uploaded_file( $_FILES["channels"]["tmp_name"], $checkpath."channels.conf" )){
-                        $response->body .= "Upload successful.\n";
-                        $importer = new channelImport( $metaData );
-                        $importer->addToUpdateLog( "-", "channels.conf was uploaded and is now being processed.");
-                        $importer->insertChannelsConfIntoDB();
-                        $importer->updateAffectedDataAndFiles();
-                        $importer->addToUpdateLog( "-", "Processing finished.");
-                        unset($importer);
+                try {
+                    $metaData = new channelImportMetaData($user);
+                    if ( $metaData->userNameExists() && $metaData->isAuthenticated( $password ) ){
+                        $checkpath = $config->getValue("userdata"). "sources/$user/";
+                        if (move_uploaded_file( $_FILES["channels"]["tmp_name"], $checkpath."channels.conf" )){
+                            $response->body .= "Upload successful.\n";
+                            $importer = new channelImport( $metaData );
+                            $importer->addToUpdateLog( "-", "channels.conf was uploaded and is now being processed.");
+                            $importer->insertChannelsConfIntoDB();
+                            $response->body .= $importer->getTextualSummary() . "\n";
+                            $importer->updateAffectedDataAndFiles();
+                            $importer->addToUpdateLog( "-", "Processing finished.");
+                            unset($importer);
+                        }
+                        else{
+                            $response->body .= "Error. Couldn't put uploaded file in the right place.\n";
+                        }
                     }
                     else{
-                        $response->body .= "Error. Couldn't put uploaded file in the right place.\n";
+                        $response->body .= "Error. File upload canceled.\n";
                     }
                 }
-                else{
-                    $response->body .= "Error. File upload canceled.\n";
+                catch (Exception $e) {
+                    $config->addToDebugLog( 'Caught exception: '. $e->getMessage() );
+                    $response->body .= "An exception occured during import.\n";
                 }
             }
             else
