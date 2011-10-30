@@ -102,14 +102,14 @@ class HTMLOutputRenderer{
     private function getHTMLHeader($pagetitle){
         if ( $this->html_header_template == ""){
             //prepare html header template + stylesheet include
-            $stylefile = $this->exportpath . "styles_". md5( file_get_contents( HTMLOutputRenderer::stylesheet ) ). ".css";
+            $stylefile = "/gen/styles_". md5( file_get_contents( HTMLOutputRenderer::stylesheet ) ). ".css";
             $this->html_header_template =
                 preg_replace( "/\[STYLESHEET\]/", $stylefile, file_get_contents( HTMLOutputRenderer::htmlHeaderTemplate));
             //TODO: delete old stylesheet files before copying new one
             if (!file_exists( $stylefile))
                 copy( HTMLOutputRenderer::stylesheet, $stylefile );
             $this->html_header_template =
-                preg_replace( "/\[INDEX\]/", $this->exportpath . "index.html", $this->html_header_template );
+                preg_replace( "/\[INDEX\]/", "/gen/", $this->html_header_template );
         }
         return preg_replace( "/\[PAGE_TITLE\]/", htmlspecialchars($pagetitle), $this->html_header_template );
     }
@@ -152,6 +152,7 @@ class HTMLOutputRenderer{
         if (!is_dir($path))
             mkdir($path, 0777, true);
         file_put_contents($this->exportpath . $filename, $filecontent );
+        $filename = str_replace("index.html","", $filename);
         $this->linklist[] = array( $link, $filename);
     }
 
@@ -269,7 +270,8 @@ class HTMLOutputRenderer{
                 '<h2'.$prestyle.'>'.
                 '<a name ="'.$escaped_shortlabel.'">'.$escaped_shortlabel . " (" . $cols["channelcount"] . ' channels)</a>'.
                 "</h2>\n".
-                "<h3>VDR channel format</h3>\n<pre".$prestyle.">";
+                //"<h3>VDR channel format</h3>\n".
+                "<pre".$prestyle.">";
             $x = new channelIterator( $shortenSource = true);
             //print $source. "/" . $cols["x_label"]."\n";
             $x->init1($cols["x_label"], $source, $orderby = "UPPER(name) ASC");
@@ -335,7 +337,7 @@ class HTMLOutputRenderer{
             $this->getHTMLFooter();
 
 
-        $filename = $language.".html";
+        $filename = $language."/index.html";
         $this->addToOverviewAndSave($language, $this->craftedPath . $filename, $nice_html_output );
     }
 
