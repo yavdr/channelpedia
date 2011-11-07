@@ -30,6 +30,7 @@ class ruleBase{
         mediaTypeRadio = 2,
         mediaTypeSDTV = 3,
         mediaTypeHDTV = 4,
+        mediaTypeData = 5,
 
         caidModeAll = 0,
         caidModeFTA = 1,

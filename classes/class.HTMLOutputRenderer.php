@@ -87,8 +87,7 @@ class HTMLOutputRenderer{
         $this->addDividerTitle($source);
         foreach ($languages as $language)
             $this->writeNiceHTMLPage( $source, $language );
-        //$this->addUncategorizedListLink( $source );
-        $this->renderGroupingHints( $source );
+        //$this->renderGroupingHints( $source );
         $this->addCompleteListLink( $source );
         $this->renderUnconfirmedChannels( $source );
         $this->renderTransponderNIDCheck( $source );
@@ -445,7 +444,7 @@ class HTMLOutputRenderer{
     }
 
     private function renderGroupingHints($source){
-        $pagetitle = "Grouping hints for unsorted channels of ".$source;
+        $pagetitle = "Grouping hints for ".$source;
         $nice_html_output =
             $this->getHTMLHeader($pagetitle).
             '<h1>'.htmlspecialchars( $pagetitle ).'</h1>
@@ -455,20 +454,20 @@ class HTMLOutputRenderer{
         $result = $this->db->query(
             "SELECT provider, COUNT(*) AS providercount FROM channels ".
             "WHERE source = ".$this->db->quote($source).
-            " AND x_label = '' GROUP BY provider ORDER by providercount DESC"
+            " GROUP BY provider ORDER by providercount DESC"
         );
         foreach ($result as $row) {
             $html_table .= "<tr><td>".htmlspecialchars($row["provider"])."</td><td>".htmlspecialchars($row["providercount"])."</td></tr>\n";
-            $nice_html_body .= "<h2>".htmlspecialchars($row["provider"]). " (" . htmlspecialchars($row["providercount"]) ." channels)</h2>\n<pre>\n";
+/*            $nice_html_body .= "<h2>".htmlspecialchars($row["provider"]). " (" . htmlspecialchars($row["providercount"]) ." channels)</h2>\n<pre>\n";
             $x = new channelIterator( $shortenSource = true );
             $x->init2( "SELECT * FROM channels ".
                 "WHERE source = ".$this->db->quote($source)." AND ".
-                "x_label = '' AND provider = ".$this->db->quote($row["provider"]).
+                "provider = ".$this->db->quote($row["provider"]).
                 " ORDER by x_label ASC, lower(name) ASC, source ASC");
             while ($x->moveToNextChannel() !== false){
                 $nice_html_body .= htmlspecialchars( $x->getCurrentChannelObject()->getChannelString())."\n";
             }
-            $nice_html_body .= "</pre>";
+            $nice_html_body .= "</pre>";*/
         }
 
         $html_table .= "</table>\n";
@@ -482,12 +481,13 @@ class HTMLOutputRenderer{
     }
 
     private function renderTransponderNIDCheck( $source ){
-        $pagetitle = htmlspecialchars($source) . " - Transponder plausibility check (checks for transponders with more than one NID)";
+        $pagetitle = htmlspecialchars($source) . " - Transponder plausibility check";
         $nice_html_output =
             $this->getHTMLHeader($pagetitle).
             '<h1>'.htmlspecialchars( $pagetitle ).'</h1>
             <p>Last updated on: '. date("D M j G:i:s T Y").'</p>
-            <p>This page only has content if the channel data provided on some transponders seems to be wrong / outdated. There should only be one NID per transponder.';
+            <p>This page only has content if the channel list of this source is faulty. This means that some channel data is wrong or outdated. There should only be one NID per transponder.</p>';
+
         $result = $this->db->query(
             "SELECT channels1.frequency as fre, channels1.modulation as mod, channels1.symbolrate as sym, channels1.nid, channels2.nid
             FROM channels AS channels1
@@ -548,7 +548,7 @@ class HTMLOutputRenderer{
     }
 
     private function renderIndexPage(){
-        $pagetitle = "Channelpedia - Overview";
+        $pagetitle = "Overview";
         $nice_html_output =
             $this->getHTMLHeader($pagetitle).
             '<h1>'.htmlspecialchars( $pagetitle ).'</h1>
@@ -567,7 +567,6 @@ class HTMLOutputRenderer{
 
         $nice_html_output .= "<br clear=\"all\" /></ul>\n".$this->getHTMLFooter();
         file_put_contents($this->exportpath . "index.html", $nice_html_output );
-
     }
 }
 ?>

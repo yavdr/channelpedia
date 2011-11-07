@@ -205,7 +205,7 @@ class GermanyEssentials  extends ruleBase{
                 "outputSortPriority" => 31,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeRadio,
-                "customwhere" => " AND NOT provider = 'ORF' AND NOT  ".DE_PUBLIC_PROVIDER . "AND NOT " . AUSTRIA
+                "customwhere" => " AND NOT  ".DE_PUBLIC_PROVIDER . "AND NOT " . AUSTRIA
             ),
 
             //provider undefined only wilhelm.tel --> sky

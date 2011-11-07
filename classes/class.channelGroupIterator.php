@@ -28,8 +28,8 @@ class channelGroupIterator{
         $db,
         $result = false,
         $channelgroup = false,
-        $count = 0,
-        $uncategorizedGroupAdded = false;
+        $count = 0;
+        //$uncategorizedGroupAdded = true;
 
     function __construct(){
         $this->db = dbConnection::getInstance();
@@ -41,8 +41,8 @@ class channelGroupIterator{
             "WHERE source = ".$this->db->quote($source)." AND x_label LIKE ".$this->db->quote($language."%")." ".
             "GROUP BY x_label ORDER BY x_label"
         );
-        if ($language != "uncategorized")
-           $this->uncategorizedGroupAdded = true;
+//        if ($language != "uncategorized")
+//           $this->uncategorizedGroupAdded = true;
     }
 
     public function moveToNextChannelGroup(){
@@ -51,7 +51,7 @@ class channelGroupIterator{
             //FIXME: encapsulate access to result fetch
             $this->channelgroup = $this->result->fetch(PDO::FETCH_ASSOC);
         }
-        if ($this->channelgroup === false && $this->uncategorizedGroupAdded === true){
+/*        if ($this->channelgroup === false && $this->uncategorizedGroupAdded === true){
             $exists = false;
         }
         else if ($this->channelgroup === false && $this->uncategorizedGroupAdded === false){
@@ -64,8 +64,9 @@ class channelGroupIterator{
             $this->channelgroup['id'] = $this->count;
             $this->channelgroup['channelcount'] = 10; // FIXME: we don't have this information here
             $this->uncategorizedGroupAdded = true;
-        }
-        else{
+        }*/
+        $exists = false;
+        if ($this->channelgroup !== false) {
             $exists = true;
             $groupnamechunks = explode(".", $this->channelgroup["x_label"]);
             $chunkcount = count($groupnamechunks);

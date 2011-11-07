@@ -41,16 +41,21 @@ class rawOutputRenderer {
     }
 
     public function writeRawOutputForSingleSource( $type, $longsource, $languages){
-        //write unfiltered channels.conf lists to disc
-        $channelListWriter = new channelListWriter("_complete", $type, $longsource);
-        $channelListWriter->writeFile();
-        //$this->writeAllChannelSelections2Disk( $longsource );
-        $this->writeAllUncategorizedChannels2Disk( $type, $longsource);
-        //epgmappings only for German providers
-        if (in_array("de", $languages)){
-            $epgstuff = epg2vdrMapper::getInstance();
-            $epgstuff->writeEPGChannelmap( $type, $longsource, "tvm");
-            $epgstuff->writeEPGChannelmap( $type, $longsource, "epgdata");
+        try {
+            //write unfiltered channels.conf lists to disc
+            $channelListWriter = new channelListWriter("_complete", $type, $longsource);
+            $channelListWriter->writeFile();
+            //$this->writeAllChannelSelections2Disk( $longsource );
+            $this->writeAllUncategorizedChannels2Disk( $type, $longsource);
+            //epgmappings only for German providers
+            if (in_array("de", $languages)){
+                $epgstuff = epg2vdrMapper::getInstance();
+                $epgstuff->writeEPGChannelmap( $type, $longsource, "tvm");
+                $epgstuff->writeEPGChannelmap( $type, $longsource, "epgdata");
+            }
+        } catch (Exception $e) {
+            $this->config->addToDebugLog( 'Caught exception in writeRawOutputForSingleSource @ $longsource: '. $e->getMessage() );
+            print "An exception occured when writing raw output for $longsource.\n";
         }
     }
 

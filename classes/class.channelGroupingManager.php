@@ -39,6 +39,7 @@ require_once PATH_TO_CLASSES . '../grouping_rules/class.PolandSatEssentials.php'
 require_once PATH_TO_CLASSES . '../grouping_rules/class.FranceSatEssentials.php';
 require_once PATH_TO_CLASSES . '../grouping_rules/class.NetherlandsSatEssentials.php';
 require_once PATH_TO_CLASSES . '../grouping_rules/class.BelgiumSatEssentials.php';
+require_once PATH_TO_CLASSES . '../grouping_rules/class.Uncategorized.php';
 
 define("HD_CHANNEL"," UPPER(name) LIKE '% HD%' ");
 
@@ -52,6 +53,7 @@ define("AUSTRIA", " (".
     " UPPER(name) LIKE '% A' OR".
     " UPPER(name) LIKE '% AUT' OR".
     " UPPER(name) LIKE '%TIROL%' OR".
+    " LOWER(provider) LIKE '%sterreich' OR".
     " UPPER(provider)='AUSTRIA' OR".
     " UPPER(provider) = '-' OR".
     " UPPER(provider)='ORF' OR".
@@ -103,6 +105,8 @@ class channelGroupingManager{
             "FranceSatEssentials"      => new FranceSatEssentials(),
             "NetherlandsSatEssentials" => new NetherlandsSatEssentials(),
             "BelgiumSatEssentials"     => new BelgiumSatEssentials(),
+            //last not least uncategorized
+            "uncategorized"            => new Uncategorized(),
         );
     }
 
@@ -126,11 +130,12 @@ class channelGroupingManager{
         $sourcetype = substr($source, 0, 1);
         foreach ( $this->rulesets as $title => $object){
             $config = $object->getConfig();
+            if ($config["lang"] === "uncategorized") $object->setSource($source);
             if ( $sourcetype == "S"){
                 if ( $config["validForSatellites"] === "all" || ( is_array( $config["validForSatellites"] ) && in_array( $source, $config["validForSatellites"], true)) ){
                     foreach ($object->getGroups() as $groupsettings){
                         $this->updateLabelsOfChannelSelection(
-                            $label = $config["country"] . "." . str_pad($groupsettings["outputSortPriority"], 2, "0", STR_PAD_LEFT) . "." . $groupsettings["title"],
+                            $label = $config["country"] . "." . str_pad($groupsettings["outputSortPriority"], 3, "0", STR_PAD_LEFT) . "." . $groupsettings["title"],
                             $source,
                             $outputSortPriority = $groupsettings["outputSortPriority"],
                             $caidMode           = $groupsettings["caidMode"],
@@ -146,7 +151,7 @@ class channelGroupingManager{
                 if ( $config["validForCableProviders"] === "all" || ( is_array( $config["validForCableProviders"] ) && in_array( $source, $config["validForCableProviders"], true)) ){
                     foreach ($object->getGroups() as $groupsettings){
                         $this->updateLabelsOfChannelSelection(
-                            $label = $config["country"] . ".". str_pad($groupsettings["outputSortPriority"], 2, "0", STR_PAD_LEFT) . "." . $groupsettings["title"],
+                            $label = $config["country"] . ".". str_pad($groupsettings["outputSortPriority"], 3, "0", STR_PAD_LEFT) . "." . $groupsettings["title"],
                             $source,
                             $outputSortPriority = $groupsettings["outputSortPriority"],
                             $caidMode           = $groupsettings["caidMode"],
@@ -162,7 +167,7 @@ class channelGroupingManager{
                 if ( $config["validForTerrProviders"] === "all" || ( is_array( $config["validForTerrProviders"] ) && in_array( $source, $config["validForTerrProviders"], true)) ){
                     foreach ($object->getGroups() as $groupsettings){
                         $this->updateLabelsOfChannelSelection(
-                            $label = $config["country"] . "." . str_pad($groupsettings["outputSortPriority"], 2, "0", STR_PAD_LEFT) . "." . $groupsettings["title"],
+                            $label = $config["country"] . "." . str_pad($groupsettings["outputSortPriority"], 3, "0", STR_PAD_LEFT) . "." . $groupsettings["title"],
                             $source,
                             $outputSortPriority = $groupsettings["outputSortPriority"],
                             $caidMode           = $groupsettings["caidMode"],
@@ -237,6 +242,10 @@ class channelGroupingManager{
                 $where[] = HD_CHANNEL;
                 $label_suffixes[] ="HDTV";
                 break;
+            case 5:
+                $where[] = "vpid == '0' AND apid == '0'";
+                $label_suffixes[] ="Data";
+                break;
         }
 
         if ($caidMode != 0){
@@ -266,10 +275,13 @@ class channelGroupingManager{
             $where .= "WHERE x_label = ''";
         }
 
-        $sqlquery = "SELECT * FROM channels $where2 x_label != '' AND x_label != ". $this->db->quote($label);
-        $result = $this->db->query($sqlquery);
-        foreach ($result as $row){
-            $this->config->addToDebugLog( "Notice: Channel '".$row["name"]."' is already tagged with '".$row["x_label"]."'. We just tried to tag it with '$label'\n" );
+        //this should be written into a separate log for grouping improvements
+        if (substr($label,0, 13) !== "uncategorized"){
+            $sqlquery = "SELECT * FROM channels $where2 x_label != '' AND x_label != ". $this->db->quote($label);
+            $result = $this->db->query($sqlquery);
+            foreach ($result as $row){
+                $this->config->addToDebugLog( "Notice: Channel '".$row["name"]."' is already tagged with '".$row["x_label"]."'. We just tried to tag it with '$label'\n" );
+            }
         }
 
         //now only update channels with EMPTY x_label field!
