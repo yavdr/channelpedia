@@ -88,25 +88,26 @@ class HTMLOutputRenderer{
         foreach ($languages as $language)
             $this->writeNiceHTMLPage( $source, $language );
         //$this->renderGroupingHints( $source );
-        $this->addCompleteListLink( $source );
         $this->renderUnconfirmedChannels( $source );
+        $this->renderLatestChannels( $source );
+        $this->writeChangelog( $source );
+        $this->addCompleteListLink( $source );
         $this->renderTransponderNIDCheck( $source );
         if (in_array("de", $languages)){
             $this->addEPGChannelmapLink( $source );
         }
-        $this->writeChangelog( $source );
         $this->closeHierarchy();
     }
 
     private function getHTMLHeader($pagetitle){
         if ( $this->html_header_template == ""){
             //prepare html header template + stylesheet include
-            $stylefile = "/gen/styles_". md5( file_get_contents( HTMLOutputRenderer::stylesheet ) ). ".css";
+            $stylefile = "styles_". md5( file_get_contents( HTMLOutputRenderer::stylesheet ) ). ".css";
             $this->html_header_template =
-                preg_replace( "/\[STYLESHEET\]/", $stylefile, file_get_contents( HTMLOutputRenderer::htmlHeaderTemplate));
+                preg_replace( "/\[STYLESHEET\]/", "/gen/" . $stylefile, file_get_contents( HTMLOutputRenderer::htmlHeaderTemplate));
             //TODO: delete old stylesheet files before copying new one
-            if (!file_exists( $stylefile))
-                copy( HTMLOutputRenderer::stylesheet, $stylefile );
+            if (!file_exists( $this->exportpath . $stylefile))
+                copy( HTMLOutputRenderer::stylesheet, $this->exportpath . $stylefile );
             $this->html_header_template =
                 preg_replace( "/\[INDEX\]/", "/gen/", $this->html_header_template );
         }
@@ -127,7 +128,7 @@ class HTMLOutputRenderer{
 
     private function addCompleteListLink( $source ){
         $filename = $this->craftedPath . $source."_complete.channels.conf";
-        $this->addToOverview("Complete", $filename);
+        $this->addToOverview("Download complete list", $filename);
     }
 
     private function addEPGChannelmapLink( $source ){
@@ -396,6 +397,17 @@ class HTMLOutputRenderer{
         return $timestamp;
     }
 
+    private function getEarliestChannelAddedTimestamp($source){
+        $timestamp = 0;
+        $sqlquery = "SELECT x_timestamp_added FROM channels WHERE source = ".$this->db->quote($source)." AND x_timestamp_added > 0 ORDER BY x_timestamp_added ASC LIMIT 1";
+        $result = $this->db->query($sqlquery);
+        $timestamp_raw = $result->fetchAll();
+        if (isset($timestamp_raw[0][0]))
+            $timestamp = intval($timestamp_raw[0][0]);
+        return $timestamp;
+    }
+
+
     private function renderUnconfirmedChannels($source){
         $pagetitle = "Unconfirmed channels on $source / likely to be outdated";
         $nice_html_output =
@@ -424,7 +436,7 @@ class HTMLOutputRenderer{
                     if ($param == "apid" || $param == "caid"){
                         $value = str_replace ( array(",",";"), ",<br/>", htmlspecialchars($value ));
                     }
-                    elseif ($param == "x_last_changed"){
+                    elseif ($param == "x_last_changed" || $param == "x_timestamp_added" || $param == "x_last_confirmed"){
                         $value = date("D, d M Y H:i:s", $value);
                     }
                     else
@@ -442,6 +454,54 @@ class HTMLOutputRenderer{
         $filename = $this->craftedPath . "unconfirmed_channels.html";
         $this->addToOverviewAndSave( "Unconfirmed/outdated", $filename, $nice_html_output );
     }
+
+    private function renderLatestChannels($source){
+        $pagetitle = "Latest channel additions on $source";
+        $nice_html_output =
+            $this->getHTMLHeader($pagetitle).
+            '<h1>'.htmlspecialchars( $pagetitle ).'</h1>
+            <p>Last updated on: '. date("D M j G:i:s T Y").'</p>';
+        $html_table = "";
+        $timestamp = intval($this->getEarliestChannelAddedTimestamp($source));
+        if ($timestamp != 0){
+            $nice_html_output .= "<p>Channels that were recently found (only the latest 25 channels that were added after the initial upload of this source).</p>\n";
+
+            $x = new channelIterator( $shortenSource = true );
+            $x->init2( "SELECT name, provider, source, frequency, modulation, symbolrate, vpid, apid, tpid, caid, sid, nid, tid, x_timestamp_added FROM channels WHERE source = ".$this->db->quote($source)." AND x_timestamp_added > " . $this->db->quote($timestamp) . " ORDER BY x_timestamp_added DESC, name DESC LIMIT 25");
+            $lastname = "";
+            while ($x->moveToNextChannel() !== false){
+                $carray = $x->getCurrentChannelObject()->getAsArray();
+                if ($lastname == ""){
+                    $html_table .= "<h3>Table view</h3>\n<div class=\"tablecontainer\"><table>\n<tr>";
+                    foreach ($x->getCurrentChannelArrayKeys() as $header){
+                        $html_table .= '<th class="'.htmlspecialchars($header).'">'.htmlspecialchars(ucfirst($header))."</th>\n";
+                    }
+                    $html_table .= "</tr>\n";
+                }
+                $html_table .= "<tr>\n";
+                foreach ($carray as $param => $value){
+                    if ($param == "apid" || $param == "caid"){
+                        $value = str_replace ( array(",",";"), ",<br/>", htmlspecialchars($value ));
+                    }
+                    elseif ($param == "x_last_changed" || $param == "x_timestamp_added" || $param == "x_last_confirmed"){
+                        $value = date("D, d M Y H:i:s", $value);
+                    }
+                    else
+                        $value = htmlspecialchars($value);
+                    $html_table .= '<td class="'.htmlspecialchars($param).'">'.$value."</td>\n";
+                }
+                $html_table .= "</tr>\n";
+                $lastname = $carray["name"];
+            }
+        }
+        $html_table .= "</table></div>\n";
+        $nice_html_output .=
+            $html_table .
+            $this->getHTMLFooter();
+        $filename = $this->craftedPath . "latest_channel_additions.html";
+        $this->addToOverviewAndSave( "New channels", $filename, $nice_html_output );
+    }
+
 
     private function renderGroupingHints($source){
         $pagetitle = "Grouping hints for ".$source;

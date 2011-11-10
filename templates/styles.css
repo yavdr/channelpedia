@@ -69,7 +69,7 @@ h3{
 
 pre { 
     border: 1px solid #4E78B1; 
-    padding: 5px;
+    padding: 2px 5px 5px 5px;
     margin: 0px;
     background-color: white; 
     overflow: auto;
@@ -139,9 +139,10 @@ td.sid, td.nid, td.rid, td.rid, td.tpid, td.frequency, td.symbolrate{
 }
 
 table.nice_table th.source, table.nice_table td.source,
-th.x_label, td.x_label,
-th.x_timestamp_added, td.x_timestamp_added,  
-th.x_last_confirmed, td.x_last_confirmed{ 
+th.x_label, td.x_label
+/*th.x_timestamp_added, td.x_timestamp_added,  
+th.x_last_confirmed, td.x_last_confirmed*/
+{ 
     display: none;
 }
  
