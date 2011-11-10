@@ -22,9 +22,6 @@
 *
 */
 
-
-DEFINE("NL_PROVIDERS", " AND UPPER(provider) = 'CANALDIGITAAL' ");
-
 class NetherlandsSatEssentials  extends ruleBase {
 
     function __construct(){
@@ -49,7 +46,7 @@ class NetherlandsSatEssentials  extends ruleBase {
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeHDTV,
                 "languageOverrule" => "",
-                "customwhere" => NL_PROVIDERS
+                "customwhere" => " AND " . NL_PROVIDERS
             ),
 
             array(
@@ -58,7 +55,7 @@ class NetherlandsSatEssentials  extends ruleBase {
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
                 "languageOverrule" => "",
-                "customwhere" =>  NL_PROVIDERS
+                "customwhere" => " AND " . NL_PROVIDERS
             ),
 
             array(
@@ -67,7 +64,7 @@ class NetherlandsSatEssentials  extends ruleBase {
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeHDTV,
                 "languageOverrule" => "",
-                "customwhere" =>  NL_PROVIDERS
+                "customwhere" => " AND " . NL_PROVIDERS
             ),
 
             array(
@@ -76,7 +73,7 @@ class NetherlandsSatEssentials  extends ruleBase {
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
                 "languageOverrule" => "",
-                "customwhere" =>  NL_PROVIDERS
+                "customwhere" => " AND " . NL_PROVIDERS
             ),
 
             array(
@@ -85,7 +82,7 @@ class NetherlandsSatEssentials  extends ruleBase {
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeRadio,
                 "languageOverrule" => "",
-                "customwhere" => NL_PROVIDERS
+                "customwhere" => " AND " . NL_PROVIDERS
             ),
 
             array(
@@ -94,7 +91,7 @@ class NetherlandsSatEssentials  extends ruleBase {
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeRadio,
                 "languageOverrule" => "",
-                "customwhere" => NL_PROVIDERS
+                "customwhere" => " AND " . NL_PROVIDERS
             ),
         );
     }

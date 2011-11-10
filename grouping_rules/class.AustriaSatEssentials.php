@@ -89,6 +89,7 @@ class AustriaSatEssentials extends ruleBase{
                 "customwhere" => "AND ". AUSTRIA. "AND ". DE_PRIVATE_PRO7_RTL
             ),
 
+            //the contents of this select will be merged with the following select
             array(
                 "title" => "Private",
                 "outputSortPriority" => 7,
@@ -98,9 +99,10 @@ class AustriaSatEssentials extends ruleBase{
                 "customwhere" => "AND ". AUSTRIA . " AND ". DE_PRIVATE_PRO7_RTL
             ),
 
+            //the contents of this select will be merged with the previous select
             array(
-                "title" => "Private2",
-                "outputSortPriority" => 8,
+                "title" => "Private",
+                "outputSortPriority" => 7,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
                 "customwhere" => "AND ". AUSTRIA

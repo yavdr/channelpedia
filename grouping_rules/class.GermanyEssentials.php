@@ -32,7 +32,7 @@ class GermanyEssentials  extends ruleBase{
         return array (
             "country" => "de",
             "lang" => "deu", //this is the language code used in the channels audio description
-            "validForSatellites" => array( "S19.2E"),
+            "validForSatellites" => array( "S19.2E", "S13E"),
             "validForCableProviders" => "all",//TODO, exclude non-de
             "validForTerrProviders" => "all",
         );
@@ -71,7 +71,7 @@ class GermanyEssentials  extends ruleBase{
 
             array(
                 "title" => "Public ARD-Test",
-                "outputSortPriority" => 4,
+                "outputSortPriority" => 99, // 99 should just ensure it is at the end of the list
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
                 "customwhere" =>
@@ -200,6 +200,7 @@ class GermanyEssentials  extends ruleBase{
                 "customwhere" => " AND ".DE_PUBLIC_PROVIDER
             ),
 
+            //CAUTION: Don't change Private 31 because it matches a group in GermanySatNonEssentials that is merged with this group
             array(
                 "title" => "Private",
                 "outputSortPriority" => 31,
@@ -211,7 +212,7 @@ class GermanyEssentials  extends ruleBase{
             //provider undefined only wilhelm.tel --> sky
             array(
                 "title" => "sky_de",
-                "outputSortPriority" => 32,
+                "outputSortPriority" => 40,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeRadio,
                 "customwhere" => " AND (UPPER(provider) LIKE 'SKY' OR provider = '' OR provider = 'undefined')"

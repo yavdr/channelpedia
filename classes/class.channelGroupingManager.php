@@ -61,9 +61,10 @@ define("AUSTRIA", " (".
     " UPPER(provider) LIKE '%ATV%'".
 ") ");
 
-define("SWITZERLAND", " (UPPER(name) LIKE '% CH' OR LOWER(name) LIKE '% Schweiz' OR UPPER(name) LIKE 'SF%') ");
-define("FRANCE_CSAT", " (upper(provider)='CSAT') ");
+define("SWITZERLAND",       " (UPPER(name) LIKE '% CH' OR LOWER(name) LIKE '% Schweiz' OR UPPER(name) LIKE 'SF%') ");
+define("FRANCE_CSAT",       " (upper(provider)='CSAT') ");
 define("SPAIN_DIGITALPLUS", " (UPPER(provider) = 'DIGITAL +' OR UPPER(provider) = 'DIGITAL+') ");
+define("NL_PROVIDERS",      " UPPER(provider) = 'CANALDIGITAAL' ");
 
 
 define("FILTER_ASTRA1_FTA", " ((tid != '1092' AND tid != '1113' AND provider != '-') OR (name = 'DMAX')) AND provider != 'SKY' ");
@@ -260,9 +261,15 @@ class channelGroupingManager{
             //$label = $label . " <div class=\"box\">".implode("</div><div class=\"box\">",$label_suffixes)."</div>";
             $label = $label . " ".implode(" ",$label_suffixes)."";
         }
-
-        if ($language != "")
-            $where[] = "apid LIKE '%=$language%'";
+      
+        if ($language !== ""){
+            $languages = explode( ",", strtoupper($language) );
+            $where_lang = array();
+            foreach( $languages as $curLanguage){
+                $where_lang[] = "UPPER(apid) LIKE '%".trim($curLanguage)."%'";
+            }
+            $where[] = "( " . implode( " OR ", $where_lang) . " )";
+        }
 
         //update label tag in the selected channels
         if (count($where) > 0){
