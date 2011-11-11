@@ -22,7 +22,7 @@
 *
 */
 
-class PolandSatEssentials  extends ruleBase {
+class GreeceSatEssentials  extends ruleBase {
 
     function __construct(){
 
@@ -30,7 +30,7 @@ class PolandSatEssentials  extends ruleBase {
 
     function getConfig(){
         return array(
-            "country" => "pl",
+            "country" => "gr",
             "lang" => "pol", //this is the language code used in the channels audio description
             "validForSatellites" => array( "S19.2E", "S13E"),
             "validForCableProviders" => array(),//none
@@ -41,39 +41,39 @@ class PolandSatEssentials  extends ruleBase {
     function getGroups(){
         return array(
             array(
-                "title" => "Cyfra+",
+                "title" => "NetMed",
                 "outputSortPriority" => 1,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeHDTV,
                 "languageOverrule" => "",
-                "customwhere" =>  " AND UPPER(provider) = 'CYFRA +'"
+                "customwhere" =>  " AND UPPER(provider) = 'NETMED'"
             ),
 
             array(
-                "title" => "Cyfra+",
+                "title" => "NetMed",
                 "outputSortPriority" => 2,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeHDTV,
                 "languageOverrule" => "",
-                "customwhere" =>  " AND UPPER(provider) = 'CYFRA +'"
+                "customwhere" =>  " AND UPPER(provider) = 'NETMED'"
             ),
 
             array(
-                "title" => "Cyfra+",
+                "title" => "NetMed",
                 "outputSortPriority" => 3,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
                 "languageOverrule" => "",
-                "customwhere" =>  " AND UPPER(provider) = 'CYFRA +'"
+                "customwhere" =>  " AND UPPER(provider) = 'NETMED'"
             ),
 
             array(
-                "title" => "Cyfra+",
+                "title" => "NetMed",
                 "outputSortPriority" => 4,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
                 "languageOverrule" => "",
-                "customwhere" =>  " AND UPPER(provider) = 'CYFRA +'"
+                "customwhere" =>  " AND UPPER(provider) = 'NETMED'"
             ),
 
             array(
@@ -109,21 +109,21 @@ class PolandSatEssentials  extends ruleBase {
             ),
 
             array(
-                "title" => "Cyfra+",
+                "title" => "NetMed",
                 "outputSortPriority" => 22,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeRadio,
                 "languageOverrule" => "",
-                "customwhere" =>  " AND UPPER(provider) = 'CYFRA +'"
+                "customwhere" =>  " AND UPPER(provider) = 'NETMED'"
             ),
 
             array(
-                "title" => "Cyfra+",
+                "title" => "NetMed",
                 "outputSortPriority" => 23,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeRadio,
                 "languageOverrule" => "",
-                "customwhere" =>  " AND UPPER(provider) = 'CYFRA +'"
+                "customwhere" =>  " AND UPPER(provider) = 'NETMED'"
             ),
 
             array(
@@ -140,15 +140,6 @@ class PolandSatEssentials  extends ruleBase {
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeRadio,
                 "customwhere" => ""
-            ),
-
-            array(
-                "title" => "Cyfra+",
-                "outputSortPriority" => 30,
-                "caidMode" => self::caidModeFTA,
-                "mediaType" => self::mediaTypeData,
-                "languageOverrule" => "",
-                "customwhere" =>  " AND UPPER(provider) = 'CYFRA +'"
             ),
 
         );

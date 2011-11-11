@@ -39,6 +39,8 @@ require_once PATH_TO_CLASSES . '../grouping_rules/class.PolandSatEssentials.php'
 require_once PATH_TO_CLASSES . '../grouping_rules/class.FranceSatEssentials.php';
 require_once PATH_TO_CLASSES . '../grouping_rules/class.NetherlandsSatEssentials.php';
 require_once PATH_TO_CLASSES . '../grouping_rules/class.BelgiumSatEssentials.php';
+require_once PATH_TO_CLASSES . '../grouping_rules/class.ItalyEssentials.php';
+require_once PATH_TO_CLASSES . '../grouping_rules/class.GreeceSatEssentials.php';
 require_once PATH_TO_CLASSES . '../grouping_rules/class.Uncategorized.php';
 
 define("HD_CHANNEL"," UPPER(name) LIKE '% HD%' ");
@@ -106,6 +108,8 @@ class channelGroupingManager{
             "FranceSatEssentials"      => new FranceSatEssentials(),
             "NetherlandsSatEssentials" => new NetherlandsSatEssentials(),
             "BelgiumSatEssentials"     => new BelgiumSatEssentials(),
+            "ItalyEssentials"          => new ItalyEssentials(),
+            "GreeceSatEssentials"      => new GreeceSatEssentials(),
             //last not least uncategorized
             "uncategorized"            => new Uncategorized(),
         );
@@ -261,7 +265,7 @@ class channelGroupingManager{
             //$label = $label . " <div class=\"box\">".implode("</div><div class=\"box\">",$label_suffixes)."</div>";
             $label = $label . " ".implode(" ",$label_suffixes)."";
         }
-      
+
         if ($language !== ""){
             $languages = explode( ",", strtoupper($language) );
             $where_lang = array();
