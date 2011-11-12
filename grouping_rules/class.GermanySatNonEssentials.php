@@ -40,12 +40,14 @@ class GermanySatNonEssentials  extends ruleBase{
 
     function getGroups(){
         return array (
+
+            //don't change details here (Private 2/13) - it is merged with GermanyEssentials!!!
             array(
-                "title" => "Private3",
-                "outputSortPriority" => 14,
+                "title" => "Private2",
+                "outputSortPriority" => 13,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
-                "languageOverrule" => "", //MEDIA BROADCAST doesn't have German audio language
+                //"languageOverrule" => "", //MEDIA BROADCAST doesn't have German audio language
                 "customwhere" =>
                     " AND NOT ". FILTER_ASTRA1_FTA . " AND NOT (". DE_PUBLIC_PROVIDER. " OR ".DE_PRIVATE_PRO7_RTL." OR ".AUSTRIA." OR ".SWITZERLAND.") "
             ),
@@ -58,7 +60,7 @@ class GermanySatNonEssentials  extends ruleBase{
                 "customwhere" => "AND ".DE_PRIVATE_PRO7_RTL . "AND NOT (" . AUSTRIA." OR ".SWITZERLAND.")"
             ),
 
-            //CAUTION: details here (Private 31) are deliberately the same as in GermanyEssentials. Content of this selection should 
+            //CAUTION: details here (Private 31) are deliberately the same as in GermanyEssentials. Content of this selection should
             //be merged with group from GermanyEssentials.
             array(
                 "title" => "Private",

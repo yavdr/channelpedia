@@ -53,7 +53,7 @@ class SwitzerlandSatEssentials extends ruleBase {
                 "outputSortPriority" => 2,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeHDTV,
-                "customwhere" =>  ""
+                "customwhere" =>  "AND ". FILTER_ASTRA1_FTA . " AND NOT ". FRANCE_CSAT
             ),
 
             array(
@@ -61,7 +61,7 @@ class SwitzerlandSatEssentials extends ruleBase {
                 "outputSortPriority" => 3,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
-                "customwhere" =>  ""
+                "customwhere" =>  "AND ". FILTER_ASTRA1_FTA . " AND NOT ". FRANCE_CSAT
             ),
 
             array(

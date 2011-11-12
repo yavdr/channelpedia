@@ -43,10 +43,24 @@ require_once PATH_TO_CLASSES . '../grouping_rules/class.ItalyEssentials.php';
 require_once PATH_TO_CLASSES . '../grouping_rules/class.GreeceSatEssentials.php';
 require_once PATH_TO_CLASSES . '../grouping_rules/class.Uncategorized.php';
 
-define("HD_CHANNEL"," UPPER(name) LIKE '% HD%' ");
+define("HD_CHANNEL"," (UPPER(name) LIKE '% HD%' OR UPPER(name) LIKE 'HD %') ");
 
-define("DE_PRIVATE_PRO7_RTL"," (provider = 'ProSiebenSat.1' OR provider='Pro7 & Sat.1' OR provider = 'RTL World' OR provider = 'RTL' OR provider='MTV Networks') ");
-define("DE_PROVIDER_ARD", "(provider LIKE 'ARD%' OR provider LIKE 'SWR' OR provider LIKE 'BR' OR provider LIKE 'NDR') ");
+define("DE_PRIVATE_PRO7_RTL"," (".
+    "provider = 'ProSiebenSat.1' OR ".
+    "provider = 'Pro7 & Sat.1' OR ".
+    "provider = 'RTL World' OR ".
+    "provider = 'RTL' OR ".
+    "provider = 'CBC' OR ".
+	"provider = 'MTV Networks'".
+") ");
+
+define("DE_PROVIDER_ARD", "(".
+    "provider LIKE 'ARD%' OR ".
+    "provider = 'SWR' OR ".
+    "provider = 'BR' OR ".
+    "provider = 'NDR'".
+") ");
+
 define("DE_PUBLIC_PROVIDER", " (".DE_PROVIDER_ARD." OR provider LIKE 'ZDF%') ");
 
 define("AUSTRIA", " (".
@@ -69,7 +83,37 @@ define("SPAIN_DIGITALPLUS", " (UPPER(provider) = 'DIGITAL +' OR UPPER(provider) 
 define("NL_PROVIDERS",      " UPPER(provider) = 'CANALDIGITAAL' ");
 
 
-define("FILTER_ASTRA1_FTA", " ((tid != '1092' AND tid != '1113' AND provider != '-') OR (name = 'DMAX')) AND provider != 'SKY' ");
+define("FILTER_ASTRA1_FTA", " ((tid != '1092' AND tid != '1113' AND provider != '-') OR (name = 'DMAX')) AND provider != 'SKY' ".
+                    " AND NOT (".
+                    " UPPER(name) = '.' OR ".
+                    " UPPER(name) LIKE '%CHAT%' OR ".
+                    " UPPER(name) LIKE '%SEX%' OR ".
+                    " UPPER(name) LIKE '%GIRL%' OR ".
+                    " UPPER(name) LIKE '%BABE%' OR ".
+                    " UPPER(name) LIKE '%DAMEN%' OR ".
+                    " UPPER(name) LIKE '%DATE%' OR ".
+                    " UPPER(name) LIKE '%DATING%' OR ".
+                    " UPPER(name) LIKE '%MAENNER%' OR ".
+                    " UPPER(name) LIKE '%BOYS%' OR ".
+                    " UPPER(name) LIKE '%BUNNY%' OR ".
+                    " UPPER(name) LIKE '%BIZARR%' OR ".
+                    " UPPER(name) LIKE '%KONTAKT%' OR ".
+                    " UPPER(name) LIKE '%VENUS%' OR ".
+                    " UPPER(name) LIKE '%VOYEUR%' OR ".
+                    " UPPER(name) LIKE '%HEISS%' OR ".
+                    " UPPER(name) LIKE '%HOT%' OR ".
+                    " UPPER(name) LIKE '%P*RN%' OR ".
+                    " UPPER(name) LIKE '%KAMASU%' OR ".
+                    " UPPER(name) LIKE '%ERO%' OR ".
+                    " UPPER(name) LIKE '%FLIRT%' OR ".
+                    " UPPER(name) LIKE '%LUST%' OR ".
+                    " UPPER(name) LIKE '%LIEBE%' OR ".
+                    " UPPER(name) LIKE '%LOVE%' OR ".
+                    " UPPER(name) LIKE '%PARTNER%' OR ".
+                    " UPPER(name) LIKE '%SINGLE%' OR ".
+                    " UPPER(name) LIKE '%AMORE%'".
+                    " )"
+);
 
 class channelGroupingManager{
 

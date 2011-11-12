@@ -32,7 +32,7 @@ class GermanyEssentials  extends ruleBase{
         return array (
             "country" => "de",
             "lang" => "deu", //this is the language code used in the channels audio description
-            "validForSatellites" => array( "S19.2E", "S13E"),
+            "validForSatellites" => array( "S19.2E"),
             "validForCableProviders" => "all",//TODO, exclude non-de
             "validForTerrProviders" => "all",
         );
@@ -91,7 +91,13 @@ class GermanyEssentials  extends ruleBase{
                 "outputSortPriority" => 11,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeHDTV,
-                "customwhere" => "AND NOT (" . AUSTRIA." OR ".SWITZERLAND.") AND (UPPER(provider) = 'BETADIGITAL' OR UPPER(provider) = 'CBC' OR UPPER(provider) = 'PROSIEBENSAT.1' OR UPPER(provider) = 'MTV NETWORKS')"
+                "customwhere" =>
+                    "AND NOT (" . AUSTRIA." OR ".SWITZERLAND.") ".
+                    "AND (UPPER(provider) = 'BETADIGITAL' ".
+                    "OR UPPER(provider) = 'CBC' ".
+                    "OR UPPER(provider) = 'PROSIEBENSAT.1' ".
+                    "OR UPPER(provider) = 'MTV NETWORKS'".
+                    ")"
             ),
 
             array(
@@ -103,13 +109,14 @@ class GermanyEssentials  extends ruleBase{
             ),
 
             //provider undefined only wilhelm.tel --> sky
+            //don't change details here (Private 2/13) - it is merged with GermanySatNonEssentials!!!
             array(
                 "title" => "Private2",
                 "outputSortPriority" => 13,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
                 "customwhere" =>
-                    " AND ". FILTER_ASTRA1_FTA . " AND NOT (". DE_PUBLIC_PROVIDER. " OR ".DE_PRIVATE_PRO7_RTL." OR ".AUSTRIA." OR ".SWITZERLAND." OR UPPER(provider) = 'UNDEFINED') AND NOT name = '.'"
+                    " AND ". FILTER_ASTRA1_FTA . " AND NOT (". DE_PUBLIC_PROVIDER. " OR ".DE_PRIVATE_PRO7_RTL." OR ".AUSTRIA." OR ".SWITZERLAND." OR UPPER(provider) = 'UNDEFINED') AND NOT name = '.' AND NOT UPPER(provider) = 'CSAT'"
             ),
 
             array(
