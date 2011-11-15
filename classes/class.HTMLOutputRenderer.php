@@ -93,6 +93,8 @@ class HTMLOutputRenderer{
         $this->writeChangelog( $source );
         $this->addCompleteListLink( $source );
         $this->renderTransponderNIDCheck( $source );
+        if ($type === "S")
+            $this->renderLNBSetupHelperTable( $source );
         if (in_array("de", $languages)){
             $this->addEPGChannelmapLink( $source );
         }
@@ -502,7 +504,6 @@ class HTMLOutputRenderer{
         $this->addToOverviewAndSave( "New channels", $filename, $nice_html_output );
     }
 
-
     private function renderGroupingHints($source){
         $pagetitle = "Grouping hints for ".$source;
         $nice_html_output =
@@ -605,6 +606,94 @@ class HTMLOutputRenderer{
         $nice_html_output .= $this->getHTMLFooter();
         $filename = $this->craftedPath . "transponder_nid_check.html";
         $this->addToOverviewAndSave( "NID check", $filename, $nice_html_output );
+    }
+
+    private function renderLNBSetupHelperTable($source){
+        $pagetitle = "LNB Setup helper table for satellite position $source";
+        $nice_html_output =
+            $this->getHTMLHeader($pagetitle).
+            '<h1>'.htmlspecialchars( $pagetitle ).'</h1>
+            <p>Last updated on: '. date("D M j G:i:s T Y").'</p>'.
+            "<p>A random selection of FTA TV channels from transponders on the four different sat areas. Maybe helpful when testing cabling after setting up a new LNB/Multiswitch or when evaluating VDR + LNB sharing patchs. Basically, you should be able to receive something on any of those four areas (as long as there are FTA channels available).</p>\n".
+
+            "<h2>Horizontal High Band</h2>\n".
+            $this->addChannelTable( "
+                SELECT * FROM channels WHERE source = ".$this->db->quote($source)."
+                AND caid = '0'
+                AND frequency >= 11700
+                AND frequency <= 12750
+                AND substr(modulation,1,1) = 'H'
+                AND vpid != '0'
+                GROUP BY frequency, modulation, symbolrate ORDER BY x_label LIMIT 10
+            " ).
+            "<h2>Vertical High Band</h2>\n".
+            $this->addChannelTable( "
+                SELECT * FROM channels WHERE source = ".$this->db->quote($source)."
+                AND caid = '0'
+                AND frequency >= 11700
+                AND frequency <= 12750
+                AND substr(modulation,1,1) = 'V'
+                AND vpid != '0'
+                GROUP BY frequency, modulation, symbolrate ORDER BY x_label LIMIT 10
+            " ).
+            "<h2>Horizontal Low Band</h2>\n".
+            $this->addChannelTable( "
+                SELECT * FROM channels WHERE source = ".$this->db->quote($source)."
+                AND caid = '0'
+                AND frequency >= 10700
+                AND frequency <= 11700
+                AND substr(modulation,1,1) = 'H'
+                AND vpid != '0'
+                GROUP BY frequency, modulation, symbolrate ORDER BY x_label LIMIT 10
+            " ).
+            "<h2>Vertical Low Band</h2>\n".
+            $this->addChannelTable( "
+                SELECT * FROM channels WHERE source = ".$this->db->quote($source)."
+                AND caid = '0'
+                AND frequency >= 10700
+                AND frequency <= 11700
+                AND substr(modulation,1,1) = 'V'
+                AND vpid != '0'
+                GROUP BY frequency, modulation, symbolrate ORDER BY x_label LIMIT 10
+            " ).
+//                AND substr(x_label,1,3) = 'de.'
+
+            $this->getHTMLFooter();
+        $filename = $this->craftedPath . "LNBSetupHelperTable.html";
+        $this->addToOverviewAndSave( "LNB setup help", $filename, $nice_html_output );
+    }
+
+    private function addChannelTable( $statement ){
+        $html_table = "";
+        $x = new channelIterator( $shortenSource = true );
+        $x->init2( $statement );
+        $lastname = "";
+        while ($x->moveToNextChannel() !== false){
+            $carray = $x->getCurrentChannelObject()->getAsArray();
+            if ($lastname == ""){
+                $html_table .= "<div class=\"tablecontainer\"><table>\n<tr>";
+                foreach ($x->getCurrentChannelArrayKeys() as $header){
+                    $html_table .= '<th class="'.htmlspecialchars($header).'">'.htmlspecialchars(ucfirst($header))."</th>\n";
+                }
+                $html_table .= "</tr>\n";
+            }
+            $html_table .= "<tr>\n";
+            foreach ($carray as $param => $value){
+                if ($param == "apid" || $param == "caid"){
+                    $value = str_replace ( array(",",";"), ",<br/>", htmlspecialchars($value ));
+                }
+                elseif ($param == "x_last_changed" || $param == "x_timestamp_added" || $param == "x_last_confirmed"){
+                    $value = date("D, d M Y H:i:s", $value);
+                }
+                else
+                    $value = htmlspecialchars($value);
+                $html_table .= '<td class="'.htmlspecialchars($param).'">'.$value."</td>\n";
+            }
+            $html_table .= "</tr>\n";
+            $lastname = $carray["name"];
+        }
+        $html_table .= "</table></div>\n";
+        return $html_table;
     }
 
     private function renderIndexPage(){

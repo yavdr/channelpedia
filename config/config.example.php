@@ -75,25 +75,37 @@ $default_lang_de_cable_provider = array("de");
 $global_source_config = array(
     "DVB-S" => array(
 /*
-        "S13E" => array(),
-        "S19.2E" => array( "de", "at", "ch", "es", "fr", "pl","nl", "be" ),
+        "S9E"    => array(),
+        "S13E"   => array(),
+        "S19.2E" => array( "de", "at", "ch", "es", "fr", "pl", "nl", "be" ),
+        "S26E"   => array(),
         "S28.2E" => array( "en" )
 */
     ),
     "DVB-C" => array(
 /*
-        "de_KabelBW" => $default_lang_de_cable_provider,
-        "de_KabelDeutschland_Speyer" => $default_lang_de_cable_provider,
+        "de_KabelBW_Heidelberg"         => $default_lang_de_cable_provider,
+        "de_KabelDeutschland_Flensburg" => $default_lang_de_cable_provider,
+        "de_KabelDeutschland_Muenchen"  => $default_lang_de_cable_provider,
         "de_KabelDeutschland_Nuernberg" => $default_lang_de_cable_provider,
-        "de_Primacom_Halberstadt" => $default_lang_de_cable_provider,
-        "de_TeleColumbus_Magdeburg" => $default_lang_de_cable_provider,
-        "de_UnityMediaNRW" => $default_lang_de_cable_provider,
-        "de_WilhelmTel" => $default_lang_de_cable_provider,
-        "at_salzburg-ag" => $default_lang_de_cable_provider
+        "de_KabelDeutschland_Speyer"    => $default_lang_de_cable_provider,
+        "de_Primacom_Halberstadt"       => $default_lang_de_cable_provider,
+        "de_TeleColumbus_Magdeburg"     => $default_lang_de_cable_provider,
+        "de_UnityMediaNRW"              => $default_lang_de_cable_provider,
+        "de_WilhelmTel"                 => $default_lang_de_cable_provider,
+        "at_salzburg-ag"                => $default_lang_de_cable_provider
 */
     ),
     "DVB-T" => array(
-//        "de_Heidelberg" => array() //$default_lang_de_cable_provider
+/*
+        "at_Linz"                       => array(),
+        "at_Wien"                       => array(),
+        "de_Flensburg"                  => $default_lang_de_cable_provider,
+        "de_Heidelberg"                 => $default_lang_de_cable_provider,
+        "de_Muenchen"                   => $default_lang_de_cable_provider,
+        "de_NordrheinWestfalen"         => $default_lang_de_cable_provider,
+        "dk_Tondern"                    => $default_lang_de_cable_provider,
+*/
     )
 );
 

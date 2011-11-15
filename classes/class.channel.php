@@ -145,12 +145,26 @@ class channel{
         return $this->params;
     }
 
-
     public function isSatelliteSource(){
         return substr( $this->source, 0, 1) == "S";
     }
+/*
+    public function belongsToSatHighBand(){
+        return ($this->params["frequency"] >= 11700 && $this->params["frequency"] <= 12750;
+    }
+    
+    public function belongsToSatLowBand(){
+        return ($this->params["frequency"] >= 10700 && $this->params["frequency"] < 11700);
+    }
 
+    public function belongsToSatVertical(){
+        return substr($this->params["modulation"], 0,1) == "V";
+    }
 
+    public function belongsToSatHorizontal(){
+        return substr($this->params["modulation"], 0,1) == "H";
+    }
+*/
     protected function getChannelsWithMatchingUniqueParams(){
         return $this->db->query2( "SELECT * FROM channels", $this->getWhereArray( "source, nid, tid, sid") );
     }
