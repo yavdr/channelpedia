@@ -36,9 +36,9 @@ class channelListWriter extends channelIterator{
         if ($label == "_complete"){
             $this->addTransponderDelimiters = true;
             if ($type == "S")
-              $orderby = "substr(modulation,1,1), frequency, provider, name ASC";
+              $orderby = "substr(modulation,1,1), frequency, sid ASC";
             else
-              $orderby = "frequency, modulation, provider, name ASC";
+              $orderby = "frequency, modulation, sid ASC";
         }
         parent::__construct();
         $visibletype = ($type == "A") ? "ATSC" : "DVB-". $type;

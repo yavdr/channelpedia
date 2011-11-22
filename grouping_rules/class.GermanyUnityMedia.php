@@ -44,8 +44,34 @@ class GermanyUnityMedia  extends ruleBase{
                 "title" => "Private",
                 "outputSortPriority" => 4,
                 "caidMode" => self::caidModeScrambled,
+                "mediaType" => self::mediaTypeHDTV,
+                "languageOverrule" => "",
+                "customwhere" => "AND (UPPER(provider) = 'UNITYMEDIA' OR UPPER(provider) = 'UNITYDIGITALTV')"
+            ),
+
+            array(
+                "title" => "Private",
+                "outputSortPriority" => 4,
+                "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => "AND provider = 'UnityDigitalTV'"
+                "customwhere" => "AND (UPPER(provider) = 'UNITYMEDIA' OR UPPER(provider) = 'UNITYDIGITALTV')"
+            ),
+
+            array(
+                "title" => "Kino auf Abruf",
+                "outputSortPriority" => 5,
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeSDTV,
+                "languageOverrule" => "",
+                "customwhere" => "AND UPPER(provider) LIKE '%KINO AUF ABRUF%'"
+            ),
+
+            array(
+                "title" => "Kino auf Abruf",
+                "outputSortPriority" => 6,
+                "caidMode" => self::caidModeScrambled,
+                "mediaType" => self::mediaTypeHDTV,
+                "customwhere" => "AND UPPER(provider) LIKE '%KINO AUF ABRUF%'"
             ),
 
             array(
@@ -53,7 +79,8 @@ class GermanyUnityMedia  extends ruleBase{
                 "outputSortPriority" => 5,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => "AND provider = 'Kino auf Abruf'"
+                "languageOverrule" => "",
+                "customwhere" => "AND UPPER(provider) LIKE '%KINO AUF ABRUF%'"
             ),
 
             array(
@@ -62,7 +89,7 @@ class GermanyUnityMedia  extends ruleBase{
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeRadio,
                 "languageOverrule" => "",
-                "customwhere" => "AND provider = 'UnityDigital TV - Music Choice'"
+                "customwhere" => "AND UPPER(provider) = 'UNITYMEDIA - MUSIC CHOICE'"
             ),
         );
     }

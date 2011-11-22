@@ -172,15 +172,18 @@ class HTMLOutputRenderer{
         $where = array();
         $wherestring = "";
         if ($source != ""){
-            $where[] = " combined_id LIKE ".$this->db->quote( $source."%" ) . " ";
+            $where[] = "timestamp >= " . $this->db->quote( $this->getLastConfirmedTimestamp($source));
+            $where[] = "combined_id LIKE ".$this->db->quote( $source."%" ) . " ";
             $pagetitle = 'Changelog for '.$source;
             $linktitle = 'Changelog';
             $filename = $this->craftedPath . "changelog.html";
+            $limit = "";
         }
         else{
             $pagetitle = 'Changelog for all sources';
             $linktitle = $pagetitle;
             $filename = "changelog.html";
+            $limit = " LIMIT 100";
         }
         if ($importance === 1 ){
         	$where[] = " importance = $importance ";
@@ -191,7 +194,7 @@ class HTMLOutputRenderer{
 
         $sqlquery=
             "SELECT DATETIME( timestamp, 'unixepoch', 'localtime' ) AS datestamp, name, combined_id, importance, update_description ".
-            "FROM channel_update_log $wherestring ORDER BY timestamp DESC LIMIT 100";
+            "FROM channel_update_log $wherestring ORDER BY timestamp DESC".$limit;
         $result = $this->db->query($sqlquery);
         $buffer =
             $this->getHTMLHeader($pagetitle)."\n".
@@ -614,48 +617,58 @@ class HTMLOutputRenderer{
             $this->getHTMLHeader($pagetitle).
             '<h1>'.htmlspecialchars( $pagetitle ).'</h1>
             <p>Last updated on: '. date("D M j G:i:s T Y").'</p>'.
-            "<p>A random selection of FTA TV channels from transponders on the four different sat areas. Maybe helpful when testing cabling after setting up a new LNB/Multiswitch or when evaluating VDR + LNB sharing patchs. Basically, you should be able to receive something on any of those four areas (as long as there are FTA channels available).</p>\n".
+            "<p>This page contains all FTA TV channels sorted by transponders and grouped by the four different sat bands:</br><ul>
+               <li>Horizontal High Band (11700 MHz to 12750 MHz)</li>
+               <li>Vertical High Band (11700 MHz to 12750 MHz)</li>
+               <li>Horizontal Low Band (10700 MHz to 11699 MHz)</li>
+               <li>Vertical Low Band (10700 Mhz to 11699 MHz)</li>
+                </ul><p>A channel list specifically grouped by sat bands might be helpful when testing a new sat cable setup, a new LNB/Multiswitch or when evaluating VDR with LNB sharing feature enabled. Basically, if your setup is flawless you should be able to receive something on any of the four sat bands (as long as there are FTA channels available on each band). Encrypted channels and radio channels are excluded from the tables below to reduce the amount of data.</p>\n".
 
-            "<h2>Horizontal High Band</h2>\n".
-            $this->addChannelTable( "
+            "<pre>: ### FTA TV channels on Horizontal High Band on ".htmlspecialchars($source)." ###\n".
+            $this->addCustomChannelList( "
                 SELECT * FROM channels WHERE source = ".$this->db->quote($source)."
                 AND caid = '0'
                 AND frequency >= 11700
                 AND frequency <= 12750
                 AND substr(modulation,1,1) = 'H'
                 AND vpid != '0'
-                GROUP BY frequency, modulation, symbolrate ORDER BY x_label LIMIT 10
+                ORDER BY frequency, modulation, symbolrate, sid
             " ).
-            "<h2>Vertical High Band</h2>\n".
-            $this->addChannelTable( "
+//                GROUP BY frequency, modulation, symbolrate
+//                ORDER BY x_label LIMIT 10
+
+            "<b>: ### FTA TV channels on Vertical High Band ".htmlspecialchars($source)." ###</b>\n".
+            $this->addCustomChannelList( "
                 SELECT * FROM channels WHERE source = ".$this->db->quote($source)."
                 AND caid = '0'
                 AND frequency >= 11700
                 AND frequency <= 12750
                 AND substr(modulation,1,1) = 'V'
                 AND vpid != '0'
-                GROUP BY frequency, modulation, symbolrate ORDER BY x_label LIMIT 10
+                ORDER BY frequency, modulation, symbolrate, sid
             " ).
-            "<h2>Horizontal Low Band</h2>\n".
-            $this->addChannelTable( "
+            "<b>: ### FTA TV channels on Horizontal Low Band ".htmlspecialchars($source)." ###</b>\n".
+            $this->addCustomChannelList( "
                 SELECT * FROM channels WHERE source = ".$this->db->quote($source)."
                 AND caid = '0'
                 AND frequency >= 10700
                 AND frequency <= 11700
                 AND substr(modulation,1,1) = 'H'
                 AND vpid != '0'
-                GROUP BY frequency, modulation, symbolrate ORDER BY x_label LIMIT 10
+                ORDER BY frequency, modulation, symbolrate, sid
             " ).
-            "<h2>Vertical Low Band</h2>\n".
-            $this->addChannelTable( "
+            "<b>: ### FTA TV channels on Vertical Low Band ".htmlspecialchars($source)." ###</b>\n".
+            $this->addCustomChannelList( "
                 SELECT * FROM channels WHERE source = ".$this->db->quote($source)."
                 AND caid = '0'
                 AND frequency >= 10700
                 AND frequency <= 11700
                 AND substr(modulation,1,1) = 'V'
                 AND vpid != '0'
-                GROUP BY frequency, modulation, symbolrate ORDER BY x_label LIMIT 10
+                ORDER BY frequency, modulation, symbolrate, sid
             " ).
+            "<b>: ### End of list. The following channels were added by VDR automatically ###</b>\n".
+            "</pre>\n".
 //                AND substr(x_label,1,3) = 'de.'
 
             $this->getHTMLFooter();
@@ -694,6 +707,17 @@ class HTMLOutputRenderer{
         }
         $html_table .= "</table></div>\n";
         return $html_table;
+    }
+
+    private function addCustomChannelList( $statement ){
+        $list = ""; //"<pre>";
+        $x = new channelIterator( $shortenSource = true );
+        $x->init2( $statement );
+        while ($x->moveToNextChannel() !== false){
+            $list .= htmlspecialchars( $x->getCurrentChannelObject()->getChannelString() )."\n";
+        }
+        //$list .= "</pre>";
+        return $list;
     }
 
     private function renderIndexPage(){

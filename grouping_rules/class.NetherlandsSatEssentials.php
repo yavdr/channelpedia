@@ -93,6 +93,16 @@ class NetherlandsSatEssentials  extends ruleBase {
                 "languageOverrule" => "",
                 "customwhere" => " AND " . NL_PROVIDERS
             ),
+
+            array(
+                "title" => "EPG CANALDIGITAAL",
+                "outputSortPriority" => 7,
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeData,
+                "languageOverrule" => "",
+                "customwhere" => " AND " . NL_PROVIDERS
+            ),
+
         );
     }
 

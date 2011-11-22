@@ -94,6 +94,15 @@ class SpainSatEssentials  extends ruleBase {
 
             array(
                 "title" => "Diverse",
+                "outputSortPriority" => 6,
+                "languageOverrule" => "",
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeSDTV,
+                "customwhere" => " AND UPPER(provider) = 'TELEFONICA SPAIN' "
+            ),
+
+            array(
+                "title" => "Diverse",
                 "outputSortPriority" => 7,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeHDTV,
