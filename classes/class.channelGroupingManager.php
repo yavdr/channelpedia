@@ -58,6 +58,7 @@ define("DE_PROVIDER_ARD", "(".
     "provider LIKE 'ARD%' OR ".
     "provider = 'SWR' OR ".
     "provider = 'BR' OR ".
+    "provider = 'HR' OR ".
     "provider = 'NDR'".
 ") ");
 

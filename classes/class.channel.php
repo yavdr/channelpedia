@@ -138,6 +138,10 @@ class channel{
         return $this->params["x_last_confirmed"];
     }
 
+    public function getXLabel(){
+        return $this->params["x_label"];
+    }
+
     //FIXME temp
     public function getAsArray(){
         $this->params["x_unique_id"] = $this->getUniqueID();
@@ -152,7 +156,7 @@ class channel{
     public function belongsToSatHighBand(){
         return ($this->params["frequency"] >= 11700 && $this->params["frequency"] <= 12750;
     }
-    
+
     public function belongsToSatLowBand(){
         return ($this->params["frequency"] >= 10700 && $this->params["frequency"] < 11700);
     }

@@ -155,6 +155,7 @@ class HTMLOutputRenderer{
             mkdir($path, 0777, true);
         file_put_contents($this->exportpath . $filename, $filecontent );
         $filename = str_replace("index.html","", $filename);
+        $link = $this->getFlagIcon($link). $link;
         $this->linklist[] = array( $link, $filename);
     }
 
@@ -617,63 +618,65 @@ class HTMLOutputRenderer{
             $this->getHTMLHeader($pagetitle).
             '<h1>'.htmlspecialchars( $pagetitle ).'</h1>
             <p>Last updated on: '. date("D M j G:i:s T Y").'</p>'.
-            "<p>This page contains all FTA TV channels sorted by transponders and grouped by the four different sat bands:</br><ul>
+            "<p>This page contains all FTA TV and radio channels sorted by transponders and grouped by the four different sat bands:</br><ul>
                <li>Horizontal High Band (11700 MHz to 12750 MHz)</li>
                <li>Vertical High Band (11700 MHz to 12750 MHz)</li>
-               <li>Horizontal Low Band (10700 MHz to 11699 MHz)</li>
-               <li>Vertical Low Band (10700 Mhz to 11699 MHz)</li>
-                </ul><p>A channel list specifically grouped by sat bands might be helpful when testing a new sat cable setup, a new LNB/Multiswitch or when evaluating VDR with LNB sharing feature enabled. Basically, if your setup is flawless you should be able to receive something on any of the four sat bands (as long as there are FTA channels available on each band). Encrypted channels and radio channels are excluded from the tables below to reduce the amount of data.</p>\n".
-
-            "<pre>: ### FTA TV channels on Horizontal High Band on ".htmlspecialchars($source)." ###\n".
-            $this->addCustomChannelList( "
-                SELECT * FROM channels WHERE source = ".$this->db->quote($source)."
-                AND caid = '0'
-                AND frequency >= 11700
-                AND frequency <= 12750
-                AND substr(modulation,1,1) = 'H'
-                AND vpid != '0'
-                ORDER BY frequency, modulation, symbolrate, sid
-            " ).
-//                GROUP BY frequency, modulation, symbolrate
-//                ORDER BY x_label LIMIT 10
-
-            "<b>: ### FTA TV channels on Vertical High Band ".htmlspecialchars($source)." ###</b>\n".
-            $this->addCustomChannelList( "
-                SELECT * FROM channels WHERE source = ".$this->db->quote($source)."
-                AND caid = '0'
-                AND frequency >= 11700
-                AND frequency <= 12750
-                AND substr(modulation,1,1) = 'V'
-                AND vpid != '0'
-                ORDER BY frequency, modulation, symbolrate, sid
-            " ).
-            "<b>: ### FTA TV channels on Horizontal Low Band ".htmlspecialchars($source)." ###</b>\n".
-            $this->addCustomChannelList( "
-                SELECT * FROM channels WHERE source = ".$this->db->quote($source)."
-                AND caid = '0'
-                AND frequency >= 10700
-                AND frequency <= 11700
-                AND substr(modulation,1,1) = 'H'
-                AND vpid != '0'
-                ORDER BY frequency, modulation, symbolrate, sid
-            " ).
-            "<b>: ### FTA TV channels on Vertical Low Band ".htmlspecialchars($source)." ###</b>\n".
-            $this->addCustomChannelList( "
-                SELECT * FROM channels WHERE source = ".$this->db->quote($source)."
-                AND caid = '0'
-                AND frequency >= 10700
-                AND frequency <= 11700
-                AND substr(modulation,1,1) = 'V'
-                AND vpid != '0'
-                ORDER BY frequency, modulation, symbolrate, sid
-            " ).
-            "<b>: ### End of list. The following channels were added by VDR automatically ###</b>\n".
+               <li>Horizontal Low Band (10700 MHz to 11700 MHz)</li>
+               <li>Vertical Low Band (10700 Mhz to 11700 MHz)</li>
+                </ul><p>A channel list specifically grouped by sat bands might be helpful when testing a new sat cable setup, ".
+                "a new LNB/Multiswitch or when evaluating VDR with LNB sharing feature enabled. ".
+                "Basically, if your setup is flawless you should be able to receive something on any of the four sat bands ".
+                "(as long as there are FTA channels available on each band). ".
+                "Encrypted channels are excluded from the tables below to reduce the amount of data.</p>\n<pre>".
+            $this->addChannelSection( $source, "H", "High", "TV" ).
+            $this->addChannelSection( $source, "H", "High", "Radio" ).
+            $this->addChannelSection( $source, "V", "High", "TV" ).
+            $this->addChannelSection( $source, "V", "High", "Radio" ).
+            $this->addChannelSection( $source, "H", "Low", "TV" ).
+            $this->addChannelSection( $source, "H", "Low", "Radio" ).
+            $this->addChannelSection( $source, "V", "Low", "TV" ).
+            $this->addChannelSection( $source, "V", "Low", "Radio" ).
+            "\n<b>:End of list. The following channels were added by VDR automatically</b>\n".
             "</pre>\n".
-//                AND substr(x_label,1,3) = 'de.'
-
             $this->getHTMLFooter();
         $filename = $this->craftedPath . "LNBSetupHelperTable.html";
         $this->addToOverviewAndSave( "LNB setup help", $filename, $nice_html_output );
+    }
+
+    private function addChannelSection( $source, $direction, $band, $type ){
+        if ($direction == "H")
+            $direction_long = "Horizontal";
+        else if ($direction == "V")
+            $direction_long = "Vertical";
+        else
+            throw new Exception("direction should either be H or V");
+        if ($band == "High"){
+            $lowfreq = 10700;
+            $hifreq = 11700;
+        }
+        else if ($band == "Low"){
+            $lowfreq = 11700;
+            $hifreq = 12750;
+        }
+        else
+            throw new Exception("band should either be High or Low");
+        if ($type == "TV")
+            $type_where = "AND vpid != '0'";
+        else if ($type == "Radio")
+            $type_where = "AND vpid = '0' AND apid != '0'";
+        else
+            $type = "";
+        return
+            "\n<b>:FTA ".$type." channels on " . $direction_long . " ".$band." Band ".htmlspecialchars($source)."</b>\n\n".
+            $this->addCustomChannelList( "
+                SELECT * FROM channels WHERE source = ".$this->db->quote($source)."
+                AND caid = '0'
+                AND frequency >= ".$lowfreq."
+                AND frequency <= ".$hifreq."
+                AND substr(modulation,1,1) = '".$direction."'
+                ".$type_where."
+                ORDER BY frequency, modulation, symbolrate, sid
+            " );
     }
 
     private function addChannelTable( $statement ){
@@ -710,14 +713,27 @@ class HTMLOutputRenderer{
     }
 
     private function addCustomChannelList( $statement ){
-        $list = ""; //"<pre>";
+        $list = "";
         $x = new channelIterator( $shortenSource = true );
         $x->init2( $statement );
         while ($x->moveToNextChannel() !== false){
-            $list .= htmlspecialchars( $x->getCurrentChannelObject()->getChannelString() )."\n";
+            $ch = $x->getCurrentChannelObject();
+            $labelparts = explode(".", $ch->getXLabel());
+            $list .= $this->getFlagIcon($labelparts[0]) . htmlspecialchars( $ch->getChannelString() )."\n";
         }
-        //$list .= "</pre>";
         return $list;
+    }
+
+    private function getFlagIcon($label){
+        if ($label != "uncategorized" && strlen($label) < 4){
+            if ($label == "en"){
+                $label = "gb";
+            }
+            $image = "<img src=\"/res/icons/flags/".$label.".png\" class=\"flag_icon\" />";
+        }
+        else
+            $image = "";
+        return $image;
     }
 
     private function renderIndexPage(){
@@ -735,7 +751,7 @@ class HTMLOutputRenderer{
            elseif($url == "close")
                $nice_html_output .= "<br clear=\"all\" /></ul>\n";
            else
-              $nice_html_output .= '<li><a href="'. htmlspecialchars( $url ) .'">'.htmlspecialchars( $title )."</a></li>\n";
+              $nice_html_output .= '<li><a href="'. urldecode( $url ) .'">'.$title ."</a></li>\n";
         }
 
         $nice_html_output .= "<br clear=\"all\" /></ul>\n".$this->getHTMLFooter();
