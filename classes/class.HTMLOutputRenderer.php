@@ -173,7 +173,8 @@ class HTMLOutputRenderer{
         $where = array();
         $wherestring = "";
         if ($source != ""){
-            $where[] = "timestamp >= " . $this->db->quote( $this->getLastConfirmedTimestamp($source));
+            //last confirmed + the 2 previous days
+            $where[] = "timestamp >= " . $this->db->quote( $this->getLastConfirmedTimestamp($source) - 60*60*24*2 );
             $where[] = "combined_id LIKE ".$this->db->quote( $source."%" ) . " ";
             $pagetitle = 'Changelog for '.$source;
             $linktitle = 'Changelog';
@@ -289,11 +290,18 @@ class HTMLOutputRenderer{
                     }
                     $html_table .= "</tr>\n";
                 }
+                $curChan = $x->getCurrentChannelObject();
+                $curChanString = htmlspecialchars($curChan->getChannelString());
+                $popuptitle = "". $curChan->getName(). " \n".
+                    "Added: " . date("D, d M Y H:i:s", $curChan->getXTimestampAdded())." &#xA;".
+                    "Last changed: " . date("D, d M Y H:i:s", $curChan->getXLastChanged())." &#xA;".
+                    "Presence last confirmed: " . date("D, d M Y H:i:s", $curChan->getXLastConfirmed())." &#xA;".
+                    "";
                 //check if channel might be outdated, if so, apply additional css class
                 if ( $x->getCurrentChannelObject()->getXLastConfirmed() < $timestamp)
-                    $nice_html_body .= "<span class=\"outdated\">".htmlspecialchars( $x->getCurrentChannelObject()->getChannelString() )."</span>\n";
+                    $nice_html_body .= "<span title=\"".$popuptitle."\" class=\"outdated\">". $curChanString ."</span>\n";
                 else
-                    $nice_html_body .= htmlspecialchars( $x->getCurrentChannelObject()->getChannelString() )."\n";
+                    $nice_html_body .= "<span title=\"".$popuptitle."\">".$curChanString."</span>\n";
 
                 $html_table .= "<tr".$prestyle.">\n";
                 //FIXME use channel object here

@@ -23,7 +23,16 @@
 */
 
 define("UK_ITV","(upper(name) LIKE '%ITV%' OR upper(name) LIKE 'STV%' OR upper(name) LIKE 'UTV%' )");
-define("UK_C4","(upper(name) LIKE 'CHANNEL 4%' OR upper(name) LIKE 'CHANNEL 5%' OR  upper(name) LIKE 'MORE4%' OR upper(name) LIKE 'FILM4%' OR upper(name) LIKE 'E4%' OR upper(name) LIKE 'S4C%') AND provider = 'BSkyB' ");
+define("UK_C4","(".
+  "upper(name) LIKE 'CHANNEL 4%' OR ".
+  "upper(name) LIKE 'CHANNEL 5%' OR  ".
+  "upper(name) LIKE 'MORE4%' OR ".
+  "upper(name) LIKE 'FILM4%' OR ".
+  "upper(name) LIKE 'E4%' OR ".
+  "upper(name) LIKE 'S4C%' OR ".
+  "upper(name) LIKE '5 USA%' OR ".
+  "upper(name) LIKE '5*%'".
+  ") AND provider = 'BSkyB' ");
 
 class UKIrelandEssentials  extends ruleBase {
 
@@ -80,13 +89,13 @@ class UKIrelandEssentials  extends ruleBase {
                 "outputSortPriority" => 5,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeHDTV,
-                "languageOverrule" => "", //only because of brand new c4 hd fta (march 2011) with missing lang stuff
                 "customwhere" => " AND ".UK_C4
             ),
 
             array(
                 "title" => "freesat Channel4Family",
                 "outputSortPriority" => 6,
+                "languageOverrule" => "", //only because new five* channels don't have apid yet
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
                 "customwhere" => " AND ".UK_C4

@@ -93,7 +93,6 @@ class GermanyUnityMedia  extends ruleBase{
             ),
         );
     }
-
 }
 
 ?>

@@ -127,7 +127,16 @@ class SpainSatEssentials  extends ruleBase {
 
             array(
                 "title" => "Diverse",
-                "outputSortPriority" => 11,
+                "outputSortPriority" => 10,
+                "languageOverrule" => "",
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeRadio,
+                "customwhere" => "AND (" . SPAIN_DIGITALPLUS . " OR UPPER(provider) = 'TELEFONICA SPAIN') "
+            ),
+
+            array(
+                "title" => "Diverse",
+                "outputSortPriority" => 12,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeRadio,
                 "customwhere" => ""

@@ -114,6 +114,10 @@ class channel{
         $this->source = $this->getShortenedSource();
     }
 
+    public function getName(){
+        return $this->params["name"];
+    }
+
     public function getFrequency(){
         return $this->params["frequency"];
     }
@@ -136,6 +140,14 @@ class channel{
 
     public function getXLastConfirmed(){
         return $this->params["x_last_confirmed"];
+    }
+
+    public function getXLastChanged(){
+        return $this->params["x_last_changed"];
+    }
+
+    public function getXTimestampAdded(){
+        return $this->params["x_timestamp_added"];
     }
 
     public function getXLabel(){

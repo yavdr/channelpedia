@@ -115,7 +115,7 @@ class storableChannel extends channel{
                 "x_label"         => "",
                 "x_last_changed"  => $this->metaData->getTimestamp(),
                 "x_timestamp_added" => $this->metaData->getTimestamp(),
-                "x_last_confirmed" => 0
+                "x_last_confirmed" => $this->metaData->getTimestamp()
             );
             $this->params["source"] = $this->sourceDB;
             $this->params["modulation"] = strtoupper( $this->params["modulation"] ); //w_scan has lower case, we don't want that
