@@ -40,7 +40,7 @@ class channelIterator{
         $this->shortenSource = $shortenSource;
     }
 
-    public function init1( $label, $source, $orderby = "frequency, modulation, provider, name ASC"){
+    public function init1( $label, $source, $orderby = "frequency, parameter, provider, name ASC"){
         $where = array();
         $where["source"] = $source;
 //        if ($label == "uncategorized")
@@ -108,7 +108,7 @@ class channelIterator{
             $hilow = "High-Band";
         else if (substr($this->channel->getSource(),0,1) == "S" && $frequency >= 10700 && $frequency < 11700)
             $hilow = "Low-Band";
-        return "Transponder " . $this->channel->getSource() . " " . $hilow . " " .$this->channel->getModulation(). " " . $frequency;
+        return "Transponder " . $this->channel->getSource() . " " . $hilow . " " .$this->channel->getParameter(). " " . $frequency;
     }
 
     public function getCurrentChannelCount(){

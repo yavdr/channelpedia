@@ -36,7 +36,7 @@ class channel{
         $name,
         $provider,
         $frequency,
-        $modulation, //w_scan has lower case, we don't want that
+        $parameter,
         $source,
         $symbolrate,
         $vpid,
@@ -62,6 +62,7 @@ class channel{
                 "sid",
                 "nid",
                 "tid",
+                "rid",
                 "x_last_changed",
                 "x_timestamp_added",
                 "x_last_confirmed",
@@ -122,8 +123,8 @@ class channel{
         return $this->params["frequency"];
     }
 
-    public function getModulation(){
-        return $this->params["modulation"];
+    public function getParameter(){
+        return $this->params["parameter"];
     }
 
     public function getSource(){
@@ -164,9 +165,9 @@ class channel{
     public function isSatelliteSource(){
         return substr( $this->source, 0, 1) == "S";
     }
-/*
+
     public function belongsToSatHighBand(){
-        return ($this->params["frequency"] >= 11700 && $this->params["frequency"] <= 12750;
+        return ($this->params["frequency"] >= 11700 && $this->params["frequency"] <= 12750);
     }
 
     public function belongsToSatLowBand(){
@@ -174,13 +175,13 @@ class channel{
     }
 
     public function belongsToSatVertical(){
-        return substr($this->params["modulation"], 0,1) == "V";
+        return substr($this->params["parameter"], 0,1) == "V";
     }
 
     public function belongsToSatHorizontal(){
-        return substr($this->params["modulation"], 0,1) == "H";
+        return substr($this->params["parameter"], 0,1) == "H";
     }
-*/
+
     protected function getChannelsWithMatchingUniqueParams(){
         return $this->db->query2( "SELECT * FROM channels", $this->getWhereArray( "source, nid, tid, sid") );
     }
@@ -207,7 +208,7 @@ class channel{
             $this->params["name"] .
             $provider . ":".
             $this->params["frequency"] . ":".
-            $this->params["modulation"] . ":".
+            $this->params["parameter"] . ":".
             $this->getShortenedSource() . ":".
             $this->params["symbolrate"] . ":".
             $this->params["vpid"] . ":".
@@ -236,7 +237,7 @@ class channel{
                 "name"            => $cname,
                 "provider"        => $cprovider,
                 "frequency"       => intval($details[1]),
-                "modulation"      => $details[2],
+                "parameter"       => $details[2],
                 "source"          => $details[3],
                 "symbolrate"      => intval($details[4]),
                 "vpid"            => $details[5],

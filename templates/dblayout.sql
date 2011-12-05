@@ -25,7 +25,7 @@ CREATE TABLE channels(
     name TEXT,
     provider TEXT,
     frequency INTEGER,
-    modulation TEXT,
+    parameter TEXT,
     source TEXT,
     symbolrate INTEGER,
     vpid INTEGER,

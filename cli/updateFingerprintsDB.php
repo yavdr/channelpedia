@@ -65,8 +65,8 @@ class updateFingerprintDB {
         SELECT source, nid, frequency, symbolrate
          FROM chandb.channels c1
          WHERE NOT EXISTS (SELECT * FROM chandb.channels c2 WHERE c1.frequency = c2.frequency AND c1.nid = c2.nid AND c1.symbolrate = c2.symbolrate AND c1.source <> c2.source)
-         AND modulation NOT LIKE '%H%'
-         AND modulation NOT LIKE '%S1%'
+         AND parameter NOT LIKE '%H%'
+         AND parameter NOT LIKE '%S1%'
          GROUP BY source, nid, frequency, symbolrate;
         ");
         $this->exec("INSERT INTO fingerprints

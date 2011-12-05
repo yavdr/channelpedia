@@ -118,7 +118,7 @@ class storableChannel extends channel{
                 "x_last_confirmed" => $this->metaData->getTimestamp()
             );
             $this->params["source"] = $this->sourceDB;
-            $this->params["modulation"] = strtoupper( $this->params["modulation"] ); //w_scan has lower case, we don't want that
+            $this->params["parameter"] = strtoupper( $this->params["parameter"] ); //w_scan has lower case, we don't want that
 
             $query = $this->db->insert( "channels", $this->params);
             //19 = channel already exists, couldn't be inserted

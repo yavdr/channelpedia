@@ -481,7 +481,7 @@ class HTMLOutputRenderer{
             $nice_html_output .= "<p>Channels that were recently found (only the latest 25 channels that were added after the initial upload of this source).</p>\n";
 
             $x = new channelIterator( $shortenSource = true );
-            $x->init2( "SELECT name, provider, source, frequency, modulation, symbolrate, vpid, apid, tpid, caid, sid, nid, tid, x_timestamp_added FROM channels WHERE source = ".$this->db->quote($source)." AND x_timestamp_added > " . $this->db->quote($timestamp) . " ORDER BY x_timestamp_added DESC, name DESC LIMIT 25");
+            $x->init2( "SELECT name, provider, source, frequency, parameter, symbolrate, vpid, apid, tpid, caid, sid, nid, tid, x_timestamp_added FROM channels WHERE source = ".$this->db->quote($source)." AND x_timestamp_added > " . $this->db->quote($timestamp) . " ORDER BY x_timestamp_added DESC, name DESC LIMIT 25");
             $lastname = "";
             while ($x->moveToNextChannel() !== false){
                 $carray = $x->getCurrentChannelObject()->getAsArray();
@@ -562,16 +562,16 @@ class HTMLOutputRenderer{
             <p>This page only has content if the channel list of this source is faulty. This means that some channel data is wrong or outdated. There should only be one NID per transponder.</p>';
 
         $result = $this->db->query(
-            "SELECT channels1.frequency as fre, channels1.modulation as mod, channels1.symbolrate as sym, channels1.nid, channels2.nid
+            "SELECT channels1.frequency as fre, channels1.parameter as mod, channels1.symbolrate as sym, channels1.nid, channels2.nid
             FROM channels AS channels1
             LEFT JOIN channels AS channels2 WHERE
             channels1.source = ".$this->db->quote($source)." AND
             channels1.source = channels2.source AND
             channels1.frequency = channels2.frequency AND
             channels1.symbolrate = channels2.symbolrate AND
-            channels1.modulation = channels2.modulation AND
+            channels1.parameter = channels2.parameter AND
             channels1.nid != channels2.nid
-            GROUP BY channels1.source, channels1.frequency, channels1.modulation, channels1.symbolrate"
+            GROUP BY channels1.source, channels1.frequency, channels1.parameter, channels1.symbolrate"
         );
         foreach ($result as $row) {
             $nice_html_output .= "<h2>" .htmlspecialchars(
@@ -583,7 +583,7 @@ class HTMLOutputRenderer{
             $x->init2( "SELECT * FROM channels WHERE ".
                 "source     = " . $this->db->quote( $source ) . " AND ".
                 "frequency  = " . $this->db->quote( $row["fre" ] ) . " AND " .
-                "modulation = " . $this->db->quote( $row["mod"] ) . " AND " .
+                "parameter = " . $this->db->quote( $row["mod"] ) . " AND " .
                 "symbolrate = " . $this->db->quote( $row["sym"] )
             );
             $html_table = "";
@@ -681,9 +681,9 @@ class HTMLOutputRenderer{
                 AND caid = '0'
                 AND frequency >= ".$lowfreq."
                 AND frequency <= ".$hifreq."
-                AND substr(modulation,1,1) = '".$direction."'
+                AND substr(parameter,1,1) = '".$direction."'
                 ".$type_where."
-                ORDER BY frequency, modulation, symbolrate, sid
+                ORDER BY frequency, parameter, symbolrate, sid
             " );
     }
 
