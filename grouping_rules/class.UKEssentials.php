@@ -34,7 +34,14 @@ define("UK_C4","(".
   "upper(name) LIKE '5*%'".
   ") AND provider = 'BSkyB' ");
 
-class UKIrelandEssentials  extends ruleBase {
+define("IRISH","(".
+  "UPPER(name) LIKE 'RTE%' OR ".
+  "UPPER(name) = 'TV3' OR ".
+  "UPPER(name) = 'TG4' OR ".
+  "UPPER(name) LIKE 'SETANTA%'".
+  ") ");
+
+class UKEssentials  extends ruleBase {
 
     function __construct(){
 
@@ -42,7 +49,7 @@ class UKIrelandEssentials  extends ruleBase {
 
     function getConfig(){
         return array (
-            "country" => "en",
+            "country" => "uk",
             "lang" => "eng", //this is the language code used in the channels audio description
             "validForSatellites" => array( "S28.2E"),
             "validForCableProviders" => array(),
@@ -172,7 +179,7 @@ class UKIrelandEssentials  extends ruleBase {
                 "outputSortPriority" => 20,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeHDTV,
-                "customwhere" => ""
+                "customwhere" => " AND NOT ".IRISH
             ),
 
             array(
@@ -180,15 +187,7 @@ class UKIrelandEssentials  extends ruleBase {
                 "outputSortPriority" => 21,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => ""
-            ),
-
-            array(
-                "title" => "Irish",
-                "outputSortPriority" => 30,
-                "caidMode" => self::caidModeScrambled,
-                "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => " AND (UPPER(name) LIKE 'RTE%' OR UPPER(name) LIKE 'TV3' OR UPPER(name) LIKE 'TG4' OR UPPER(name) LIKE 'SETANTA%')"
+                "customwhere" => " AND NOT ".IRISH
             ),
 
             array(
@@ -200,19 +199,11 @@ class UKIrelandEssentials  extends ruleBase {
             ),
 
             array(
-                "title" => "freesat Irish RTE",
-                "outputSortPriority" => 41,
-                "caidMode" => self::caidModeFTA,
-                "mediaType" => self::mediaTypeRadio,
-                "customwhere" => " AND upper(name) LIKE 'RTE %' "
-            ),
-
-            array(
                 "title" => "Rest",
                 "outputSortPriority" => 42,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeRadio,
-                "customwhere" => ""
+                "customwhere" => " AND NOT ".IRISH
             ),
 
             array(
@@ -220,7 +211,7 @@ class UKIrelandEssentials  extends ruleBase {
                 "outputSortPriority" => 43,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeRadio,
-                "customwhere" => ""
+                "customwhere" => " AND NOT ".IRISH
             ),
         );
     }

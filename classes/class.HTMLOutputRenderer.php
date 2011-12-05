@@ -734,7 +734,7 @@ class HTMLOutputRenderer{
 
     private function getFlagIcon($label){
         if ($label != "uncategorized" && strlen($label) < 4){
-            if ($label == "en"){
+            if ($label == "uk"){
                 $label = "gb";
             }
             $image = "<img src=\"/res/icons/flags/".$label.".png\" class=\"flag_icon\" />";
