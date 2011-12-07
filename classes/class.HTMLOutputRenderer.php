@@ -292,10 +292,16 @@ class HTMLOutputRenderer{
                 }
                 $curChan = $x->getCurrentChannelObject();
                 $curChanString = htmlspecialchars($curChan->getChannelString());
-                $popuptitle = "". $curChan->getName(). " \n".
-                    "Added: " . date("D, d M Y H:i:s", $curChan->getXTimestampAdded())." &#xA;".
-                    "Last changed: " . date("D, d M Y H:i:s", $curChan->getXLastChanged())." &#xA;".
-                    "Presence last confirmed: " . date("D, d M Y H:i:s", $curChan->getXLastConfirmed())." &#xA;".
+                $popuptitle = "". $curChan->getName(). " | ".
+                    "Modulation: " . $curChan->getModulation() ." | ".
+                    ($curChan->isSatelliteSource() ?
+                        "Type: DVB-S"    . ( $curChan->onS2SatTransponder()   ? "2"        : ""           ) ." | ".
+                        "Polarisation: " . ( $curChan->belongsToSatVertical() ? "Vertical" : "Horizontal" ) ." | ".
+                        "Band: "         . ( $curChan->belongsToSatHighBand() ? "High"     : "Low"        ) ." | "
+                    : "" ).
+                    "Added: " . date("D, d M Y H:i:s", $curChan->getXTimestampAdded())." | ".
+                    "Last changed: " . date("D, d M Y H:i:s", $curChan->getXLastChanged())." | ".
+                    "Presence last confirmed: " . date("D, d M Y H:i:s", $curChan->getXLastConfirmed())." ".
                     "";
                 //check if channel might be outdated, if so, apply additional css class
                 if ( $x->getCurrentChannelObject()->getXLastConfirmed() < $timestamp)
@@ -447,7 +453,7 @@ class HTMLOutputRenderer{
                 }
                 $html_table .= "<tr>\n";
                 foreach ($carray as $param => $value){
-                    if ($param == "apid" || $param == "caid"){
+                    if ($param == "apid" || $param == "caid" || $param == "tpid" ){
                         $value = str_replace ( array(",",";"), ",<br/>", htmlspecialchars($value ));
                     }
                     elseif ($param == "x_last_changed" || $param == "x_timestamp_added" || $param == "x_last_confirmed"){

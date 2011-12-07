@@ -42,15 +42,23 @@ class IrelandEssentials  extends ruleBase {
         return array (
 
             array(
-                "title" => "Irish",
+                "title" => "RTÉ",
                 "outputSortPriority" => 30,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => " AND (UPPER(name) LIKE 'RTE%' OR UPPER(name) LIKE 'TV3' OR UPPER(name) LIKE 'TG4')"
+                "customwhere" => " AND UPPER(name) LIKE 'RTE%'"
             ),
 
             array(
-                "title" => "Irish Setanta",
+                "title" => "Private",
+                "outputSortPriority" => 30,
+                "caidMode" => self::caidModeScrambled,
+                "mediaType" => self::mediaTypeSDTV,
+                "customwhere" => " AND (UPPER(name) LIKE 'TV3' OR UPPER(name) LIKE 'TG4')"
+            ),
+
+            array(
+                "title" => "Setanta",
                 "outputSortPriority" => 30,
                 "languageOverrule"=>"",
                 "caidMode" => self::caidModeScrambled,
@@ -60,7 +68,7 @@ class IrelandEssentials  extends ruleBase {
 
 
             array(
-                "title" => "freesat Irish RTE",
+                "title" => "freesat RTÉ",
                 "outputSortPriority" => 41,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeRadio,

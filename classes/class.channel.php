@@ -32,6 +32,7 @@ class channel{
         $channelstring = "",
         $uniqueID = "",
         $longUniqueID = "",
+        $processedParameters = array(),
 
         $name,
         $provider,
@@ -95,7 +96,27 @@ class channel{
         $this->sourceLessId = $this->params["nid"]."-". $this->params["tid"]."-". $this->params["sid"];
         $this->uniqueID = $this->getShortenedSource()."-". $this->sourceLessId;
         $this->longUniqueID = $this->params["source"]."-". $this->sourceLessId;
+
+        //split transponder parameters
+        $tempProcessedParameters = explode(";", preg_replace( "/(\D|\d)(\D)/", "$1;$2", $this->params["parameter"]));
+        foreach ($tempProcessedParameters as $item){
+            $this->processedParameters[ strtoupper(substr($item,0,1)) ] = substr($item,1);
+        }
     }
+
+    public function getSingleTransponderParameter( $key ){
+        $key = strtoupper($key);
+        if ( array_key_exists( $key, $this->processedParameters ) ){
+            if ($this->processedParameters[$key] !== "")
+                return intval( $this->processedParameters[$key]);
+            else
+                return true; //for H and V that don't have a numeric value
+        }
+        else
+            return false;
+    }
+
+
 
     public function isValid(){
         return ($this->params !== false);
@@ -163,7 +184,11 @@ class channel{
     }
 
     public function isSatelliteSource(){
-        return substr( $this->source, 0, 1) == "S";
+        return (substr( $this->source, 0, 1) === "S") && $this->getSingleTransponderParameter("S") !== false ;
+    }
+
+    public function onS2SatTransponder(){
+        return  $this->getSingleTransponderParameter("S") === 1;
     }
 
     public function belongsToSatHighBand(){
@@ -175,12 +200,60 @@ class channel{
     }
 
     public function belongsToSatVertical(){
-        return substr($this->params["parameter"], 0,1) == "V";
+        return $this->getSingleTransponderParameter( "V" );
     }
 
     public function belongsToSatHorizontal(){
-        return substr($this->params["parameter"], 0,1) == "H";
+        return $this->getSingleTransponderParameter( "H" );
     }
+
+    public function getModulation(){
+        $rawModulation = $this->getSingleTransponderParameter( "M" );
+        $retVal = "";
+        switch ($rawModulation){
+            case 16:
+            case 32:
+            case 64:
+            case 128:
+            case 256:
+               $retVal = "QAM".$rawModulation;
+               break;
+            case 998:
+                $retVal = "QAM-Auto";
+               break;
+            case 2:
+               $retVal = "QPSK";
+               break;
+            case 5:
+               $retVal = "8PSK";
+               break;
+           case 6:
+               $retVal = "16APSK";
+               break;
+            case 10:
+                $retVal = "VSB8";
+               break;
+            case 11:
+                $retVal = "VSB16";
+                break;
+        }
+        return $retVal;
+    }
+/*
+C (0, 12, 13, 14, 23, 25, 34, 35, 45, 56, 67, 78, 89, 910) Code rate high priority
+D (0, 12, 13, 14, 23, 25, 34, 35, 45, 56, 67, 78, 89, 910) Code rate low priority
+B (5, 6, 7, 8) Bandbreite in MHz (DVB-T)
+Y (0, 1, 2, 4) Hierarchie (DVB-T/H), 0 = aus, 1, 2, 4 = Alpha (Hierarchy ein)
+G (4, 8, 16, 32) Guard interval (DVB-T/H)
+I (0, 1) Inversion, 0 = aus, 1 = ein (DVB-T/H, DVB-C)
+T (2, 4, 8) Transmission mode (DVB-T/H)
+H Polarisation horizontal (DVB-S/S2)
+V Polarisation vertikal (DVB-S/S2)
+R Polarisation zirkular rechts (DVB-S/S2)
+L Polarisation zirkular links (DVB-S/S2)
+S (0, 1) Modulationssystem, 0 = DVB-S, 1 = DVB-S2
+O (20, 25, 35) RollOff für DVB-S/S2, DVB-S: 35, DVB-S2: alle Werte
+*/
 
     protected function getChannelsWithMatchingUniqueParams(){
         return $this->db->query2( "SELECT * FROM channels", $this->getWhereArray( "source, nid, tid, sid") );

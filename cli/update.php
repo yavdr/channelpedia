@@ -27,7 +27,7 @@ $startime = time();
 //input: reads channel.conf from path and put channels into db
 require_once '../classes/class.config.php';
 
-ini_set("max_execution_time", 120); //workaround
+ini_set("max_execution_time", 240); //workaround
 $config = config::getInstance();
 
 //if ( array_key_exists('SERVER_SOFTWARE',$_SERVER)) print "<pre>";
