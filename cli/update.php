@@ -36,6 +36,7 @@ try {
     importFromAllChannelSources($config);
 } catch (Exception $e) {
     $config->addToDebugLog( 'Caught exception: '. $e->getMessage() );
+    $config->addToDebugLog( 'Backtrace: '. print_r( $e->getTrace(), true) );
     print "An exception occured.\n";
 }
 

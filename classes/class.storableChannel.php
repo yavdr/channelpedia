@@ -57,7 +57,13 @@ class storableChannel extends channel{
         //if a channel was read from a file the source of non-sat channels
         //need to be modified before they are being put into the db
         //this does not apply for channels read from the db
-        $this->setSourceForDB();
+        try{
+            $this->setSourceForDB();
+        }
+        catch (Exception $E){
+            $this->markChannelAsInvalid("Source is not allowed: '". $this->source . "'");
+            $config->addToDebugLog( 'Caught exception in storableChannel: '. $e->getMessage() );
+        }
         $this->longUniqueID = $this->sourceDB."-". $this->sourceLessId;
     }
 
@@ -72,15 +78,15 @@ class storableChannel extends channel{
                     $this->sourceDB = $this->source . '[' . $nonSatProvider . ']';
                 }
                 else{
-                    $this->markChannelAsInvalid();
+                    $this->markChannelAsInvalid("Source is not allowed: '". $this->source . "'");
                 }
                 break;
             case "I":
             case "P":
-                $this->markChannelAsInvalid();
+                $this->markChannelAsInvalid("Source is not allowed: '". $this->source . "'");
                 break;
             default:
-                $this->markChannelAsInvalid();
+                $this->markChannelAsInvalid("Source is not allowed: '". $this->source . "'");
                 throw new Exception( "Unknown source type! " . $this->source );
             }
         }
@@ -92,13 +98,8 @@ class storableChannel extends channel{
                 $this->sourceDB = $this->source;
             }
             else
-                $this->markChannelAsInvalid();
+                $this->markChannelAsInvalid("Source is not allowed: '". $this->source . "'");
         }
-    }
-
-    protected function markChannelAsInvalid(){
-        $this->params = false;
-        $this->config->addToDebugLog( "Channel was marked as invalid. Source is not allowed: '". $this->source  ."'\n");
     }
 
     /*

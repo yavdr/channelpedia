@@ -54,7 +54,8 @@ class rawOutputRenderer {
                 $epgstuff->writeEPGChannelmap( $type, $longsource, "epgdata");
             }
         } catch (Exception $e) {
-            $this->config->addToDebugLog( 'Caught exception in writeRawOutputForSingleSource @ $longsource: '. $e->getMessage() );
+            $this->config->addToDebugLog( 'Caught exception in writeRawOutputForSingleSource @ $longsource: '. $e->getMessage());
+            $this->config->addToDebugLog( 'Backtrace: '. print_r( $e->getTrace(), true) );
             print "An exception occured when writing raw output for $longsource.\n";
         }
     }

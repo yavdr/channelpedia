@@ -93,15 +93,16 @@ class channel{
         else
             throw new Exception("Channelparams are neither of type array nor of type string!");
 
-        $this->sourceLessId = $this->params["nid"]."-". $this->params["tid"]."-". $this->params["sid"];
-        $this->uniqueID = $this->getShortenedSource()."-". $this->sourceLessId;
-        $this->longUniqueID = $this->params["source"]."-". $this->sourceLessId;
-
-        //split transponder parameters
+        //split transponder parameters (as early as possible)
         $tempProcessedParameters = explode(";", preg_replace( "/(\D|\d)(\D)/", "$1;$2", $this->params["parameter"]));
         foreach ($tempProcessedParameters as $item){
             $this->processedParameters[ strtoupper(substr($item,0,1)) ] = substr($item,1);
         }
+
+        $this->sourceLessId = $this->params["nid"]."-". $this->params["tid"]."-". $this->params["sid"];
+        $this->uniqueID = $this->getShortenedSource()."-". $this->sourceLessId;
+        $this->longUniqueID = $this->params["source"]."-". $this->sourceLessId;
+
     }
 
     public function getSingleTransponderParameter( $key ){
@@ -116,7 +117,10 @@ class channel{
             return false;
     }
 
-
+    protected function markChannelAsInvalid( $msg ){
+        $this->params = false;
+        $this->config->addToDebugLog( "Channel was marked as invalid: $msg\n");
+    }
 
     public function isValid(){
         return ($this->params !== false);
@@ -184,7 +188,15 @@ class channel{
     }
 
     public function isSatelliteSource(){
-        return (substr( $this->source, 0, 1) === "S") && $this->getSingleTransponderParameter("S") !== false ;
+        $check1 = (substr( $this->source, 0, 1) === "S");
+        $check2 = (stristr( $this->params["parameter"], "S") !== false);
+        if ($check1 !== $check2){
+            if ($check1 === true)
+                $this->markChannelAsInvalid("A satellite channel should have an S in parameters: '". $this->params["parameter"]."'. Is this obsolete VDR 1.6 syntax?");
+            else
+                $this->markChannelAsInvalid("Channel parameters misleadingly indicate a satellite channel: '". $this->params["parameter"]."'");
+        }
+        return ( $check1 );
     }
 
     public function onS2SatTransponder(){
@@ -205,6 +217,20 @@ class channel{
 
     public function belongsToSatHorizontal(){
         return $this->getSingleTransponderParameter( "H" );
+    }
+
+    public function getFECOfSatTransponder(){
+        $rawCoderate = $this->getSingleTransponderParameter( "C" );
+        if ($rawCoderate !== false && strlen($rawCoderate) >= 2 ){
+            $n1 = intval(substr($rawCoderate,0,1));
+            $n2 = intval(substr($rawCoderate,1));
+            if ($n1 + 1 - $n2 !== 0)
+                 throw new Exception("Satellite channel has wrong FEC parameters");
+            $rawCoderate = $n1."/".$n2;
+        }
+        else
+            $rawCoderate = "";
+        return $rawCoderate;
     }
 
     public function getModulation(){
