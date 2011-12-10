@@ -55,7 +55,7 @@ define("PIWIK_TRACKING_ENABLED", false);
  * will be reparsed if FORCE_REPARSING is set to true
  */
 define("FORCE_REPARSING", false);
-
+define("DELETE_OUTDATED", false);
 
 $default_lang_de_cable_provider = array("de");
 

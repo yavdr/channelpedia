@@ -80,6 +80,10 @@ pre {
     font-size: 1em;
 }
 
+pre span:hover{
+    background-color: #eeeeee;
+}
+
 pre span.outdated{
     color: #bbbbbb;
 }

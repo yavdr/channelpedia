@@ -62,10 +62,9 @@ function importFromAllChannelSources($config){
         if ( $fileinfo->isDir() && !$fileinfo->isDot()){
             $metaData = new channelImportMetaData( $fileinfo->getFilename() );
             if ( $metaData->userNameExists()){
-                $importer = new channelImport( $metaData, FORCE_REPARSING );
+                $importer = new channelImport( $metaData, FORCE_REPARSING, DELETE_OUTDATED );
                 $importer->addToUpdateLog( "-", "Manually forced update: Checking for presence of unprocessed channels.conf to analyze.");
                 $importer->insertChannelsConfIntoDB();
-                //print "user account for folder " . $fileinfo->getFilename() . " does exist in global_user_data!\n";
             }
             else
                 print "user account for folder " . $fileinfo->getFilename() . " does not exist in global_user_data!\n";

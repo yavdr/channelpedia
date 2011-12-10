@@ -441,6 +441,7 @@ class HTMLOutputRenderer{
             $nice_html_output .= "<p>Looking for channels that were last confirmed before ". date("D, d M Y H:i:s", $timestamp). " ($timestamp)</p>\n";
 
             $x = new channelIterator( $shortenSource = true );
+            $x->tolerateInvalidChannels();
             $x->init2( "SELECT * FROM channels WHERE source = ".$this->db->quote($source)." AND x_last_confirmed < ".$timestamp);
             $lastname = "";
             while ($x->moveToNextChannel() !== false){

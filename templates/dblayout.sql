@@ -43,8 +43,10 @@ CREATE TABLE channels(
     x_last_changed TIMESTAMP,
     x_last_confirmed TIMESTAMP,
     x_utf8 BOOLEAN,
-    PRIMARY KEY ( x_namespace, source, nid, tid, sid)
+    PRIMARY KEY ( source, nid, tid, sid)
 );
+
+/* FIXME: x_namespace should become a PRIMARY_KEY as soon as all selects, inserts and updates are aware of x_namespace!*/
 
 CREATE TABLE channel_update_log(
     timestamp TIMESTAMP,

@@ -26,17 +26,18 @@ class channelImport extends channelFileIterator{
 
     private
         $reparseOldFile = false,
+        $deleteOutdatedChannels = false,
         $metaData,
         $textualSummary,
         $username,
         $htmlOutput,
         $labeller,
-        $rawOutput,
-        $lastConfirmedTimestamp = 0;
+        $rawOutput;
 
-    public function __construct( & $metaData, $forceReparsing = false ){
+    public function __construct( & $metaData, $forceReparsing = false, $deleteOutdated = false ){
         parent::__construct();
         $this->reparseOldFile = $forceReparsing;
+        $this->deleteOutdatedChannels = $deleteOutdated;
         $this->metaData = $metaData;
         $this->username = $this->metaData->getUsername();
         $this->textualSummary = "undefined";
@@ -121,6 +122,8 @@ class channelImport extends channelFileIterator{
             $this->updateTextualSummary();
             $this->addToUpdateLog( "-", $this->textualSummary);
             unlink($sourcepath . 'lockfile.txt');
+            if ($this->deleteOutdatedChannels)
+                $this->deleteOutdatedChannelsForPresentSources();
         }
     }
 
@@ -132,8 +135,8 @@ class channelImport extends channelFileIterator{
             " / Ignored: "  . $this->metaData->getIgnoredChannelCount();
     }
 
-    public function deleteOutdatedChannels(){
-        $this->lastConfirmedTimestamp = $this->getLastConfirmedTimestamp($source);
+    private function deleteOutdatedChannelsForPresentSources(){
+        $this->config->addToDebugLog( "deleteOutdatedChannels was called\n");
         foreach ($this->metaData->getPresentSatProviders() as $sat => $dummy){
             $this->deleteOutdatedChannelsForSource( $sat );
         }
@@ -152,8 +155,11 @@ class channelImport extends channelFileIterator{
         return $timestamp;
     }
 
-    private function deleteOutdatedChannelsForSource( $sat ){
-        //$this->lastConfirmedTimestamp
+    private function deleteOutdatedChannelsForSource( $source ){
+        $lastConfirmedTimestamp = $this->getLastConfirmedTimestamp($source);
+        $statement = "DELETE FROM channels WHERE source = ".$this->db->quote($source)." AND x_last_confirmed < ".$lastConfirmedTimestamp;
+        $this->config->addToDebugLog( "Deleting outdated channels for $source: $statement\n");
+        $query = $this->db->exec( $statement );
     }
 
     private function deleteOutdatedChannelsForNonSatProvider( $type ){

@@ -32,12 +32,14 @@ class channelIterator{
         $count = 0,
         $lastFrequency = "",
         $transponderChanged = true,
-        $shortenSource;
+        $shortenSource,
+        $tolerateInvalidChannels = false;
 
     function __construct($shortenSource = true){
         $this->db = dbConnection::getInstance();
         $this->config = config::getInstance();
         $this->shortenSource = $shortenSource;
+        $this->tolerateInvalidChannels = false;
     }
 
     public function init1( $label, $source, $orderby = "frequency, parameter, provider, name ASC"){
@@ -53,6 +55,10 @@ class channelIterator{
         $this->result = $this->db->query($statement);
     }
 
+    public function tolerateInvalidChannels(){
+        $this->tolerateInvalidChannels = true;
+    }
+
     public function moveToNextChannel(){
         $this->channel = false;
         $exists = false;
@@ -62,7 +68,7 @@ class channelIterator{
             if (!$temp === false){
                 $channelobj = new channel( $temp );
                 //print "channelobject instanciated.\n";
-                if ($channelobj->isValid()) {
+                if ($this->tolerateInvalidChannels || $channelobj->isValid()) {
                     //print "channelobject is valid.\n";
                     $exists = true;
                     $this->channel = $channelobj;
