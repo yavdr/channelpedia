@@ -293,16 +293,18 @@ class HTMLOutputRenderer{
                 $curChan = $x->getCurrentChannelObject();
                 $curChanString = htmlspecialchars($curChan->getChannelString());
                 $popuptitle = "". $curChan->getName(). " | ".
-                    "Modulation: " . $curChan->getModulation() ." | ".
                     ($curChan->isSatelliteSource() ?
                         "Type: DVB-S"    . ( $curChan->onS2SatTransponder()   ? "2"        : ""           ) ." | ".
                         "Polarisation: " . ( $curChan->belongsToSatVertical() ? "Vertical" : "Horizontal" ) ." | ".
                         "Band: "         . ( $curChan->belongsToSatHighBand() ? "High"     : "Low"        ) ." | ".
                         "FEC: "          . $curChan->getFECOfSatTransponder()                          ." | "
                     : "" ).
-                    "Added: "        . date("D, d M Y H:i:s", $curChan->getXTimestampAdded() ) . " | ".
-                    "Last changed: " . date("D, d M Y H:i:s", $curChan->getXLastChanged()    ) . " | ".
-                    "Last seen: "    . date("D, d M Y H:i:s", $curChan->getXLastConfirmed()  ) . " ".
+                    "Modulation: "        . $curChan->getModulation() ." | ".
+                    "Frequency: "         . $curChan->getReadableFrequency() ." | ".
+                    "Symbolrate: "        . $curChan->getSymbolrate() ." | ".
+                    "Date added: "        . date("D, d M Y H:i:s", $curChan->getXTimestampAdded() ) . " | ".
+                    "Date last changed: " . date("D, d M Y H:i:s", $curChan->getXLastChanged()    ) . " | ".
+                    "Date last seen: "    . date("D, d M Y H:i:s", $curChan->getXLastConfirmed()  ) . " ".
                     "";
                 //check if channel might be outdated, if so, apply additional css class
                 if ( $x->getCurrentChannelObject()->getXLastConfirmed() < $timestamp)

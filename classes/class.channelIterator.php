@@ -106,13 +106,20 @@ class channelIterator{
 
     //FIXME: This info should be provided by channel object!
     public function getCurrentTransponderInfo(){
-        $frequency = $this->channel->getFrequency();
-        $hilow = "";
-        if (substr($this->channel->getSource(),0,1) == "S" && $frequency >= 11700 && $frequency <= 12750)
-            $hilow = "High-Band";
-        else if (substr($this->channel->getSource(),0,1) == "S" && $frequency >= 10700 && $frequency < 11700)
-            $hilow = "Low-Band";
-        return "Transponder " . $this->channel->getSource() . " " . $hilow . " " .$this->channel->getModulation() ." " . $this->channel->onS2SatTransponder() . " " . $this->channel->getParameter(). " " . $frequency;
+        return "Transponder " .
+                $this->channel->getSource() . ", " .
+                ($this->channel->isSatelliteSource() ?
+                    "DVB-S" . ( $this->channel->onS2SatTransponder() ? "2" : "" ) .", ".
+                    $this->channel->getReadableFrequency() . ", " .
+                    "" . ( $this->channel->belongsToSatVertical() ? "Vertical" : "Horizontal" ) ." ".
+                    "" . ( $this->channel->belongsToSatHighBand() ? "High"     : "Low"        ) ." Band, ".
+                    "FEC " . $this->channel->getFECOfSatTransponder() .", "
+                :
+                    $this->channel->getReadableFrequency() . ", "
+                ).
+                $this->channel->getModulation() .", " .
+                $this->channel->getSymbolrate() .", " .
+                $this->channel->getParameter();
     }
 
     public function getCurrentChannelCount(){

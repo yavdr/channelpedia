@@ -32,6 +32,7 @@ class channel{
         $channelstring = "",
         $uniqueID = "",
         $longUniqueID = "",
+        $isCheckedSatelliteSource = false,
         $processedParameters = array(),
 
         $name,
@@ -53,6 +54,7 @@ class channel{
         $this->db = dbConnection::getInstance();
         $this->config = config::getInstance();
         $this->params = array();
+        $this->isCheckedSatelliteSource = false;
 
         if (is_array( $channelparams )){
             //turn some integer params back into integer values
@@ -79,11 +81,13 @@ class channel{
             }
             $this->params = $channelparams;
             $this->source = $this->params["source"];
+            $this->prepareAndValidateParameters();
             $this->channelstring = $this->convertArray2String();
         }
         elseif (is_string( $channelparams )){
             $this->params = $this->convertString2Array( $channelparams );
             $this->source = $this->params["source"];
+            $this->prepareAndValidateParameters();
             //For debugging (slower): compare channel strings to check if our conversion works fine
             //$this->channelstring = $this->convertArray2String();
             //if ( $this->channelstring != $channelparams)
@@ -93,16 +97,32 @@ class channel{
         else
             throw new Exception("Channelparams are neither of type array nor of type string!");
 
+        $this->sourceLessId = $this->params["nid"]."-". $this->params["tid"]."-". $this->params["sid"];
+        $this->uniqueID = $this->getShortenedSource()."-". $this->sourceLessId;
+        $this->longUniqueID = $this->params["source"]."-". $this->sourceLessId;
+    }
+
+    public function prepareAndValidateParameters(){
         //split transponder parameters (as early as possible)
         $tempProcessedParameters = explode(";", preg_replace( "/(\D|\d)(\D)/", "$1;$2", $this->params["parameter"]));
         foreach ($tempProcessedParameters as $item){
             $this->processedParameters[ strtoupper(substr($item,0,1)) ] = substr($item,1);
         }
 
-        $this->sourceLessId = $this->params["nid"]."-". $this->params["tid"]."-". $this->params["sid"];
-        $this->uniqueID = $this->getShortenedSource()."-". $this->sourceLessId;
-        $this->longUniqueID = $this->params["source"]."-". $this->sourceLessId;
-
+        //sanity check for satellite source
+        $check1 = (substr( $this->params["source"], 0, 1) === "S");
+        $check2 = (stristr( $this->params["parameter"], "S") !== false);
+        //TODO: Also check for presence of H or V
+        if ($check1 !== $check2){
+            if ($check1 === true){
+                throw new Exception("A satellite channel should have an S in parameters: '". $this->params["parameter"]."'. Is this obsolete VDR 1.6 syntax?");
+                //$check1 = false;
+            }
+            //IPTV channels might have an S in the parameter field
+//            else
+//                $this->markChannelAsInvalid("Channel parameters misleadingly indicate a satellite channel: '". $this->params["parameter"]."'");
+        }
+        $this->isCheckedSatelliteSource = $check1;
     }
 
     public function getSingleTransponderParameter( $key ){
@@ -148,6 +168,30 @@ class channel{
         return $this->params["frequency"];
     }
 
+    //TODO: http://www.mysnip.de/forum-archiv/thema/8773/414227/DVB_+Wie+wird+die+Symbolrate+berechnet.html
+    public function getSymbolrate(){
+        return $this->params["symbolrate"];
+    }
+
+    public function getReadableFrequency(){
+        if ($this->isSatelliteSource())
+            $value = $this->params["frequency"]." MHz";
+        else{
+            //    * MHz, kHz oder Hz angegeben.
+            //Der angegebene Wert wird mit 1000 multipliziert, bis er größer als 1000000 ist.
+             $value2 = intval( $this->params["frequency"] );
+             $step = 0;    //113000
+             while($value2 < 1000000){
+                 $step++;
+                 $value2 = $value2 * 1000;
+             }
+             $value = $value2 / (1000*1000);
+             $value = $value . " Mhz";
+        }
+        return $value;
+    }
+
+
     public function getParameter(){
         return $this->params["parameter"];
     }
@@ -188,15 +232,7 @@ class channel{
     }
 
     public function isSatelliteSource(){
-        $check1 = (substr( $this->source, 0, 1) === "S");
-        $check2 = (stristr( $this->params["parameter"], "S") !== false);
-        if ($check1 !== $check2){
-            if ($check1 === true)
-                $this->markChannelAsInvalid("A satellite channel should have an S in parameters: '". $this->params["parameter"]."'. Is this obsolete VDR 1.6 syntax?");
-            else
-                $this->markChannelAsInvalid("Channel parameters misleadingly indicate a satellite channel: '". $this->params["parameter"]."'");
-        }
-        return ( $check1 );
+        return $this->isCheckedSatelliteSource;
     }
 
     public function onS2SatTransponder(){

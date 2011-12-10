@@ -54,7 +54,7 @@ class channelListWriter extends channelIterator{
     public function writeFile(){
         while ($this->moveToNextChannel() !== false){
             if ($this->addTransponderDelimiters && $this->transponderChanged())
-                $this->write2File( ": ### ".$this->getCurrentTransponderInfo()." ###\n" );
+                $this->write2File( ":".$this->getCurrentTransponderInfo()." ###\n" );
             $this->write2File( $this->getCurrentChannelObject()->getChannelString()."\n" );
         }
         $this->closeFile();

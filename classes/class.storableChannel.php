@@ -31,27 +31,33 @@ class storableChannel extends channel{
     public function __construct( $channelparams, & $metaDataObj ){
         $this->metaData = $metaDataObj;
         $this->metaData->increaseCheckedChannelCount();
-        parent::__construct( $channelparams);
+        try{
+            parent::__construct( $channelparams );
+            //convert name and provider strings to utf-8 if they are not in utf-8
+            //this only needs to be done if the channels were read from file
+            //usually is necessary for sky_de channels that are encoded in ISO-8859-15
+            $this->params["x_utf8"] = 1;
+            if (mb_check_encoding($this->params["name"], "UTF-8") === false){
+                $this->params["name"] = mb_convert_encoding ( $this->params["name"] , "UTF-8", "ISO-8859-15");
+                $this->params["x_utf8"] = 0;
+            }
+            if (mb_check_encoding($this->params["provider"], "UTF-8") === false){
+                $this->params["provider"] = mb_convert_encoding ( $this->params["provider"] , "UTF-8", "ISO-8859-15");
+                $this->params["x_utf8"] = 0;
+            }
 
-        //convert name and provider strings to utf-8 if they are not in utf-8
-        //this only needs to be done if the channels were read from file
-        //usually is necessary for sky_de channels that are encoded in ISO-8859-15
-        $this->params["x_utf8"] = 1;
-        if (mb_check_encoding($this->params["name"], "UTF-8") === false){
-            $this->params["name"] = mb_convert_encoding ( $this->params["name"] , "UTF-8", "ISO-8859-15");
-            $this->params["x_utf8"] = 0;
+            //FIXME: This should go into a method in the metadata class
+            //ignore changed channel names that should check if a channel is eclipsed
+            $checkignore= "[checkignore]";
+            if (substr($this->params["name"], 0, 13) == $checkignore){
+                $this->params["name"] = substr($this->params["name"], 13);
+                //$this->config->addToDebugLog("checkignore: " .$this->params["name"]."\n");
+            }
         }
-        if (mb_check_encoding($this->params["provider"], "UTF-8") === false){
-            $this->params["provider"] = mb_convert_encoding ( $this->params["provider"] , "UTF-8", "ISO-8859-15");
-            $this->params["x_utf8"] = 0;
-        }
-
-        //FIXME: This should go into a method in the metadata class
-        //ignore changed channel names that should check if a channel is eclipsed
-        $checkignore= "[checkignore]";
-        if (substr($this->params["name"], 0, 13) == $checkignore){
-            $this->params["name"] = substr($this->params["name"], 13);
-            //$this->config->addToDebugLog("checkignore: " .$this->params["name"]."\n");
+        catch (Exception $e){
+            $this->markChannelAsInvalid("Channel malformed.");
+            $config = config::getInstance();
+            $config->addToDebugLog( 'Caught exception in storableChannel: '. $e->getMessage() );
         }
 
         //if a channel was read from a file the source of non-sat channels
@@ -59,12 +65,12 @@ class storableChannel extends channel{
         //this does not apply for channels read from the db
         try{
             $this->setSourceForDB();
+            $this->longUniqueID = $this->sourceDB."-". $this->sourceLessId;
         }
-        catch (Exception $E){
+        catch (Exception $e){
             $this->markChannelAsInvalid("Source is not allowed: '". $this->source . "'");
             $config->addToDebugLog( 'Caught exception in storableChannel: '. $e->getMessage() );
         }
-        $this->longUniqueID = $this->sourceDB."-". $this->sourceLessId;
     }
 
     protected function setSourceForDB(){

@@ -66,8 +66,10 @@ class epg2vdrMapper{
         $visibletype = ($type == "A") ? "ATSC" : "DVB-". $type;
         if ($type !== "S")
             $source = $type . "[" . $puresource . "]";
-        else
+        else{
             $source = $puresource;
+            $type = $puresource;
+        }
         $map = "";
         $noepg_config = "";
         $notfoundlist = array();
