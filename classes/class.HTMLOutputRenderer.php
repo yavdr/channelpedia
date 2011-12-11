@@ -91,10 +91,10 @@ class HTMLOutputRenderer{
         $this->renderUnconfirmedChannels( $source );
         $this->renderLatestChannels( $source );
         $this->writeChangelog( $source );
-        $this->addCompleteListLink( $source );
         $this->renderTransponderNIDCheck( $source );
         if ($type === "S")
             $this->renderLNBSetupHelperTable( $source );
+        $this->addCompleteListLink( $source );
         if (in_array("de", $languages)){
             $this->addEPGChannelmapLink( $source );
         }
@@ -130,7 +130,9 @@ class HTMLOutputRenderer{
 
     private function addCompleteListLink( $source ){
         $filename = $this->craftedPath . $source."_complete.channels.conf";
-        $this->addToOverview("Download complete list", $filename);
+        $this->addToOverview("List sorted by transponder", $filename);
+        $filename = $this->craftedPath . $source."_complete_sorted_by_groups.channels.conf";
+        $this->addToOverview("List sorted by group", $filename);
     }
 
     private function addEPGChannelmapLink( $source ){
