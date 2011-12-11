@@ -119,6 +119,18 @@ class GermanyEssentials  extends ruleBase{
                     " AND ". FILTER_ASTRA1_FTA . " AND NOT (". DE_PUBLIC_PROVIDER. " OR ".DE_PRIVATE_PRO7_RTL." OR ".AUSTRIA." OR ".SWITZERLAND." OR UPPER(provider) = 'UNDEFINED') AND NOT name = '.' AND NOT UPPER(provider) = 'CSAT'"
             ),
 
+            //provider undefined only wilhelm.tel --> sky
+            //don't change details here (Private 2/13) - it is merged with GermanySatNonEssentials!!!
+            //This is only for Viva Germany
+            array(
+                "title" => "Private2",
+                "outputSortPriority" => 13,
+                "languageOverrule" => "",
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeSDTV,
+                "customwhere" => " AND UPPER(provider) = 'MTV NETWORKS EUROPE'"
+            ),
+
             array(
                 "title" => "sky_de",
                 "outputSortPriority" => 20,
@@ -196,7 +208,7 @@ class GermanyEssentials  extends ruleBase{
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
                 "languageOverrule" => "",
-                "customwhere" => " AND UPPER(provider) = 'MTV NETWORKS EUROPE'"
+                "customwhere" => " AND UPPER(provider) = 'MTV NETWORKS EUROPE' AND NOT UPPER(name) LIKE '%FRANCE%' AND NOT apid LIKE '%fra%'"
             ),
 
             array(

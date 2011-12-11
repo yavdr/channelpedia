@@ -70,9 +70,18 @@ class UKEssentials  extends ruleBase {
             array(
                 "title" => "freesat BBC",
                 "outputSortPriority" => 2,
+                "languageOverrule" => "", //BBC ALBA doesn't have apid with eng
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
                 "customwhere" => " AND (upper(name) LIKE '%BBC%' OR upper(name) = 'CBEEBIES')"
+            ),
+
+            array(
+                "title" => "freesat BBC Red Button / Interactive / Sports",
+                "outputSortPriority" => 3,
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeSDTV,
+                "customwhere" => " AND nid=2 AND tid=2013"
             ),
 
             array(
@@ -102,7 +111,6 @@ class UKEssentials  extends ruleBase {
             array(
                 "title" => "freesat Channel4Family",
                 "outputSortPriority" => 6,
-                "languageOverrule" => "", //only because new five* channels don't have apid yet
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
                 "customwhere" => " AND ".UK_C4

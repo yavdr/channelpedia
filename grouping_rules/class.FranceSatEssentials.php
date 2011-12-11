@@ -78,6 +78,15 @@ class FranceSatEssentials  extends ruleBase{
             ),
 
             array(
+                "title" => "MTVNetworksEurope",
+                "outputSortPriority" => 9,
+                "caidMode" => self::caidModeScrambled,
+                "mediaType" => self::mediaTypeSDTV,
+                "languageOverrule" => "",
+                "customwhere" => " AND UPPER(provider) = 'MTV NETWORKS EUROPE' AND UPPER(name) LIKE '%FRANCE%'"
+            ),
+
+            array(
                 "title" => "Diverse",
                 "outputSortPriority" => 1,
                 "caidMode" => self::caidModeFTA,
