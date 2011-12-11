@@ -32,6 +32,8 @@ class channelIterator{
         $count = 0,
         $lastFrequency = "",
         $transponderChanged = true,
+        $groupChanged = true,
+        $lastGroup = "",
         $shortenSource,
         $tolerateInvalidChannels = false;
 
@@ -45,7 +47,7 @@ class channelIterator{
     public function init1( $label, $source, $orderby = "frequency, parameter, provider, name ASC"){
         $where = array();
         $where["source"] = $source;
-        if ($label !== "_complete")
+        if (substr($label,0,9) !== "_complete")
             $where["x_label"] = $label;
         $this->result = $this->db->query2("SELECT * FROM channels", $where, true, $orderby);
     }
@@ -77,15 +79,14 @@ class channelIterator{
                     }
                     $this->count++;
 
-                    if ( $this->lastFrequency != $this->channel->getSource() ."-" . $this->channel->getFrequency() ){
-                        $this->transponderChanged = true;
-                    }
-                    else
-                        $this->transponderChanged = false;
+                    $this->groupChanged = ( $this->lastGroup !== $this->channel->getXLabel() );
+                    $this->lastGroup = $this->channel->getXLabel();
+
+                    $this->transponderChanged = ( $this->lastFrequency !== $this->channel->getSource() ."-" . $this->channel->getFrequency() );
                     $this->lastFrequency = $this->channel->getSource() ."-" . $this->channel->getFrequency();
                 }
                 else{
-                    print "channel invalid.\n";
+                    print "channelIterator: channel is invalid.\n";
                 }
             }
         }
@@ -104,7 +105,6 @@ class channelIterator{
         return $this->transponderChanged;
     }
 
-    //FIXME: This info should be provided by channel object!
     public function getCurrentTransponderInfo(){
         return "Transponder " .
                 $this->channel->getSource() . ", " .
@@ -121,6 +121,16 @@ class channelIterator{
                 $this->channel->getSymbolrate() .", " .
                 $this->channel->getParameter();
     }
+
+    public function groupChanged(){
+        return $this->groupChanged;
+    }
+
+    public function getCurrentGroupInfo(){
+        list( $langregion, $prio, $title) =  explode("." , $this->channel->getXLabel());
+        return "[" . $this->channel->getSource() . "/" . $langregion . "] " . $title;
+    }
+
 
     public function getCurrentChannelCount(){
         return $this->count;

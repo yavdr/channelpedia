@@ -40,11 +40,14 @@ class rawOutputRenderer {
         }
     }
 
-    public function writeRawOutputForSingleSource( $type, $longsource, $languages){
+    public function writeRawOutputForSingleSource( $type, $longsource, $languages ){
         try {
             //write unfiltered channels.conf lists to disc
             $channelListWriter = new channelListWriter("_complete", $type, $longsource);
             $channelListWriter->writeFile();
+            $channelListWriter = new channelListWriter("_complete_sorted_by_groups", $type, $longsource);
+            $channelListWriter->writeFile();
+
             //$this->writeAllChannelSelections2Disk( $longsource );
             $this->writeAllUncategorizedChannels2Disk( $type, $longsource);
             //epgmappings only for German providers
@@ -59,8 +62,8 @@ class rawOutputRenderer {
             print "An exception occured when writing raw output for $longsource.\n";
         }
     }
-
-    private function writeAllChannelSelections2Disk( $source){
+    /*
+    private function writeAllChannelSelections2Disk( $source ){
         $sourcetype = substr($source, 0, 1);
         foreach ( channelGroupingRulesStore::getRules() as $title => $config){
             if ( $sourcetype == "S"){
@@ -89,7 +92,7 @@ class rawOutputRenderer {
             }
         }
     }
-
+    */
     private function writeAllUncategorizedChannels2Disk( $shortsource, $longsource){
         //also write a complete channels.conf for this source grouped by transponders, containing all existing channels
         $y = new channelListWriter( "uncategorized", $shortsource, $longsource );

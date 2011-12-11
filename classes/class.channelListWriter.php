@@ -27,18 +27,22 @@ class channelListWriter extends channelIterator{
     private
         $filehandle = null,
         $filename = "",
-        $addTransponderDelimiters = false,
+        $delimiters = false,
         $config;
 
     function __construct($label = "_complete", $type, $puresource, $orderby = "UPPER(name) ASC"){
         $this->config = config::getInstance();
         $xlabel = $label;
-        if ($label == "_complete"){
-            $this->addTransponderDelimiters = true;
+        if ($label === "_complete"){
+            $this->delimiters = "transponders";
             if ($type == "S")
-              $orderby = "substr(parameter,1,1), frequency, sid ASC";
+              $orderby = "substr(parameter,1,1), frequency, sid ASC"; //horiz/vertic
             else
               $orderby = "frequency, parameter, sid ASC";
+        }
+        elseif ($label === "_complete_sorted_by_groups"){
+            $this->delimiters = "groups";
+            $orderby = "x_label ASC, UPPER(name) ASC";
         }
         parent::__construct();
         $visibletype = ($type == "A") ? "ATSC" : "DVB-". $type;
@@ -53,8 +57,12 @@ class channelListWriter extends channelIterator{
 
     public function writeFile(){
         while ($this->moveToNextChannel() !== false){
-            if ($this->addTransponderDelimiters && $this->transponderChanged())
-                $this->write2File( ":".$this->getCurrentTransponderInfo()." ###\n" );
+            if ($this->delimiters !== false){
+                if ($this->delimiters === "transponders" && $this->transponderChanged())
+                    $this->write2File( ":".$this->getCurrentTransponderInfo()."\n" );
+                elseif ($this->delimiters === "groups" && $this->groupChanged())
+                    $this->write2File( ":".$this->getCurrentGroupInfo()."\n" );
+            }
             $this->write2File( $this->getCurrentChannelObject()->getChannelString()."\n" );
         }
         $this->closeFile();
