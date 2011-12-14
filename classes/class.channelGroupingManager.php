@@ -44,7 +44,7 @@ require_once PATH_TO_CLASSES . '../grouping_rules/class.ItalyEssentials.php';
 require_once PATH_TO_CLASSES . '../grouping_rules/class.GreeceSatEssentials.php';
 require_once PATH_TO_CLASSES . '../grouping_rules/class.Uncategorized.php';
 
-define("HD_CHANNEL"," (UPPER(name) LIKE '% HD%' OR UPPER(name) LIKE 'HD %') ");
+define("HD_CHANNEL"," (UPPER(name) LIKE '% HD%' OR UPPER(name) LIKE 'HD %' OR UPPER(parameter) LIKE '%S1%' ) ");
 
 define("DE_PRIVATE_PRO7_RTL"," (".
     "provider = 'ProSiebenSat.1' OR ".

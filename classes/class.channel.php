@@ -226,6 +226,8 @@ class channel{
 
     //FIXME temp
     public function getAsArray(){
+        //hotfix modulation - we need modulation in json structure!
+        $this->params["modulation"] = $this->params["parameter"];
         $this->params["x_unique_id"] = $this->getUniqueID();
         $this->params["source"] = $this->source;
         return $this->params;
