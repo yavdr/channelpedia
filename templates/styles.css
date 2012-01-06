@@ -163,12 +163,21 @@ ul ul li {
     margin: 2px;
 }
 
-ul ul ul ul li{
+ul ul ul ul li, ul.section_menu li{
     display: inline;
     float: left;
 }
 
- ul ul li a, ul ul ul ul li a{
+ul.section_menu{
+    list-style-position:inside;
+    list-style-type: none;
+    padding: 0px;
+}
+
+ul ul li a, 
+ul ul ul ul li a, 
+ul.section_menu li a
+{
     font-weight: bold;
     text-decoration: none;
     color: orange;
@@ -180,10 +189,42 @@ ul ul ul ul li{
     border-radius: 10px;
  }
 
-ul ul li a:hover, ul ul ul ul li a:hover{
+ul.section_menu li a{
+    border-width: 1px 1px 1px 1px;
+    padding: 4px 8px 4px 8px;
+    margin: 2px 0px 2px 0px;
+    -moz-border-radius-bottomleft: 0px;
+    -moz-border-radius-bottomright: 0px;
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+    background: rgb(255,228,181); /* Old browsers */
+    background: -moz-linear-gradient(top,  rgba(255,228,181,1) 0%, rgba(255,255,255,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,228,181,1)), color-stop(100%,rgba(255,255,255,1))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  rgba(255,228,181,1) 0%,rgba(255,255,255,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  rgba(255,228,181,1) 0%,rgba(255,255,255,1) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  rgba(255,228,181,1) 0%,rgba(255,255,255,1) 100%); /* IE10+ */
+    background: linear-gradient(top,  rgba(255,228,181,1) 0%,rgba(255,255,255,1) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffe4b5', endColorstr='#ffffff',GradientType=0 ); /* IE6-9 */
+
+}
+
+ul ul li a:hover,
+ul ul ul ul li a:hover,
+ul.section_menu li a:hover
+{
     background-color: orange;
     color: red;
 }
+
+ul.section_menu li.active a,
+ul.section_menu li.active a:hover{
+    border-width: 1px 1px 0px 1px;
+    background: none;
+    filter: none;
+    background-color: white;
+    color: black;
+}
+
 
  /*
 ul.overview{
@@ -208,7 +249,7 @@ ul.overview li a:hover{
 }
 
 p.warning{
-    border: 1px solid red; 
+    border: 1px solid wheat; 
     background-color: pink; 
     color:red; 
     font-weight: bold; 

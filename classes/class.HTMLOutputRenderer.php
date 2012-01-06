@@ -36,13 +36,18 @@ class HTMLOutputRenderer{
         $config,
         $craftedPath = "",
         $linklist = array(),
+        $source_linklist = array(),
         $html_header_template = "",
-        $html_footer_template = "";
+        $html_footer_template = "",
+        $cutOffIndexHtml = false,
+        $relPath;
 
     function __construct(){
         $this->db = dbConnection::getInstance();
         $this->config = config::getInstance();
         $this->exportpath = $this->config->getValue("exportfolder")."/";
+        $this->cutOffIndexHtml = false;
+        $this->relPath = "";
     }
 
     public function renderAllHTMLPages(){
@@ -64,6 +69,8 @@ class HTMLOutputRenderer{
         foreach ($this->config->getValue("terr_providers") as $terrp => $languages){
             $this->renderPagesOfSingleSource( "T", $terrp, $languages );
         }
+        $this->craftedPath = "";
+        $this->relPath = "";
         $this->closeHierarchy();
 
         $this->closeHierarchy();
@@ -77,20 +84,35 @@ class HTMLOutputRenderer{
         $this->renderIndexPage();
     }
 
-    public function renderPagesOfSingleSource($type, $puresource, $languages){
-        $visibletype = ($type == "A") ? "ATSC" : "DVB-". $type;
+    private function setCraftedPath($visibletype, $puresource ){
+        //print "Old craftedpath: $this->craftedPath\n";
+        $this->craftedPath = $visibletype ."/". strtr(strtr( trim($puresource," _"), "/", ""),"_","/"). "/";
+        $this->relPath = "";
+        $dirjumps = substr_count( $this->craftedPath, "/");
+        for ($z = 0; $z < $dirjumps; $z++){
+            $this->relPath .= '../';
+        }
+        //print "New craftedpath: $this->craftedPath\n";
+    }
+
+    public function renderPagesOfSingleSource( $type, $puresource, $languages ){
         if ($type !== "S")
             $source = $type . "[" . $puresource . "]";
         else
             $source = $puresource;
-        $this->craftedPath = $visibletype ."/". strtr(strtr( trim($puresource," _"), "/", ""),"_","/"). "/";
-        $this->addDividerTitle($source);
+        $visibletype = ($type == "A") ? "ATSC" : "DVB-". $type;
+        $this->setCraftedPath($visibletype, $puresource);
+        $this->addDividerTitle( $source);
+        $this->addToOverview( "Details", $this->craftedPath."index.html" );
+        $this->source_linklist = array();
         foreach ($languages as $language)
-            $this->writeNiceHTMLPage( $source, $language );
+            $this->writeNiceHTMLPage( $visibletype, $source, $language, $languages, $puresource );
         //$this->renderGroupingHints( $source );
+        $this->setCraftedPath($visibletype, $puresource);
         $this->renderUnconfirmedChannels( $source );
         $this->renderLatestChannels( $source );
         $this->writeChangelog( $source );
+        $this->renderTransponderList( $source );
         $this->renderTransponderNIDCheck( $source );
         if ($type === "S")
             $this->renderLNBSetupHelperTable( $source );
@@ -98,6 +120,9 @@ class HTMLOutputRenderer{
         if (in_array("de", $languages)){
             $this->addEPGChannelmapLink( $source );
         }
+        $this->writeSourceLinklistPage($source, $visibletype, $languages, $puresource);
+        $this->source_linklist = array();
+
         $this->closeHierarchy();
     }
 
@@ -106,14 +131,18 @@ class HTMLOutputRenderer{
             //prepare html header template + stylesheet include
             $stylefile = "styles_". md5( file_get_contents( HTMLOutputRenderer::stylesheet ) ). ".css";
             $this->html_header_template =
-                preg_replace( "/\[STYLESHEET\]/", "/gen/" . $stylefile, file_get_contents( HTMLOutputRenderer::htmlHeaderTemplate));
+                preg_replace( "/\[STYLESHEET\]/", "[CHANNELPEDIA_REL_PATH]" . $stylefile, file_get_contents( HTMLOutputRenderer::htmlHeaderTemplate));
             //TODO: delete old stylesheet files before copying new one
             if (!file_exists( $this->exportpath . $stylefile))
                 copy( HTMLOutputRenderer::stylesheet, $this->exportpath . $stylefile );
             $this->html_header_template =
-                preg_replace( "/\[INDEX\]/", "/gen/", $this->html_header_template );
+                preg_replace( "/\[INDEX\]/", $this->getCrispFilename( "[CHANNELPEDIA_REL_PATH]" . "index.html" ), $this->html_header_template );
         }
-        return preg_replace( "/\[PAGE_TITLE\]/", htmlspecialchars($pagetitle), $this->html_header_template );
+        return preg_replace(
+            array( "/\[PAGE_TITLE\]/", "/\[CHANNELPEDIA_REL_PATH\]/" ),
+            array( htmlspecialchars( $pagetitle ), $this->relPath ),
+            $this->html_header_template
+        );
     }
 
     private function getHTMLFooter(){
@@ -130,16 +159,16 @@ class HTMLOutputRenderer{
 
     private function addCompleteListLink( $source ){
         $filename = $this->craftedPath . $source."_complete.channels.conf";
-        $this->addToOverview("List sorted by transponder", $filename);
+        $this->source_linklist[] = array("List sorted by transponder", $filename);
         $filename = $this->craftedPath . $source."_complete_sorted_by_groups.channels.conf";
-        $this->addToOverview("List sorted by group", $filename);
+        $this->source_linklist[] = array("List sorted by group", $filename);
     }
 
     private function addEPGChannelmapLink( $source ){
         $filename = $this->craftedPath . $source.".epgdata2vdr_channelmap.conf";
-        $this->addToOverview("epgdata2vdr Channelmap", $filename);
+        $this->source_linklist[] = array("epgdata2vdr Channelmap", $filename);
         $filename = $this->craftedPath . $source.".tvm2vdr_channelmap.conf";
-        $this->addToOverview("tvm2vdr Channelmap", $filename);
+        $this->source_linklist[] = array("tvm2vdr Channelmap", $filename);
     }
 
     private function addDividerTitle( $title ){
@@ -150,15 +179,24 @@ class HTMLOutputRenderer{
         $this->linklist[] = array( $param, $value);
     }
 
+    private function getCrispFilename( $filename){
+        return ($this->cutOffIndexHtml ? str_replace("index.html","", $filename) : $filename);
+    }
+
+    private function getMenuItem( $link, $filename, $class = ""){
+        $class = ($class === "") ? "" : ' class="'.$class.'"';
+        $path = $this->exportpath . substr( $filename, 0, strrpos ( $filename , "/" ) );
+        $this->config->addToDebugLog( "HTMLOutputRenderer/getMenuItem: file '".$filename."', link: '$link'\n" );
+        return '<li'.$class.'><a href="'.$this->getCrispFilename($filename).'">'. $this->getFlagIcon($link, $this->relPath). $link .'</a></li>'."\n";
+    }
+
     private function addToOverviewAndSave( $link, $filename, $filecontent ){
         $path = $this->exportpath . substr( $filename, 0, strrpos ( $filename , "/" ) );
         $this->config->addToDebugLog( "HTMLOutputRenderer/addToOverviewAndSave: file '".$filename."', link: '$link'\n" );
         if (!is_dir($path))
             mkdir($path, 0777, true);
         file_put_contents($this->exportpath . $filename, $filecontent );
-        $filename = str_replace("index.html","", $filename);
-        $link = $this->getFlagIcon($link). $link;
-        $this->linklist[] = array( $link, $filename);
+        $this->source_linklist[] = array( $this->getFlagIcon($link, ""). $link, $this->getCrispFilename($filename));
     }
 
     private function closeHierarchy(){
@@ -249,14 +287,38 @@ class HTMLOutputRenderer{
         $this->addToOverviewAndSave($pagetitle, $filename, $buffer );
     }
 
+    private function getSectionTabmenu($visibletype, $source, $language, $languages, $puresource){
+        $class = "";
+        if ("overview" == $language){
+            $language = "";
+            $tabmenu = $this->getMenuItem( $source, "index.html", "active" );
+            $this->setCraftedPath($visibletype, $puresource );
+        }
+        else{
+            $tabmenu = $this->getMenuItem( $source, "../index.html", "" );
+            $this->setCraftedPath($visibletype, $puresource . "/" . $language);
+        }
+        foreach ($languages as $language_temp){
+            if ("" == $language)
+                $tabmenu .= $this->getMenuItem($language_temp, $language_temp."/index.html", "");
+            else{
+                $class = ($language_temp == $language) ? "active" : "";
+                $tabmenu .= $this->getMenuItem($language_temp, "../". $language_temp."/index.html", $class );
+            }
+        }
+        $tabmenu = "<ul class=\"section_menu\">" . $tabmenu . "<br clear=\"all\" /></ul>";
+        return $tabmenu;
+    }
 
     //assembles all pre-written channel lists from hdd into one html page
-    public function writeNiceHTMLPage($source, $language){
-        $pagetitle = ''.$source.' (Language/Region: '.$language.')';
+    public function writeNiceHTMLPage($visibletype, $source, $language, $languages, $puresource){
+        $tabmenu = $this->getSectionTabmenu($visibletype, $source, $language, $languages, $puresource);
+        $pagetitle = ''.$source.': Section '. $this->getFlagIcon($language, $this->relPath) .$language.'';
         $nice_html_output =
             $this->getHTMLHeader($pagetitle).
-            '<h1>'.htmlspecialchars( $pagetitle)."</h1>\n
-            <p>Last updated on: ". date("D M j G:i:s T Y")."</p>\n";
+            $tabmenu.
+            '<h1>'. $pagetitle."</h1>\n".
+            "<p>Last updated on: ". date("D M j G:i:s T Y")."</p>\n";
         $nice_html_body = "";
         $nice_html_linklist = "";
         //FIXME timestamp only needs to be determined once per source, not for every language again and again
@@ -361,9 +423,7 @@ class HTMLOutputRenderer{
             $nice_html_body.
             $this->getHTMLFooter();
 
-
-        $filename = $language."/index.html";
-        $this->addToOverviewAndSave($language, $this->craftedPath . $filename, $nice_html_output );
+        $this->addToOverviewAndSave($language, $this->craftedPath . "index.html", $nice_html_output );
     }
 
     private function renderDEComparison(){
@@ -565,6 +625,35 @@ class HTMLOutputRenderer{
         $this->addToOverviewAndSave( "Grouping hints", $filename, $nice_html_output );
     }
 
+    private function renderTransponderList( $source ){
+        $pagetitle = htmlspecialchars($source) . " - Transponder list";
+        $nice_html_output =
+            $this->getHTMLHeader($pagetitle).
+            '<h1>'.htmlspecialchars( $pagetitle ).'</h1>
+            <p>Last updated on: '. date("D M j G:i:s T Y").'</p>';
+        $result = $this->db->query(
+            "SELECT parameter, frequency, symbolrate, nid
+            FROM channels
+            WHERE source = ".$this->db->quote($source)."
+            GROUP BY parameter, frequency, nid
+            ORDER BY frequency, parameter, nid"
+            );
+        $html_table = "<table><tr><th>Frequency</th><th>Parameter</th><th>Symbolrate</th><th>NID</th></tr>\n";
+        foreach ($result as $row) {
+            $html_table .= "<tr>".
+                "<td>".htmlspecialchars($row["frequency"])."</td>".
+                "<td>".htmlspecialchars($row["parameter"])."</td>".
+                "<td>".htmlspecialchars($row["symbolrate"])."</td>".
+                "<td>".htmlspecialchars($row["nid"])."</td>".
+                "</tr>\n";
+        }
+        $html_table .= "</table>\n";
+        $nice_html_output .= $html_table;
+        $nice_html_output .= $this->getHTMLFooter();
+        $filename = $this->craftedPath . "transponder_list.html";
+        $this->addToOverviewAndSave( "Transponders", $filename, $nice_html_output );
+    }
+
     private function renderTransponderNIDCheck( $source ){
         $pagetitle = htmlspecialchars($source) . " - Transponder plausibility check";
         $nice_html_output =
@@ -739,21 +828,41 @@ class HTMLOutputRenderer{
         while ($x->moveToNextChannel() !== false){
             $ch = $x->getCurrentChannelObject();
             $labelparts = explode(".", $ch->getXLabel());
-            $list .= $this->getFlagIcon($labelparts[0]) . htmlspecialchars( $ch->getChannelString() )."\n";
+            $list .= $this->getFlagIcon($labelparts[0], $this->relPath) . htmlspecialchars( $ch->getChannelString() )."\n";
         }
         return $list;
     }
 
-    private function getFlagIcon($label){
+    private function getFlagIcon($label, $relPath){
         if ($label != "uncategorized" && strlen($label) < 4){
             if ($label == "uk"){
                 $label = "gb";
             }
-            $image = "<img src=\"/res/icons/flags/".$label.".png\" class=\"flag_icon\" />";
+            $image = "<img src=\"".$relPath."../res/icons/flags/".$label.".png\" class=\"flag_icon\" />";
         }
         else
             $image = "";
         return $image;
+    }
+
+    private function writeSourceLinklistPage($source, $visibletype, $languages, $puresource){
+        $pagetitle = "$source - Overview";
+        $nice_html_output =
+            $this->getHTMLHeader($pagetitle).
+            $this->getSectionTabmenu($visibletype, $source, "overview", $languages, $puresource).
+            '<h1>'.htmlspecialchars( $pagetitle ).'</h1>'.
+            '<p>Last updated on: '. date("D M j G:i:s T Y").'</p><ul>';
+        foreach ($this->source_linklist as $linkarray){
+            $nice_html_output .= '<li><a href="'.$linkarray[1].'">'.$linkarray[0].'</a></li>'."\n";
+        }
+        $nice_html_output .= "</ul>".
+            $this->getHTMLFooter();
+        $filename = $this->craftedPath . "index.html";
+        $path = $this->exportpath . substr( $filename, 0, strrpos ( $filename , "/" ) );
+        $this->config->addToDebugLog( "HTMLOutputRenderer/writeSourceLinklistPage: file '".$filename."'\n" );
+        if (!is_dir($path))
+            mkdir($path, 0777, true);
+        file_put_contents($this->exportpath . $filename, $nice_html_output );
     }
 
     private function renderIndexPage(){
