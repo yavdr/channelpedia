@@ -106,7 +106,9 @@ class channel{
         //split transponder parameters (as early as possible)
         $tempProcessedParameters = explode(";", preg_replace( "/(\D|\d)(\D)/", "$1;$2", $this->params["parameter"]));
         foreach ($tempProcessedParameters as $item){
-            $this->processedParameters[ strtoupper(substr($item,0,1)) ] = substr($item,1);
+            $value = substr($item,1);
+            if ($value === false) $value = ""; // in case of H and V
+            $this->processedParameters[ strtoupper(substr($item,0,1)) ] = $value;
         }
 
         //sanity check for satellite source
