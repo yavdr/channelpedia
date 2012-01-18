@@ -56,6 +56,9 @@ define("PIWIK_TRACKING_ENABLED", false);
  */
 define("FORCE_REPARSING", false);
 define("DELETE_OUTDATED", false);
+define("CUT_OFF_INDEX_HTML", false); //only set to true if serving rendered pages via HTTP, beautyfies urls
+
+
 
 $default_lang_de_cable_provider = array("de");
 

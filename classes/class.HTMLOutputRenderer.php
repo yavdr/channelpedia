@@ -46,7 +46,7 @@ class HTMLOutputRenderer{
         $this->db = dbConnection::getInstance();
         $this->config = config::getInstance();
         $this->exportpath = $this->config->getValue("exportfolder")."/";
-        $this->cutOffIndexHtml = false;
+        $this->cutOffIndexHtml = CUT_OFF_INDEX_HTML;
         $this->relPath = "";
     }
 
@@ -103,12 +103,13 @@ class HTMLOutputRenderer{
         $visibletype = ($type == "A") ? "ATSC" : "DVB-". $type;
         $this->setCraftedPath($visibletype, $puresource);
         $this->addDividerTitle( $source);
-        $this->addToOverview( "Details", $this->craftedPath."index.html" );
+        $this->addToOverview( "Details", $this->getCrispFilename( $this->craftedPath."index.html" ));
         $this->source_linklist = array();
         foreach ($languages as $language)
             $this->writeNiceHTMLPage( $visibletype, $source, $language, $languages, $puresource );
         //$this->renderGroupingHints( $source );
         $this->setCraftedPath($visibletype, $puresource);
+        //$this->craftedPath = "";
         $this->renderUnconfirmedChannels( $source );
         $this->renderLatestChannels( $source );
         $this->writeChangelog( $source );
@@ -120,6 +121,7 @@ class HTMLOutputRenderer{
         if (in_array("de", $languages)){
             $this->addEPGChannelmapLink( $source );
         }
+        $this->setCraftedPath($visibletype, $puresource);
         $this->writeSourceLinklistPage($source, $visibletype, $languages, $puresource);
         $this->source_linklist = array();
 
@@ -136,7 +138,8 @@ class HTMLOutputRenderer{
             if (!file_exists( $this->exportpath . $stylefile))
                 copy( HTMLOutputRenderer::stylesheet, $this->exportpath . $stylefile );
             $this->html_header_template =
-                preg_replace( "/\[INDEX\]/", $this->getCrispFilename( "[CHANNELPEDIA_REL_PATH]" . "index.html" ), $this->html_header_template );
+                preg_replace( "/\[INDEX\]/", "[CHANNELPEDIA_REL_PATH]" . "index.html", $this->html_header_template );
+                //preg_replace( "/\[INDEX\]/", $this->getCrispFilename( "[CHANNELPEDIA_REL_PATH]" . "index.html" ), $this->html_header_template );
         }
         return preg_replace(
             array( "/\[PAGE_TITLE\]/", "/\[CHANNELPEDIA_REL_PATH\]/" ),
@@ -158,16 +161,16 @@ class HTMLOutputRenderer{
     }
 
     private function addCompleteListLink( $source ){
-        $filename = $this->craftedPath . $source."_complete.channels.conf";
+        $filename = $source."_complete.channels.conf";
         $this->source_linklist[] = array("List sorted by transponder", $filename);
-        $filename = $this->craftedPath . $source."_complete_sorted_by_groups.channels.conf";
+        $filename = $source."_complete_sorted_by_groups.channels.conf";
         $this->source_linklist[] = array("List sorted by group", $filename);
     }
 
     private function addEPGChannelmapLink( $source ){
-        $filename = $this->craftedPath . $source.".epgdata2vdr_channelmap.conf";
+        $filename = $source.".epgdata2vdr_channelmap.conf";
         $this->source_linklist[] = array("epgdata2vdr Channelmap", $filename);
-        $filename = $this->craftedPath . $source.".tvm2vdr_channelmap.conf";
+        $filename = $source.".tvm2vdr_channelmap.conf";
         $this->source_linklist[] = array("tvm2vdr Channelmap", $filename);
     }
 
@@ -180,7 +183,13 @@ class HTMLOutputRenderer{
     }
 
     private function getCrispFilename( $filename){
-        return ($this->cutOffIndexHtml ? str_replace("index.html","", $filename) : $filename);
+        $retVal = $filename;
+        if ($this->cutOffIndexHtml){
+            $retVal = str_replace("index.html","", $filename);
+            if ($retVal == "")
+                $retVal = "/";
+        }
+        return $retVal;
     }
 
     private function getMenuItem( $link, $filename, $class = ""){
@@ -190,13 +199,22 @@ class HTMLOutputRenderer{
         return '<li'.$class.'><a href="'.$this->getCrispFilename($filename).'">'. $this->getFlagIcon($link, $this->relPath). $link .'</a></li>'."\n";
     }
 
-    private function addToOverviewAndSave( $link, $filename, $filecontent ){
+    private function save( $filename, $filecontent ){
         $path = $this->exportpath . substr( $filename, 0, strrpos ( $filename , "/" ) );
-        $this->config->addToDebugLog( "HTMLOutputRenderer/addToOverviewAndSave: file '".$filename."', link: '$link'\n" );
+        $this->config->addToDebugLog( "HTMLOutputRenderer/save: file '".$filename."'\n" );
         if (!is_dir($path))
             mkdir($path, 0777, true);
         file_put_contents($this->exportpath . $filename, $filecontent );
-        $this->source_linklist[] = array( $this->getFlagIcon($link, ""). $link, $this->getCrispFilename($filename));
+    }
+
+    private function addToOverviewAndSave( $link, $filename, $filecontent ){
+        $this->save($filename, $filecontent);
+        $this->source_linklist[] = array( $this->getFlagIcon($link, ""). $link, $this->relPath . $this->getCrispFilename($filename));
+    }
+
+    private function addToOverviewAndSave2( $link, $filename, $filecontent ){
+        $this->save($filename, $filecontent);
+        $this->linklist[] = array( $link, $this->relPath . $this->getCrispFilename($filename));
     }
 
     private function closeHierarchy(){
@@ -260,7 +278,10 @@ class HTMLOutputRenderer{
             "</td></tr>\n";
         }
         $buffer .= "<table>\n".$this->getHTMLFooter();
-        $this->addToOverviewAndSave($linktitle, $filename, $buffer);
+        if ($source != "")
+            $this->addToOverviewAndSave($linktitle, $filename, $buffer);
+        else
+            $this->addToOverviewAndSave2($linktitle, $filename, $buffer);
     }
 
     public function writeUploadLog(){
@@ -284,7 +305,7 @@ class HTMLOutputRenderer{
         }
         $buffer .= "<table>\n".$this->getHTMLFooter();
         $filename = "upload_log.html";
-        $this->addToOverviewAndSave($pagetitle, $filename, $buffer );
+        $this->addToOverviewAndSave2($pagetitle, $filename, $buffer );
     }
 
     private function getSectionTabmenu($visibletype, $source, $language, $languages, $puresource){
@@ -313,11 +334,11 @@ class HTMLOutputRenderer{
     //assembles all pre-written channel lists from hdd into one html page
     public function writeNiceHTMLPage($visibletype, $source, $language, $languages, $puresource){
         $tabmenu = $this->getSectionTabmenu($visibletype, $source, $language, $languages, $puresource);
-        $pagetitle = ''.$source.': Section '. $this->getFlagIcon($language, $this->relPath) .$language.'';
+        $pagetitle = ''.$source.' - Section '.$language.'';
         $nice_html_output =
             $this->getHTMLHeader($pagetitle).
             $tabmenu.
-            '<h1>'. $pagetitle."</h1>\n".
+            '<h1>'.$source.': Section '. $this->getFlagIcon($language, $this->relPath) .$language ."</h1>\n".
             "<p>Last updated on: ". date("D M j G:i:s T Y")."</p>\n";
         $nice_html_body = "";
         $nice_html_linklist = "";
@@ -423,7 +444,7 @@ class HTMLOutputRenderer{
             $nice_html_body.
             $this->getHTMLFooter();
 
-        $this->addToOverviewAndSave($language, $this->craftedPath . "index.html", $nice_html_output );
+        $this->save( $this->craftedPath . "index.html", $nice_html_output );
     }
 
     private function renderDEComparison(){
@@ -468,7 +489,7 @@ class HTMLOutputRenderer{
             $html_table .
             $this->getHTMLFooter();
         $filename = "parameter_comparison_de.html";
-        $this->addToOverviewAndSave( "Comparison: Parameters of German public TV channels at different providers", $filename, $nice_html_output );
+        $this->addToOverviewAndSave2( "Comparison: Parameters of German public TV channels at different providers", $filename, $nice_html_output );
     }
 
     //FIXME: this method is a duplicate of the one in channelImport.php
