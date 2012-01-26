@@ -31,6 +31,7 @@ require_once PATH_TO_CLASSES . '../grouping_rules/class.GermanyKabelDeutschland.
 require_once PATH_TO_CLASSES . '../grouping_rules/class.GermanyWilhelmTel.php';
 require_once PATH_TO_CLASSES . '../grouping_rules/class.GermanyUnityMedia.php';
 require_once PATH_TO_CLASSES . '../grouping_rules/class.GermanyTeleColumbus.php';
+require_once PATH_TO_CLASSES . '../grouping_rules/class.ScotlandEssentials.php';
 require_once PATH_TO_CLASSES . '../grouping_rules/class.UKEssentials.php';
 require_once PATH_TO_CLASSES . '../grouping_rules/class.IrelandEssentials.php';
 require_once PATH_TO_CLASSES . '../grouping_rules/class.AustriaSatEssentials.php';
@@ -148,6 +149,7 @@ class channelGroupingManager{
             "GermanyWilhelmTel"        => new GermanyWilhelmTel(),
             "GermanyUnityMedia"        => new GermanyUnityMedia(),
             "GermanyTeleColumbus"      => new GermanyTeleColumbus(),
+            "ScotlandEssentials"       => new ScotlandEssentials(),
             "UKIrelandEssentials"      => new UKEssentials(),
             "IrelandEssentials"        => new IrelandEssentials(),
             "SpainSatEssentials"       => new SpainSatEssentials(),

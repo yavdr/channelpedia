@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2011 Henning Pingel
+*  (c) 2012 Henning Pingel
 *  All rights reserved
 *
 *  This script is part of the yaVDR project. yaVDR is
@@ -22,7 +22,7 @@
 *
 */
 
-class IrelandEssentials  extends ruleBase {
+class ScotlandEssentials  extends ruleBase {
 
     function __construct(){
 
@@ -30,7 +30,7 @@ class IrelandEssentials  extends ruleBase {
 
     function getConfig(){
         return array (
-            "country" => "ie",
+            "country" => "sco",
             "lang" => "eng", //this is the language code used in the channels audio description
             "validForSatellites" => array( "S28.2E"),
             "validForCableProviders" => array(),
@@ -40,41 +40,40 @@ class IrelandEssentials  extends ruleBase {
 
     function getGroups(){
         return array (
-
             array(
-                "title" => "sky_ireland RTÉ",
+                "title" => "freesat BBC",
                 "outputSortPriority" => 1,
-                "caidMode" => self::caidModeScrambled,
+                "languageOverrule" => "", //BBC ALBA doesn't always have apid with eng
+                "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => " AND UPPER(name) LIKE 'RTE%'"
+                "customwhere" => " AND upper(name) LIKE 'BBC%' AND (upper(name) LIKE '%ALBA%' OR upper(name) LIKE '%SCOT%')"
             ),
 
+            //3855;BSkyB:10935:VC56M2O0S0:S28.2E:22000:512=27:640=NAR@4;660=eng@106:576:0:3855:2:2056:0
+            //channel 3855 aka STV HD doesn't indicate to be HDTV (no S2 transponder, no HD in name), therefore we need OR in customwhere
             array(
-                "title" => "sky_ireland",
+                "title" => "STV",
                 "outputSortPriority" => 2,
-                "caidMode" => self::caidModeScrambled,
-                "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => " AND (UPPER(name) LIKE 'TV3' OR UPPER(name) LIKE 'TG4')"
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeHDTV, 
+                "customwhere" => " AND sid='3855' OR (sid='3855' AND nid='2' AND tid='2056')"
             ),
 
             array(
-                "title" => "Setanta Sports",
+                "title" => "STV",
                 "outputSortPriority" => 3,
-                "languageOverrule"=>"",
-                "caidMode" => self::caidModeScrambled,
+                "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => " AND UPPER(name) LIKE 'SETANTA%'"
+                "customwhere" => "AND upper(name) LIKE 'STV%'"
             ),
 
-
             array(
-                "title" => "freesat RTÉ",
-                "outputSortPriority" => 10,
+                "title" => "freesat BBC",
+                "outputSortPriority" => 40,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeRadio,
-                "customwhere" => " AND upper(name) LIKE 'RTE %' "
+                "customwhere" => " AND upper(name) LIKE '%BBC%' AND upper(name) LIKE '%SCOT%'"
             ),
-
         );
     }
 
