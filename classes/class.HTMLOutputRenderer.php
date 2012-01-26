@@ -357,7 +357,7 @@ class HTMLOutputRenderer{
             $prestyle = (strstr($shortlabel, "FTA") === false  || strstr($shortlabel, "scrambled") !== false) ? ' class = "scrambled" ' : '';
             $escaped_shortlabel = htmlspecialchars($shortlabel);
             $icons = "";
-            $icons .= (strstr($shortlabel, "FTA") === false  || strstr($shortlabel, "scrambled") !== false) ? ' <img src="http://www.openwebgraphics.com/resources/data/1629/lock.png" class="lock_icon" />' : '';
+            $icons .= (strstr($shortlabel, "FTA") === false  || strstr($shortlabel, "scrambled") !== false) ? ' <img src="'.$this->relPath.'../res/icons/lock.png" class="lock_icon" />' : '';
             $nice_html_body .=
                 '<h2'.$prestyle.'>'.
                 '<a name ="'.$escaped_shortlabel.'">'.$escaped_shortlabel . $icons. " (" . $cols["channelcount"] . ' channels)</a>'.
@@ -862,7 +862,7 @@ class HTMLOutputRenderer{
             $labelparts = explode(".", $ch->getXLabel());
             $list .= $this->getFlagIcon($labelparts[0], $this->relPath).
                 //lock icon taken from http://www.openwebgraphics.com/resources/data/1629/lock.png
-                (($ch->getCAID() !== "0")? '<img src="'.$relPath.'"../res/icons/lock.png\" class="lock_icon" title="'.htmlspecialchars($ch->getCAID()).'" />':'');
+                (($ch->getCAID() !== "0")? '<img src="'.$this->relPath.'../res/icons/lock.png" class="lock_icon" title="'.htmlspecialchars($ch->getCAID()).'" />':'');
             $list .= htmlspecialchars( $ch->getChannelString() )."\n";
         }
         return $list;
