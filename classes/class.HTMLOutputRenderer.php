@@ -102,8 +102,7 @@ class HTMLOutputRenderer{
             $source = $puresource;
         $visibletype = ($type == "A") ? "ATSC" : "DVB-". $type;
         $this->setCraftedPath($visibletype, $puresource);
-        $this->addDividerTitle( $source);
-        $this->addToOverview( "Details", $this->getCrispFilename( $this->craftedPath."index.html" ));
+        $this->addToOverview( $puresource, $this->getCrispFilename( $this->craftedPath."index.html" ));
         $this->source_linklist = array();
         foreach ($languages as $language)
             $this->writeNiceHTMLPage( $visibletype, $source, $language, $languages, $puresource );
@@ -124,8 +123,6 @@ class HTMLOutputRenderer{
         $this->setCraftedPath($visibletype, $puresource);
         $this->writeSourceLinklistPage($source, $visibletype, $languages, $puresource);
         $this->source_linklist = array();
-
-        $this->closeHierarchy();
     }
 
     private function getHTMLHeader($pagetitle){
@@ -223,6 +220,7 @@ class HTMLOutputRenderer{
 
     //general changelog for all sources
     public function writeGeneralChangelog(){
+        $this->relPath = "";
         $this->writeChangelog("", 1 );
     }
 
@@ -358,9 +356,11 @@ class HTMLOutputRenderer{
                 $shortlabel = $cols["x_label"];
             $prestyle = (strstr($shortlabel, "FTA") === false  || strstr($shortlabel, "scrambled") !== false) ? ' class = "scrambled" ' : '';
             $escaped_shortlabel = htmlspecialchars($shortlabel);
+            $icons = "";
+            $icons .= (strstr($shortlabel, "FTA") === false  || strstr($shortlabel, "scrambled") !== false) ? ' <img src="http://www.openwebgraphics.com/resources/data/1629/lock.png" class="lock_icon" />' : '';
             $nice_html_body .=
                 '<h2'.$prestyle.'>'.
-                '<a name ="'.$escaped_shortlabel.'">'.$escaped_shortlabel . " (" . $cols["channelcount"] . ' channels)</a>'.
+                '<a name ="'.$escaped_shortlabel.'">'.$escaped_shortlabel . $icons. " (" . $cols["channelcount"] . ' channels)</a>'.
                 "</h2>\n".
                 //"<h3>VDR channel format</h3>\n".
                 "<pre".$prestyle.">";
@@ -748,7 +748,7 @@ class HTMLOutputRenderer{
             $this->getHTMLHeader($pagetitle).
             '<h1>'.htmlspecialchars( $pagetitle ).'</h1>
             <p>Last updated on: '. date("D M j G:i:s T Y").'</p>'.
-            "<p>This page contains all FTA TV and radio channels sorted by transponders and grouped by the four different sat bands:</br><ul>
+            "<p>This page contains all TV and FTA radio channels sorted by transponders and grouped by the four different sat bands:</br><ul>
                <li>Horizontal High Band (11700 MHz to 12750 MHz)</li>
                <li>Vertical High Band (11700 MHz to 12750 MHz)</li>
                <li>Horizontal Low Band (10700 MHz to 11700 MHz)</li>
@@ -756,16 +756,21 @@ class HTMLOutputRenderer{
                 </ul><p>A channel list specifically grouped by sat bands might be helpful when testing a new sat cable setup, ".
                 "a new LNB/Multiswitch or when evaluating VDR with LNB sharing feature enabled. ".
                 "Basically, if your setup is flawless you should be able to receive something on any of the four sat bands ".
-                "(as long as there are FTA channels available on each band). ".
-                "Encrypted channels are excluded from the tables below to reduce the amount of data.</p>\n<pre>".
-            $this->addChannelSection( $source, "H", "High", "TV" ).
-            $this->addChannelSection( $source, "H", "High", "Radio" ).
-            $this->addChannelSection( $source, "V", "High", "TV" ).
-            $this->addChannelSection( $source, "V", "High", "Radio" ).
-            $this->addChannelSection( $source, "H", "Low", "TV" ).
-            $this->addChannelSection( $source, "H", "Low", "Radio" ).
-            $this->addChannelSection( $source, "V", "Low", "TV" ).
-            $this->addChannelSection( $source, "V", "Low", "Radio" ).
+                //"(as long as there are FTA channels available on each band). ".
+                //"Encrypted channels are excluded from the tables below to reduce the amount of data.".
+                "</p>\n<pre>".
+            $this->addChannelSection( $source, "H", "High", "TV", false ).
+            $this->addChannelSection( $source, "H", "High", "TV", true ).
+            $this->addChannelSection( $source, "H", "High", "Radio", false ).
+            $this->addChannelSection( $source, "V", "High", "TV", false ).
+            $this->addChannelSection( $source, "V", "High", "TV", true ).
+            $this->addChannelSection( $source, "V", "High", "Radio", false ).
+            $this->addChannelSection( $source, "H", "Low", "TV", false ).
+            $this->addChannelSection( $source, "H", "Low", "TV", true ).
+            $this->addChannelSection( $source, "H", "Low", "Radio", false ).
+            $this->addChannelSection( $source, "V", "Low", "TV", false ).
+            $this->addChannelSection( $source, "V", "Low", "TV", true ).
+            $this->addChannelSection( $source, "V", "Low", "Radio", false ).
             "\n<b>:End of list. The following channels were added by VDR automatically</b>\n".
             "</pre>\n".
             $this->getHTMLFooter();
@@ -773,7 +778,7 @@ class HTMLOutputRenderer{
         $this->addToOverviewAndSave( "LNB setup help", $filename, $nice_html_output );
     }
 
-    private function addChannelSection( $source, $direction, $band, $type ){
+    private function addChannelSection( $source, $direction, $band, $type, $encrypted = false ){
         if ($direction == "H")
             $direction_long = "Horizontal";
         else if ($direction == "V")
@@ -796,11 +801,17 @@ class HTMLOutputRenderer{
             $type_where = "AND vpid = '0' AND apid != '0'";
         else
             $type = "";
+
+        if ($encrypted)
+            $caidflag = "!=";
+        else
+            $caidflag = "=";
+
         return
-            "\n<b>:FTA ".$type." channels on " . $direction_long . " ".$band." Band ".htmlspecialchars($source)."</b>\n\n".
+            "\n<b>:".($encrypted?"Scrambled":"FTA"). " " .$type." channels on " . $direction_long . " ".$band." Band ".htmlspecialchars($source)."</b>\n\n".
             $this->addCustomChannelList( "
                 SELECT * FROM channels WHERE source = ".$this->db->quote($source)."
-                AND caid = '0'
+                AND caid $caidflag '0'
                 AND frequency >= ".$lowfreq."
                 AND frequency <= ".$hifreq."
                 AND substr(parameter,1,1) = '".$direction."'
@@ -849,7 +860,10 @@ class HTMLOutputRenderer{
         while ($x->moveToNextChannel() !== false){
             $ch = $x->getCurrentChannelObject();
             $labelparts = explode(".", $ch->getXLabel());
-            $list .= $this->getFlagIcon($labelparts[0], $this->relPath) . htmlspecialchars( $ch->getChannelString() )."\n";
+            $list .= $this->getFlagIcon($labelparts[0], $this->relPath).
+                //lock icon taken from http://www.openwebgraphics.com/resources/data/1629/lock.png
+                (($ch->getCAID() !== "0")? '<img src="'.$relPath.'"../res/icons/lock.png\" class="lock_icon" title="'.htmlspecialchars($ch->getCAID()).'" />':'');
+            $list .= htmlspecialchars( $ch->getChannelString() )."\n";
         }
         return $list;
     }
@@ -858,6 +872,9 @@ class HTMLOutputRenderer{
         if ($label != "uncategorized" && strlen($label) < 4){
             if ($label == "uk"){
                 $label = "gb";
+            }
+            elseif ($label == "sco"){
+                $label = "scotland";
             }
             $image = "<img src=\"".$relPath."../res/icons/flags/".$label.".png\" class=\"flag_icon\" />";
         }

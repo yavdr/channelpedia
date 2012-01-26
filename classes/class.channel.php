@@ -202,6 +202,10 @@ class channel{
         return $this->source;
     }
 
+    public function getCAID(){
+        return $this->params["caid"];
+    }
+
     public function getUniqueID(){
         return $this->uniqueID;
     }

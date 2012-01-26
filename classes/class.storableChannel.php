@@ -204,9 +204,10 @@ class storableChannel extends channel{
                     //$this->config->addToDebugLog( "channel unchanged, but update x_last_confirmed\n");
                     //channel unchanged, but update x_last_confirmed
                     $query = $this->db->exec2(
-                        "UPDATE channels SET x_last_confirmed = " . $this->metaData->getTimestamp(),
+                        "UPDATE channels SET x_last_confirmed = '" . $this->metaData->getTimestamp()."'",
                         $this->getWhereArray( "source, nid, tid, sid" )
                     );
+                    //$this->config->addToDebugLog( "updated x_last_confirmed = db response: ". $query . "\n");                   
                 }
             }
         }
