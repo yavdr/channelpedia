@@ -84,7 +84,6 @@ class UKEssentials  extends ruleBase {
             array(
                 "title" => "freesat BBC",
                 "outputSortPriority" => 2,
-                "languageOverrule" => "", //BBC ALBA doesn't have apid with eng
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
                 "customwhere" => " AND (upper(name) LIKE '%BBC%' OR upper(name) = 'CBEEBIES')"
@@ -228,18 +227,54 @@ class UKEssentials  extends ruleBase {
                 "customwhere" => " AND  ".UK_C5
             ),
 
+            array(
+                "title" => "sky_uk Sports",
+                "outputSortPriority" => 40,
+                "caidMode" => self::caidModeScrambled,
+                "mediaType" => self::mediaTypeHDTV,
+                "customwhere" => " AND (UPPER(name) LIKE '%SP NEWS%' OR UPPER(name) LIKE '%SPORT%' OR UPPER(name) LIKE 'ESPN%')"
+            ),
 
             array(
-                "title" => "sky_uk etc",
-                "outputSortPriority" => 20,
+                "title" => "sky_uk NVOD",
+                "outputSortPriority" => 50,
+                "languageOverrule" => "",
+                "caidMode" => self::caidModeScrambled,
+                "mediaType" => self::mediaTypeHDTV,
+                "customwhere" => " AND UPPER(name) = 'NVOD'"
+            ),
+
+
+            array(
+                "title" => "sky_uk",
+                "outputSortPriority" => 30,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeHDTV,
                 "customwhere" => " AND NOT ".IRISH
             ),
 
             array(
-                "title" => "sky_uk etc",
-                "outputSortPriority" => 21,
+                "title" => "sky_uk Sports",
+                "outputSortPriority" => 41,
+                "languageOverrule" => "",
+                "caidMode" => self::caidModeScrambled,
+                "mediaType" => self::mediaTypeSDTV,
+                "customwhere" => " AND (UPPER(name) LIKE '%SP NEWS%' OR UPPER(name) LIKE '%SPORT%' OR UPPER(name) LIKE 'ESPN%' OR UPPER(name) LIKE '%SPTS%')"
+            ),
+
+            array(
+                "title" => "sky_uk NVOD",
+                "outputSortPriority" => 51,
+                "languageOverrule" => "",
+                "caidMode" => self::caidModeScrambled,
+                "mediaType" => self::mediaTypeSDTV,
+                "customwhere" => " AND UPPER(name) = 'NVOD'"
+            ),
+
+            array(
+                "title" => "sky_uk",
+                "outputSortPriority" => 31,
+                "languageOverrule" => "",
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
                 "customwhere" => " AND NOT ".IRISH
@@ -247,7 +282,7 @@ class UKEssentials  extends ruleBase {
 
             array(
                 "title" => "freesat BBC",
-                "outputSortPriority" => 40,
+                "outputSortPriority" => 90,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeRadio,
                 "customwhere" => " AND upper(name) LIKE '%BBC%' "
@@ -255,7 +290,7 @@ class UKEssentials  extends ruleBase {
 
             array(
                 "title" => "Rest",
-                "outputSortPriority" => 42,
+                "outputSortPriority" => 91,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeRadio,
                 "customwhere" => " AND NOT ".IRISH
@@ -263,7 +298,7 @@ class UKEssentials  extends ruleBase {
 
             array(
                 "title" => "Rest",
-                "outputSortPriority" => 43,
+                "outputSortPriority" => 92,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeRadio,
                 "customwhere" => " AND NOT ".IRISH
