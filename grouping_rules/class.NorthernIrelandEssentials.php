@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2011 Henning Pingel
+*  (c) 2012 Henning Pingel
 *  All rights reserved
 *
 *  This script is part of the yaVDR project. yaVDR is
@@ -22,7 +22,7 @@
 *
 */
 
-class IrelandEssentials  extends ruleBase {
+class NorthernIrelandEssentials extends ruleBase {
 
     function __construct(){
 
@@ -30,7 +30,7 @@ class IrelandEssentials  extends ruleBase {
 
     function getConfig(){
         return array (
-            "country" => "ie",
+            "country" => "northern ireland",
             "lang" => "eng", //this is the language code used in the channels audio description
             "validForSatellites" => array( "S28.2E"),
             "validForCableProviders" => array(),
@@ -40,33 +40,22 @@ class IrelandEssentials  extends ruleBase {
 
     function getGroups(){
         return array (
-
             array(
-                "title" => "sky_ireland",
+                "title" => "freesat BBC",
                 "outputSortPriority" => 1,
-                "caidMode" => self::caidModeScrambled,
+                "languageOverrule" => "", //BBC ALBA doesn't always have apid with eng
+                "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => " AND (UPPER(name) LIKE 'RTE%' OR UPPER(name) LIKE 'TV3' OR UPPER(name) LIKE 'TG4')"
+                "customwhere" => " AND (upper(name) LIKE '% NI%' OR upper(name) LIKE '%ULSTER%' OR upper(name) LIKE 'UTV%')"
             ),
 
             array(
-                "title" => "Setanta Sports",
-                "outputSortPriority" => 3,
-                "languageOverrule"=>"",
-                "caidMode" => self::caidModeScrambled,
-                "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => " AND UPPER(name) LIKE 'SETANTA%'"
-            ),
-
-            array(
-                "title" => "freesat",
-                "outputSortPriority" => 10,
-                "languageOverrule"=>"",
+                "title" => "freesat BBC",
+                "outputSortPriority" => 40,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeRadio,
-                "customwhere" => " AND (upper(name) LIKE 'RTE %' OR upper(name) LIKE '%IRELAND%') "
+                "customwhere" => " AND (upper(name) LIKE '%ULSTER%' OR upper(name) LIKE '% NI%')"
             ),
-
         );
     }
 

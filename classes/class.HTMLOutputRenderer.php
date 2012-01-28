@@ -189,11 +189,12 @@ class HTMLOutputRenderer{
         return $retVal;
     }
 
-    private function getMenuItem( $link, $filename, $class = ""){
+    private function getMenuItem( $link, $filename, $class = "", $showflagicon = false){
         $class = ($class === "") ? "" : ' class="'.$class.'"';
         $path = $this->exportpath . substr( $filename, 0, strrpos ( $filename , "/" ) );
         $this->config->addToDebugLog( "HTMLOutputRenderer/getMenuItem: file '".$filename."', link: '$link'\n" );
-        return '<li'.$class.'><a href="'.$this->getCrispFilename($filename).'">'. $this->getFlagIcon($link, $this->relPath). $link .'</a></li>'."\n";
+        return '<li'.$class.'><a href="'.$this->getCrispFilename($filename).'">'.
+            ($showflagicon ? $this->getFlagIcon($link, $this->relPath) : "") . $link .'</a></li>'."\n";
     }
 
     private function save( $filename, $filecontent ){
@@ -206,7 +207,7 @@ class HTMLOutputRenderer{
 
     private function addToOverviewAndSave( $link, $filename, $filecontent ){
         $this->save($filename, $filecontent);
-        $this->source_linklist[] = array( $this->getFlagIcon($link, ""). $link, $this->relPath . $this->getCrispFilename($filename));
+        $this->source_linklist[] = array( $link, $this->relPath . $this->getCrispFilename($filename));
     }
 
     private function addToOverviewAndSave2( $link, $filename, $filecontent ){
@@ -310,19 +311,19 @@ class HTMLOutputRenderer{
         $class = "";
         if ("overview" == $language){
             $language = "";
-            $tabmenu = $this->getMenuItem( $source, "index.html", "active" );
+            $tabmenu = $this->getMenuItem( $source, "index.html", "active", false );
             $this->setCraftedPath($visibletype, $puresource );
         }
         else{
-            $tabmenu = $this->getMenuItem( $source, "../index.html", "" );
+            $tabmenu = $this->getMenuItem( $source, "../index.html", "", false );
             $this->setCraftedPath($visibletype, $puresource . "/" . $language);
         }
         foreach ($languages as $language_temp){
             if ("" == $language)
-                $tabmenu .= $this->getMenuItem($language_temp, $language_temp."/index.html", "");
+                $tabmenu .= $this->getMenuItem($language_temp, $language_temp."/index.html", "", true);
             else{
                 $class = ($language_temp == $language) ? "active" : "";
-                $tabmenu .= $this->getMenuItem($language_temp, "../". $language_temp."/index.html", $class );
+                $tabmenu .= $this->getMenuItem($language_temp, "../". $language_temp."/index.html", $class, true );
             }
         }
         $tabmenu = "<ul class=\"section_menu\">" . $tabmenu . "<br clear=\"all\" /></ul>";
@@ -869,17 +870,17 @@ class HTMLOutputRenderer{
     }
 
     private function getFlagIcon($label, $relPath){
-        if ($label != "uncategorized" && strlen($label) < 4){
+        $image = "";
+        if ($label != "uncategorized"){
             if ($label == "uk"){
                 $label = "gb";
             }
-            elseif ($label == "sco"){
-                $label = "scotland";
-            }
-            $image = "<img src=\"".$relPath."../res/icons/flags/".$label.".png\" class=\"flag_icon\" />";
+            $checkpath = "../res/icons/flags/".$label.".png";
+            if (file_exists( $checkpath ))
+                $image = "<img src=\"".$relPath."../res/icons/flags/".$label.".png\" class=\"flag_icon\" />";
+            //else
+                //die("image $checkpath does not exist! Stopping\n");
         }
-        else
-            $image = "";
         return $image;
     }
 

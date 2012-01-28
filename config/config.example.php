@@ -79,10 +79,10 @@ $global_source_config = array(
     "DVB-S" => array(
 /*
         "S9E"    => array(),
-        "S13E"   => array(),
+        "S13E"   => array( "gr", "it", "pl" ), //"de",
         "S19.2E" => array( "de", "at", "ch", "es", "fr", "pl", "nl", "be" ),
         "S26E"   => array(),
-        "S28.2E" => array( "ie", uk", "sco" )
+        "S28.2E" => array( "uk", "ie", "northern ireland", "scotland", "wales" ),
 */
     ),
     "DVB-C" => array(

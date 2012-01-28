@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2011 Henning Pingel
+*  (c) 2012 Henning Pingel
 *  All rights reserved
 *
 *  This script is part of the yaVDR project. yaVDR is
@@ -22,7 +22,7 @@
 *
 */
 
-class IrelandEssentials  extends ruleBase {
+class WalesEssentials  extends ruleBase {
 
     function __construct(){
 
@@ -30,7 +30,7 @@ class IrelandEssentials  extends ruleBase {
 
     function getConfig(){
         return array (
-            "country" => "ie",
+            "country" => "wales",
             "lang" => "eng", //this is the language code used in the channels audio description
             "validForSatellites" => array( "S28.2E"),
             "validForCableProviders" => array(),
@@ -40,33 +40,23 @@ class IrelandEssentials  extends ruleBase {
 
     function getGroups(){
         return array (
-
             array(
-                "title" => "sky_ireland",
+                "title" => "freesat",
                 "outputSortPriority" => 1,
-                "caidMode" => self::caidModeScrambled,
+                "languageOverrule" => "eng,wel",
+                "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => " AND (UPPER(name) LIKE 'RTE%' OR UPPER(name) LIKE 'TV3' OR UPPER(name) LIKE 'TG4')"
-            ),
-
-            array(
-                "title" => "Setanta Sports",
-                "outputSortPriority" => 3,
-                "languageOverrule"=>"",
-                "caidMode" => self::caidModeScrambled,
-                "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => " AND UPPER(name) LIKE 'SETANTA%'"
+                "customwhere" => " AND (upper(name) LIKE '%WALES%' OR upper(name) LIKE 'S4C%' OR (sid = '7308' AND nid ='2' AND tid='2022'))"
             ),
 
             array(
                 "title" => "freesat",
-                "outputSortPriority" => 10,
-                "languageOverrule"=>"",
+                "outputSortPriority" => 40,
+                "languageOverrule" => "eng,wel",
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeRadio,
-                "customwhere" => " AND (upper(name) LIKE 'RTE %' OR upper(name) LIKE '%IRELAND%') "
+                "customwhere" => " AND (upper(name) LIKE '%CYMRU%' OR upper(name) LIKE '%WALES%')"
             ),
-
         );
     }
 

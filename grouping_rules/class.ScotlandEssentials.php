@@ -30,7 +30,7 @@ class ScotlandEssentials  extends ruleBase {
 
     function getConfig(){
         return array (
-            "country" => "sco",
+            "country" => "scotland",
             "lang" => "eng", //this is the language code used in the channels audio description
             "validForSatellites" => array( "S28.2E"),
             "validForCableProviders" => array(),
@@ -40,39 +40,34 @@ class ScotlandEssentials  extends ruleBase {
 
     function getGroups(){
         return array (
-            array(
-                "title" => "freesat BBC",
-                "outputSortPriority" => 1,
-                "languageOverrule" => "", //BBC ALBA doesn't always have apid with eng
-                "caidMode" => self::caidModeFTA,
-                "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => " AND upper(name) LIKE 'BBC%' AND (upper(name) LIKE '%ALBA%' OR upper(name) LIKE '%SCOT%')"
-            ),
 
             //3855;BSkyB:10935:VC56M2O0S0:S28.2E:22000:512=27:640=NAR@4;660=eng@106:576:0:3855:2:2056:0
             //channel 3855 aka STV HD doesn't indicate to be HDTV (no S2 transponder, no HD in name), therefore we need OR in customwhere
             array(
                 "title" => "STV",
-                "outputSortPriority" => 2,
+                "outputSortPriority" => 1,
+                "languageOverrule" => "eng,gla",
                 "caidMode" => self::caidModeFTA,
-                "mediaType" => self::mediaTypeHDTV, 
+                "mediaType" => self::mediaTypeHDTV,
                 "customwhere" => " AND sid='3855' OR (sid='3855' AND nid='2' AND tid='2056')"
             ),
 
             array(
-                "title" => "STV",
-                "outputSortPriority" => 3,
+                "title" => "freesat",
+                "outputSortPriority" => 2,
+                "languageOverrule" => "eng,gla",
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => "AND upper(name) LIKE 'STV%'"
+                "customwhere" => " AND upper(name) LIKE 'BBC%' AND (upper(name) LIKE '%ALBA%' OR upper(name) LIKE '%SCOT%' OR upper(name) LIKE 'STV%')"
             ),
 
             array(
-                "title" => "freesat BBC",
+                "title" => "freesat",
                 "outputSortPriority" => 40,
+                "languageOverrule" => "eng,gla",
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeRadio,
-                "customwhere" => " AND upper(name) LIKE '%BBC%' AND upper(name) LIKE '%SCOT%'"
+                "customwhere" => " AND (upper(name) LIKE '%GAEL%' OR upper(name) LIKE '%SCOT%')"
             ),
         );
     }
