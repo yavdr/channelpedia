@@ -58,7 +58,7 @@ class ScotlandEssentials  extends ruleBase {
                 "languageOverrule" => "eng,gla",
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => " AND upper(name) LIKE 'BBC%' AND (upper(name) LIKE '%ALBA%' OR upper(name) LIKE '%SCOT%' OR upper(name) LIKE 'STV%')"
+                "customwhere" => " AND (upper(name) LIKE '%ALBA%' OR upper(name) LIKE '%SCOT%' OR upper(name) = 'STV')"
             ),
 
             array(

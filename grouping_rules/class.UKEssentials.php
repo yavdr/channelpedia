@@ -172,14 +172,6 @@ class UKEssentials  extends ruleBase {
             ),
 
             array(
-                "title" => "Diverse",
-                "outputSortPriority" => 9,
-                "caidMode" => self::caidModeFTA,
-                "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => ""
-            ),
-
-            array(
                 "title" => "sky_uk ITV",
                 "outputSortPriority" => 10,
                 "caidMode" => self::caidModeScrambled,
@@ -244,7 +236,6 @@ class UKEssentials  extends ruleBase {
                 "customwhere" => " AND UPPER(name) = 'NVOD'"
             ),
 
-
             array(
                 "title" => "sky_uk",
                 "outputSortPriority" => 30,
@@ -278,6 +269,23 @@ class UKEssentials  extends ruleBase {
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
                 "customwhere" => " AND NOT ".IRISH
+            ),
+
+            array(
+                "title" => "sky_uk",
+                "outputSortPriority" => 30,
+                "languageOverrule" => "",
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeSDTV,
+                "customwhere" => " AND UPPER(name) LIKE 'SKY%'"
+            ),
+
+            array(
+                "title" => "Diverse",
+                "outputSortPriority" => 9,
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeSDTV,
+                "customwhere" => ""
             ),
 
             array(
