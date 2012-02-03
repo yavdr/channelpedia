@@ -36,7 +36,11 @@ require_once PATH_TO_CLASSES.'class.channelFileIterator.php';
 require_once PATH_TO_CLASSES.'class.channelImport.php';
 require_once PATH_TO_CLASSES.'class.channelListWriter.php';
 require_once PATH_TO_CLASSES.'class.rawOutputRenderer.php';
+require_once PATH_TO_CLASSES.'class.HTMLFragments.php';
 require_once PATH_TO_CLASSES.'class.HTMLOutputRenderer.php';
+require_once PATH_TO_CLASSES.'class.HTMLOutputRenderSource.php';
+require_once PATH_TO_CLASSES.'class.HTMLChangelog.php';
+require_once PATH_TO_CLASSES.'class.HTMLPage.php';
 require_once PATH_TO_CLASSES.'class.epg2vdrMapper.php';
 
 class config {
@@ -55,7 +59,6 @@ class config {
         }
         else
             $this->pathdynamic = CUSTOM_PATH;
-
         $debuglogfile = $this->getValue("exportfolder")."/../userdata/debuglog.txt";
         //@unlink($debuglogfile);
         $this->debuglog = fopen( $debuglogfile, "a");
@@ -129,5 +132,14 @@ class config {
         }
         return $value;
     }
+
+    public function save( $filename, $filecontent ){
+        $path = $this->getValue("exportfolder")."/" . substr( $filename, 0, strrpos ( $filename , "/" ) );
+        $this->addToDebugLog( "save: file '".$filename."'\n" );
+        if (!is_dir($path))
+            mkdir($path, 0777, true);
+        file_put_contents($this->getValue("exportfolder")."/" . $filename, $filecontent );
+    }
+
 }
 ?>
