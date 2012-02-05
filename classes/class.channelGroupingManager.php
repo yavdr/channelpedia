@@ -142,20 +142,24 @@ class channelGroupingManager{
         $this->config = config::getInstance();
         $this->db = dbConnection::getInstance();
         $this->rulesets = array(
-            "GermanyEssentials"        => new GermanyEssentials(),
-            "GermanySatNonEssential"   => new GermanySatNonEssentials(),
+
             "AustriaSatEssentials"     => new AustriaSatEssentials(),
             "SwitzerlandSatEssentials" => new SwitzerlandSatEssentials(),
+            "GermanyEssentials"        => new GermanyEssentials(),
+            "GermanySatNonEssential"   => new GermanySatNonEssentials(),
+
             "GermanyKabelBW"           => new GermanyKabelBW(),
             "GermanyKabelDeutschland"  => new GermanyKabelDeutschland(),
             "GermanyWilhelmTel"        => new GermanyWilhelmTel(),
             "GermanyUnityMedia"        => new GermanyUnityMedia(),
             "GermanyTeleColumbus"      => new GermanyTeleColumbus(),
+
             "ScotlandEssentials"       => new ScotlandEssentials(),
             "WalesEssentials"          => new WalesEssentials(),
             "NorthernIrelandEssentials"=> new NorthernIrelandEssentials(),
             "IrelandEssentials"        => new IrelandEssentials(),
             "UKIrelandEssentials"      => new UKEssentials(),
+
             "SpainSatEssentials"       => new SpainSatEssentials(),
             "PolandSatEssentials"      => new PolandSatEssentials(),
             "FranceSatEssentials"      => new FranceSatEssentials(),
@@ -163,6 +167,7 @@ class channelGroupingManager{
             "BelgiumSatEssentials"     => new BelgiumSatEssentials(),
             "ItalyEssentials"          => new ItalyEssentials(),
             "GreeceSatEssentials"      => new GreeceSatEssentials(),
+
             //last not least uncategorized
             "uncategorized"            => new Uncategorized(),
         );

@@ -30,7 +30,7 @@ class NorthernIrelandEssentials extends ruleBase {
 
     function getConfig(){
         return array (
-            "country" => "northern ireland",
+            "country" => "northern_ireland",
             "lang" => "eng", //this is the language code used in the channels audio description
             "validForSatellites" => array( "S28.2E"),
             "validForCableProviders" => array(),

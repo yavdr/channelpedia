@@ -105,7 +105,7 @@ class AustriaSatEssentials extends ruleBase{
                 "outputSortPriority" => 7,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => "AND ". AUSTRIA
+                "customwhere" => "AND ". AUSTRIA . " AND UPPER(provider) != 'ARD'"
             ),
 
             array(

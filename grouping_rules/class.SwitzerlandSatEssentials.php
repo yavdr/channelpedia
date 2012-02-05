@@ -48,7 +48,7 @@ class SwitzerlandSatEssentials extends ruleBase {
                 "customwhere" =>  " AND ". FILTER_ASTRA1_FTA . "AND ". SWITZERLAND. "AND ". DE_PRIVATE_PRO7_RTL
             ),
 
-            array(
+/*            array(
                 "title" => "Diverse",
                 "outputSortPriority" => 2,
                 "caidMode" => self::caidModeFTA,
@@ -71,6 +71,7 @@ class SwitzerlandSatEssentials extends ruleBase {
                 "mediaType" => self::mediaTypeHDTV,
                 "customwhere" =>  "AND NOT ". FRANCE_CSAT
             ),
+*/
         );
     }
 
