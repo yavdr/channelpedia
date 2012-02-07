@@ -1,0 +1,1 @@
+This folder should contain generated files (.html, .conf, etc)  after channelpedia engine has been running.
