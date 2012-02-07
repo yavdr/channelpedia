@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2011 Henning Pingel
+*  (c) 2011 - 2012 Henning Pingel
 *  All rights reserved
 *
 *  This script is part of the yaVDR project. yaVDR is
@@ -59,7 +59,7 @@ class config {
         }
         else
             $this->pathdynamic = CUSTOM_PATH;
-        $debuglogfile = $this->getValue("exportfolder")."/../userdata/debuglog.txt";
+        $debuglogfile = $this->getValue("userdata")."/debuglog.txt";
         //@unlink($debuglogfile);
         $this->debuglog = fopen( $debuglogfile, "a");
         $this->addToDebugLog("---------------------------------- begin of session ".date("D M j G:i:s T Y")." -------------------------------------------\n");
@@ -119,26 +119,44 @@ class config {
     public function getValue($key){
 
         $value = null;
-        if ( $key == "userdata")
-            $value = $this->pathdynamic."userdata/";
-        elseif ($key == "exportfolder")
-            $value = $this->pathdynamic."gen"; // no ending slash!
-        elseif ($key == "sat_positions")
-            $value = $this->sourcelist["DVB-S"];
-        elseif ($key == "cable_providers")
-            $value = $this->sourcelist["DVB-C"];
-        elseif ($key == "terr_providers"){
-            $value = $this->sourcelist["DVB-T"];
+        switch ( $key ){
+            case "userdata":
+                $value = $this->pathdynamic."userdata/";
+                break;
+            case "engine_path":
+                $value = ENGINE_PATH;
+                break;
+            case "data_path":
+                $value = $this->pathdynamic;
+                break;
+            case "log_path":
+                $value = $this->pathdynamic."userdata/";
+                break;
+            case "exportfolder":
+                $value = $this->pathdynamic."gen/";
+                break;
+            case "sat_positions":
+                $value = $this->sourcelist["DVB-S"];
+                break;
+            case "cable_providers":
+                $value = $this->sourcelist["DVB-C"];
+                break;
+            case "terr_providers":
+                $value = $this->sourcelist["DVB-T"];
+                break;
+            default:
+                die ("config/getValue: undefined key '$key'");
+                break;
         }
         return $value;
     }
 
     public function save( $filename, $filecontent ){
-        $path = $this->getValue("exportfolder")."/" . substr( $filename, 0, strrpos ( $filename , "/" ) );
+        $path = $this->getValue("exportfolder") . substr( $filename, 0, strrpos ( $filename , "/" ) );
         $this->addToDebugLog( "save: file '".$filename."'\n" );
         if (!is_dir($path))
             mkdir($path, 0777, true);
-        file_put_contents($this->getValue("exportfolder")."/" . $filename, $filecontent );
+        file_put_contents($this->getValue("exportfolder") .  $filename, $filecontent );
     }
 
 }

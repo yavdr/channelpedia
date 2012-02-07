@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2011 Henning Pingel
+*  (c) 2011 - 2012 Henning Pingel
 *  All rights reserved
 *
 *  This script is part of the yaVDR project. yaVDR is
@@ -25,7 +25,7 @@
 $startime = time();
 
 //input: reads channel.conf from path and put channels into db
-require_once '../classes/class.config.php';
+require_once( dirname(__FILE__) . '/../classes/class.config.php');
 
 ini_set("max_execution_time", 240); //workaround
 $config = config::getInstance();

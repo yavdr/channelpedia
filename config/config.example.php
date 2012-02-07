@@ -45,6 +45,10 @@
 
 define("CUSTOM_PATH", "");
 
+//path to channelpedia engine (classes, grouping_rules, cli, etc.)
+define("ENGINE_PATH", "");
+
+
 define("PIWIK_TRACKING_ENABLED", false);
 //define("PIWIK_TRACKING_REMOTE_URL", "");
 //define("PIWIK_TRACKING_IDSITE", 0);

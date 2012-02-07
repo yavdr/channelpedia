@@ -74,7 +74,7 @@ class dbConnection {
     }
 
     private function createDB(){
-        $dblayoutfile = "../templates/dblayout.sql";
+        $dblayoutfile = $this->config->getValue("engine_path") . "/classes/dblayout.sql";
         if (!file_exists($dblayoutfile))
             die ("dblayoutfile $dblayoutfile does not exist!");
         $this->connect();

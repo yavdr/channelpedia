@@ -40,7 +40,7 @@ class updateFingerprintDB {
         $startime = time();
         $this->config = config::getInstance();
         $channeldbfile = $this->config->getValue("userdata") . "channeldb.sqlite";
-        $fpdb = $this->config->getValue("exportfolder") . "/raw/fingerprintdb.sqlite";
+        $fpdb = $this->config->getValue("exportfolder") . "raw/fingerprintdb.sqlite";
         if (file_exists($fpdb)) @unlink( $fpdb );
         $this->dbh = new PDO( 'sqlite:'. $fpdb );
 

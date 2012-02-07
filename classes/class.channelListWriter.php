@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2011 Henning Pingel
+*  (c) 2011 - 2012 Henning Pingel
 *  All rights reserved
 *
 *  This script is part of the yaVDR project. yaVDR is
@@ -77,12 +77,12 @@ class channelListWriter extends channelIterator{
 
     private function openFile(){
         $this->config->addToDebugLog( "channelListWriter: writing to file $this->filename\n");
-        $path = $this->config->getValue("exportfolder") . "/" . substr( $this->filename, 0, strrpos ( $this->filename , "/" ) );
+        $path = $this->config->getValue("exportfolder") . substr( $this->filename, 0, strrpos ( $this->filename , "/" ) );
         if (!is_dir($path))
             mkdir($path, 0777, true);
         else
             @unlink($gpath .  $this->filename);
-        $this->filehandle = fopen ( $this->config->getValue("exportfolder") . "/" .  $this->filename, "w");
+        $this->filehandle = fopen ( $this->config->getValue("exportfolder") .  $this->filename, "w");
     }
 
     private function closeFile(){

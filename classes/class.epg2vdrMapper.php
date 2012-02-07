@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2011 Henning Pingel
+*  (c) 2011 - 2012 Henning Pingel
 *  All rights reserved
 *
 *  This script is part of the yaVDR project. yaVDR is
@@ -51,7 +51,7 @@ class epg2vdrMapper{
 
     private function getExternalEPGMappings($epgservice){
         if (!array_key_exists($epgservice, $this->externalEPGMappings)){
-            $this->externalEPGMappings[$epgservice] = unserialize(file_get_contents(epg2vdrMapper::epgMappingDir .$epgservice."2vdr.txt"));
+            $this->externalEPGMappings[$epgservice] = unserialize(file_get_contents( dirname(__FILE__) ."/". epg2vdrMapper::epgMappingDir .$epgservice."2vdr.txt"));
         }
         return $this->externalEPGMappings[$epgservice];
     }
@@ -171,7 +171,7 @@ class epg2vdrMapper{
                 $map.
                 "//\n";
 
-            $gpath = $this->config->getValue("exportfolder")."/";
+            $gpath = $this->config->getValue("exportfolder");
             $filename = $visibletype ."/". strtr(strtr( trim($puresource," _"), "/", ""),"_","/"). "/" . $source . '.' . $epgservice . '2vdr_channelmap.conf';
             $this->config->addToDebugLog("Writing channelmap $filename\n");
             file_put_contents($gpath . $filename, $map);

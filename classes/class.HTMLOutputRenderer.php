@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2011 Henning Pingel
+*  (c) 2011 - 2012 Henning Pingel
 *  All rights reserved
 *
 *  This script is part of the yaVDR project. yaVDR is
@@ -83,7 +83,6 @@ class HTMLOutputRenderer{
     }
 
     public function renderPagesOfSingleSource( $type, $puresource, $languages ){
-
         $x = new HTMLOutputRenderSource( $type, $puresource, $languages );
         $this->setCraftedPath($x->getVisibletype(), $puresource);
         $this->addToOverview( $puresource, HTMLFragments::getInstance()->getCrispFilename( $this->craftedPath."index.html" ));
