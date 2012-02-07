@@ -1,0 +1,3 @@
+#!/bin/sh
+#cp /var/lib/vdr/channels.conf /var/lib/vdr-channelpedia/userdata/sources/example/channels.conf
+php /usr/share/vdr-channelpedia/cli/update.php

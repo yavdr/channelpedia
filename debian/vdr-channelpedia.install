@@ -1,0 +1,11 @@
+classes        /usr/share/vdr-channelpedia/
+cli            /usr/share/vdr-channelpedia/
+epg_mappings   /usr/share/vdr-channelpedia/
+grouping_rules /usr/share/vdr-channelpedia/
+res            /var/lib/vdr-channelpedia
+templates      /usr/share/vdr-channelpedia/
+config         /var/lib/vdr-channelpedia/
+gen            /var/lib/vdr-channelpedia/
+userdata       /var/lib/vdr-channelpedia/
+debian/example/channels.conf  /var/lib/vdr-channelpedia/userdata/sources/example/
+debian/example/config.php     /var/lib/vdr-channelpedia/config/

@@ -1,0 +1,25 @@
+Source: vdr-channelpedia
+Section: web
+Priority: optional
+Maintainer: Henning Pingel <henning@henningpingel.de>
+Build-Depends: debhelper (>= 6)
+Standards-Version: 3.8.4
+Homepage: http://channelpedia.yavdr.com
+
+Package: vdr-channelpedia
+Architecture: all
+Conflicts: vdr-channelpedia 
+Replaces: vdr-channelpedia
+Depends: ${misc:Depends}, php5-cli
+Suggests: vdr-channelpedia-restful
+Description: Generates versatile directory of digital TV and radio channels
+ from VDR channel lists.
+
+Package: vdr-channelpedia-restful
+Architecture: all
+Conflicts: vdr-channelpedia-restful 
+Replaces: vdr-channelpedia-restful
+Depends: ${misc:Depends}, php5, vdr-channelpedia
+#Suggests: 
+Description: Allows HTTP access to channelpedia, a versatile directory of digital TV 
+ and radio channels via a PHP based RESTFUL interface that provides data in JSON format
