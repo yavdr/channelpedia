@@ -37,7 +37,7 @@ class HTMLFragments{
         $html_footer_template = "";
 
     protected function __construct(){
-        $this->exportpath = config::getInstance()->getValue("engine_path")."/templates/";
+        $this->exportpath = config::getInstance()->getValue("engine_path")."templates/";
 
         //prepare html header template + stylesheet include
         $stylefile = "styles_". md5( file_get_contents( $this->exportpath . HTMLFragments::stylesheet ) ). ".css";

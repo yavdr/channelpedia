@@ -59,7 +59,7 @@ class config {
         }
         else
             $this->pathdynamic = CUSTOM_PATH;
-        $debuglogfile = $this->getValue("userdata")."/debuglog.txt";
+        $debuglogfile = $this->getValue("userdata")."debuglog.txt";
         //@unlink($debuglogfile);
         $this->debuglog = fopen( $debuglogfile, "a");
         $this->addToDebugLog("---------------------------------- begin of session ".date("D M j G:i:s T Y")." -------------------------------------------\n");

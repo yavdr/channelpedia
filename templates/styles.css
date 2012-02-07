@@ -262,3 +262,11 @@ p.warning{
 img.flag_icon{
   padding-right: 3px;
 }
+
+div#logoimage{
+    background-image: url('../res/icons/yavdr_logo_150x50_transparent.png');
+    width: 150px;
+    height: 50px;
+    margin-left: auto;
+    margin-right: auto;
+}
