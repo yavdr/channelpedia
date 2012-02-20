@@ -22,6 +22,10 @@
 *
 */
 
+define( 'PATH_TO_REPORT_CLASSES', dirname(__FILE__) );
+require_once PATH_TO_REPORT_CLASSES . '/singleSourceHTMLReportBase.php';
+require_once PATH_TO_REPORT_CLASSES . '/SingleSourceHTMLReports/latestChannels.php';
+
 class HTMLOutputRenderSource {
 
     private
@@ -51,7 +55,12 @@ class HTMLOutputRenderSource {
         $this->setCraftedPath();
         //$this->renderGroupingHints();
         $this->renderUnconfirmedChannels();
-        $this->renderLatestChannels();
+
+        $x = new latestChannels($this->relPath, $this->source, $this->visibletype, $this->puresource, $languages );
+        $x->popuplatePageBody();
+        $x->processResult();
+        $this->source_linklist[] = $x->getParentPageLink();
+
         $this->writeChangelog();
         $this->renderTransponderList();
         $this->renderTransponderNIDCheck();
@@ -68,14 +77,6 @@ class HTMLOutputRenderSource {
 
     public function getVisibletype(){
         return $this->visibletype;
-    }
-
-    private function getMenuItem( $link, $filename, $class = "", $showflagicon = false){
-        $class = ($class === "") ? "" : ' class="'.$class.'"';
-        $path = $this->config->getValue("exportfolder") . substr( $filename, 0, strrpos ( $filename , "/" ) );
-        $this->config->addToDebugLog( "HTMLOutputRenderer/getMenuItem: file '".$filename."', link: '$link'\n" );
-        return '<li'.$class.'><a href="'.$this->HTMLFragments->getCrispFilename($filename).'">'.
-            ($showflagicon ? $this->HTMLFragments->getFlagIcon($link, $this->relPath) : "") . $link .'</a></li>'."\n";
     }
 
     private function setCraftedPath( $suffix = ""){
@@ -145,6 +146,14 @@ class HTMLOutputRenderSource {
         }
         $tabmenu = "<ul class=\"section_menu\">" . $tabmenu . "<br clear=\"all\" /></ul>";
         return $tabmenu;
+    }
+
+    private function getMenuItem( $link, $filename, $class = "", $showflagicon = false){
+        $class = ($class === "") ? "" : ' class="'.$class.'"';
+        $path = $this->config->getValue("exportfolder") . substr( $filename, 0, strrpos ( $filename , "/" ) );
+        $this->config->addToDebugLog( "HTMLOutputRenderer/getMenuItem: file '".$filename."', link: '$link'\n" );
+        return '<li'.$class.'><a href="'.$this->HTMLFragments->getCrispFilename($filename).'">'.
+            ($showflagicon ? $this->HTMLFragments->getFlagIcon($link, $this->relPath) : "") . $link .'</a></li>'."\n";
     }
 
     private function addToOverviewAndSave( $link, $filename, $filecontent ){
@@ -291,17 +300,6 @@ class HTMLOutputRenderSource {
         return $timestamp;
     }
 
-    private function getEarliestChannelAddedTimestamp(){
-        $timestamp = 0;
-        $sqlquery = "SELECT x_timestamp_added FROM channels WHERE source = ".$this->db->quote($this->source)." AND x_timestamp_added > 0 ORDER BY x_timestamp_added ASC LIMIT 1";
-        $result = $this->db->query($sqlquery);
-        $timestamp_raw = $result->fetchAll();
-        if (isset($timestamp_raw[0][0]))
-            $timestamp = intval($timestamp_raw[0][0]);
-        return $timestamp;
-    }
-
-
     private function renderUnconfirmedChannels(){
         $pagetitle = "Unconfirmed channels on $this->source / likely to be outdated";
         $page = new HTMLPage($this->relPath);
@@ -348,53 +346,6 @@ class HTMLOutputRenderSource {
         $html_table .= "</table></div>\n";
         $page->appendToBody($html_table);
         $this->addToOverviewAndSave( "Unconfirmed/outdated", $this->craftedPath . "unconfirmed_channels.html", $page->getContents());
-    }
-
-    private function renderLatestChannels(){
-        $pagetitle = "Latest channel additions on $this->source";
-        $page = new HTMLPage($this->relPath);
-        $page->setPageTitle($pagetitle);
-        $page->appendToBody(
-            $this->getSectionTabmenu("").
-            '<h1>'.htmlspecialchars( $pagetitle ).'</h1>
-            <p>Last updated on: '. date("D M j G:i:s T Y").'</p>'
-        );
-        $html_table = "";
-        $timestamp = intval($this->getEarliestChannelAddedTimestamp());
-        if ($timestamp != 0){
-            $page->appendToBody("<p>Channels that were recently found (only the latest 25 channels that were added after the initial upload of this source).</p>\n");
-
-            $x = new channelIterator( $shortenSource = true );
-            $x->init2( "SELECT name, provider, source, frequency, parameter, symbolrate, vpid, apid, tpid, caid, sid, nid, tid, x_timestamp_added FROM channels WHERE source = ".$this->db->quote($this->source)." AND x_timestamp_added > " . $this->db->quote($timestamp) . " ORDER BY x_timestamp_added DESC, name DESC LIMIT 25");
-            $lastname = "";
-            while ($x->moveToNextChannel() !== false){
-                $carray = $x->getCurrentChannelObject()->getAsArray();
-                if ($lastname == ""){
-                    $html_table .= "<h3>Table view</h3>\n<div class=\"tablecontainer\"><table>\n<tr>";
-                    foreach ($x->getCurrentChannelArrayKeys() as $header){
-                        $html_table .= '<th class="'.htmlspecialchars($header).'">'.htmlspecialchars(ucfirst($header))."</th>\n";
-                    }
-                    $html_table .= "</tr>\n";
-                }
-                $html_table .= "<tr>\n";
-                foreach ($carray as $param => $value){
-                    if ($param == "apid" || $param == "caid"){
-                        $value = str_replace ( array(",",";"), ",<br/>", htmlspecialchars($value ));
-                    }
-                    elseif ($param == "x_last_changed" || $param == "x_timestamp_added" || $param == "x_last_confirmed"){
-                        $value = date("D, d M Y H:i:s", $value);
-                    }
-                    else
-                        $value = htmlspecialchars($value);
-                    $html_table .= '<td class="'.htmlspecialchars($param).'">'.$value."</td>\n";
-                }
-                $html_table .= "</tr>\n";
-                $lastname = $carray["name"];
-            }
-        }
-        $html_table .= "</table></div>\n";
-        $page->appendToBody($html_table);
-        $this->addToOverviewAndSave( "New channels", $this->craftedPath . "latest_channel_additions.html", $page->getContents() );
     }
 
     private function renderGroupingHints(){

@@ -24,10 +24,10 @@
 
 class HTMLPage {
 
-    private
+    protected
         $relPath = "",
         $pageBody = "",
-        $pagetitle = "undefined pagetitle",
+        $pageTitle = "undefined pagetitle",
         $pageFragments;
 
 
@@ -37,7 +37,11 @@ class HTMLPage {
     }
 
     public function setPageTitle( $title ){
-        $this->pagetitle = $title;
+        $this->pageTitle = $title;
+    }
+
+    protected function clearBody(){
+        $this->pageBody = "";
     }
 
     public function appendToBody( $content ){
@@ -49,7 +53,7 @@ class HTMLPage {
     }
 
     private function getHTMLHeader(){
-        return $this->pageFragments->getHTMLHeader($this->pagetitle, $this->relPath);
+        return $this->pageFragments->getHTMLHeader($this->pageTitle, $this->relPath);
     }
 
     private function getHTMLFooter(){

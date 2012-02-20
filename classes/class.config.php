@@ -37,10 +37,10 @@ require_once PATH_TO_CLASSES.'class.channelImport.php';
 require_once PATH_TO_CLASSES.'class.channelListWriter.php';
 require_once PATH_TO_CLASSES.'class.rawOutputRenderer.php';
 require_once PATH_TO_CLASSES.'class.HTMLFragments.php';
+require_once PATH_TO_CLASSES.'class.HTMLPage.php';
 require_once PATH_TO_CLASSES.'class.HTMLOutputRenderer.php';
 require_once PATH_TO_CLASSES.'class.HTMLOutputRenderSource.php';
 require_once PATH_TO_CLASSES.'class.HTMLChangelog.php';
-require_once PATH_TO_CLASSES.'class.HTMLPage.php';
 require_once PATH_TO_CLASSES.'class.epg2vdrMapper.php';
 
 class config {

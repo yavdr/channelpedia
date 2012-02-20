@@ -107,6 +107,5 @@ class HTMLFragments{
         }
         return $image;
     }
-
 }
 ?>
