@@ -25,6 +25,8 @@
 define( 'PATH_TO_REPORT_CLASSES', dirname(__FILE__) );
 require_once PATH_TO_REPORT_CLASSES . '/singleSourceHTMLReportBase.php';
 require_once PATH_TO_REPORT_CLASSES . '/SingleSourceHTMLReports/latestChannels.php';
+require_once PATH_TO_REPORT_CLASSES . '/SingleSourceHTMLReports/satBandHelper.php';
+require_once PATH_TO_REPORT_CLASSES . '/SingleSourceHTMLReports/transponderList.php';
 
 class HTMLOutputRenderSource {
 
@@ -56,16 +58,23 @@ class HTMLOutputRenderSource {
         //$this->renderGroupingHints();
         $this->renderUnconfirmedChannels();
 
-        $x = new latestChannels($this->relPath, $this->source, $this->visibletype, $this->puresource, $languages );
+
+        $x = new latestChannels(& $this);
         $x->popuplatePageBody();
-        $x->processResult();
         $this->source_linklist[] = $x->getParentPageLink();
 
         $this->writeChangelog();
-        $this->renderTransponderList();
+        $x = new transponderList(& $this);
+        $x->popuplatePageBody();
+        $this->source_linklist[] = $x->getParentPageLink();
+
         $this->renderTransponderNIDCheck();
-        if ($type === "S")
-            $this->renderLNBSetupHelperTable();
+        if ($type === "S"){
+            $x = new satBandHelper( & $this );
+            $x->popuplatePageBody();
+            $this->source_linklist[] = $x->getParentPageLink();
+        }
+
         $this->addCompleteListLink();
         if (in_array("de", $this->languages)){
             $this->addEPGChannelmapLink();
@@ -75,8 +84,28 @@ class HTMLOutputRenderSource {
         //$this->source_linklist = array();
     }
 
-    public function getVisibletype(){
+    public function getVisibleType(){
         return $this->visibletype;
+    }
+
+    public function getCraftedPath(){
+        return $this->craftedPath;
+    }
+
+    public function getLanguages(){
+        return $this->languages;
+    }
+
+    public function getSource(){
+        return $this->source;
+    }
+
+    public function getPureSource(){
+        return $this->puresource;
+    }
+
+    public function getRelPath(){
+        return $this->relPath;
     }
 
     private function setCraftedPath( $suffix = ""){
@@ -383,36 +412,6 @@ class HTMLOutputRenderSource {
         $this->addToOverviewAndSave( "Grouping hints", $this->craftedPath . "grouping_hints.html", $page->getContents());
     }
 
-    private function renderTransponderList(){
-        $pagetitle = htmlspecialchars($this->source) . " - Transponder list";
-        $page = new HTMLPage($this->relPath);
-        $page->setPageTitle($pagetitle);
-        $page->appendToBody(
-            $this->getSectionTabmenu("").
-            '<h1>'.htmlspecialchars( $pagetitle ).'</h1>
-            <p>Last updated on: '. date("D M j G:i:s T Y").'</p>'
-        );
-        $result = $this->db->query(
-            "SELECT parameter, frequency, symbolrate, nid
-            FROM channels
-            WHERE source = ".$this->db->quote($this->source)."
-            GROUP BY parameter, frequency, nid
-            ORDER BY frequency, parameter, nid"
-            );
-        $html_table = "<table><tr><th>Frequency</th><th>Parameter</th><th>Symbolrate</th><th>NID</th></tr>\n";
-        foreach ($result as $row) {
-            $html_table .= "<tr>".
-                "<td>".htmlspecialchars($row["frequency"])."</td>".
-                "<td>".htmlspecialchars($row["parameter"])."</td>".
-                "<td>".htmlspecialchars($row["symbolrate"])."</td>".
-                "<td>".htmlspecialchars($row["nid"])."</td>".
-                "</tr>\n";
-        }
-        $html_table .= "</table>\n";
-        $page->appendToBody($html_table);
-        $this->addToOverviewAndSave( "Transponders", $this->craftedPath . "transponder_list.html", $page->getContents() );
-    }
-
     private function renderTransponderNIDCheck(){
         $pagetitle = htmlspecialchars($this->source) . " - Transponder plausibility check";
         $page = new HTMLPage($this->relPath);
@@ -483,85 +482,6 @@ class HTMLOutputRenderSource {
         $this->addToOverviewAndSave( "NID check", $this->craftedPath . "transponder_nid_check.html", $page->getContents() );
     }
 
-    private function renderLNBSetupHelperTable(){
-        $pagetitle = "LNB Setup helper table for satellite position $this->source";
-        $page = new HTMLPage($this->relPath);
-        $page->setPageTitle($pagetitle);
-        $page->appendToBody(
-            $this->getSectionTabmenu("").
-            '<h1>'.htmlspecialchars( $pagetitle ).'</h1>
-            <p>Last updated on: '. date("D M j G:i:s T Y").'</p>'.
-            "<p>This page contains all TV and FTA radio channels sorted by transponders and grouped by the four different sat bands:</br><ul>
-               <li>Horizontal High Band (11700 MHz to 12750 MHz)</li>
-               <li>Vertical High Band (11700 MHz to 12750 MHz)</li>
-               <li>Horizontal Low Band (10700 MHz to 11700 MHz)</li>
-               <li>Vertical Low Band (10700 Mhz to 11700 MHz)</li>
-                </ul><p>A channel list specifically grouped by sat bands might be helpful when testing a new sat cable setup, ".
-                "a new LNB/Multiswitch or when evaluating VDR with LNB sharing feature enabled. ".
-                "Basically, if your setup is flawless you should be able to receive something on any of the four sat bands ".
-                //"(as long as there are FTA channels available on each band). ".
-                //"Encrypted channels are excluded from the tables below to reduce the amount of data.".
-                "</p>\n<pre>".
-            $this->addChannelSection( "H", "High", "TV", false ).
-            $this->addChannelSection( "H", "High", "TV", true ).
-            $this->addChannelSection( "H", "High", "Radio", false ).
-            $this->addChannelSection( "V", "High", "TV", false ).
-            $this->addChannelSection( "V", "High", "TV", true ).
-            $this->addChannelSection( "V", "High", "Radio", false ).
-            $this->addChannelSection( "H", "Low", "TV", false ).
-            $this->addChannelSection( "H", "Low", "TV", true ).
-            $this->addChannelSection( "H", "Low", "Radio", false ).
-            $this->addChannelSection( "V", "Low", "TV", false ).
-            $this->addChannelSection( "V", "Low", "TV", true ).
-            $this->addChannelSection( "V", "Low", "Radio", false ).
-            "\n<b>:End of list. The following channels were added by VDR automatically</b>\n".
-            "</pre>\n"
-        );
-        $this->addToOverviewAndSave( "LNB setup help", $this->craftedPath . "LNBSetupHelperTable.html", $page->getContents() );
-    }
-
-    private function addChannelSection( $direction, $band, $type, $encrypted = false ){
-        if ($direction == "H")
-            $direction_long = "Horizontal";
-        else if ($direction == "V")
-            $direction_long = "Vertical";
-        else
-            throw new Exception("direction should either be H or V");
-        if ($band == "High"){
-            $lowfreq = 10700;
-            $hifreq = 11700;
-        }
-        else if ($band == "Low"){
-            $lowfreq = 11700;
-            $hifreq = 12750;
-        }
-        else
-            throw new Exception("band should either be High or Low");
-        if ($type == "TV")
-            $type_where = "AND vpid != '0'";
-        else if ($type == "Radio")
-            $type_where = "AND vpid = '0' AND apid != '0'";
-        else
-            $type = "";
-
-        if ($encrypted)
-            $caidflag = "!=";
-        else
-            $caidflag = "=";
-
-        return
-            "\n<b>:".($encrypted?"Scrambled":"FTA"). " " .$type." channels on " . $direction_long . " ".$band." Band ".htmlspecialchars($this->source)."</b>\n\n".
-            $this->addCustomChannelList( "
-                SELECT * FROM channels WHERE source = ".$this->db->quote($this->source)."
-                AND caid $caidflag '0'
-                AND frequency >= ".$lowfreq."
-                AND frequency <= ".$hifreq."
-                AND substr(parameter,1,1) = '".$direction."'
-                ".$type_where."
-                ORDER BY frequency, parameter, symbolrate, sid
-            " );
-    }
-
     private function addChannelTable( $statement ){
         $html_table = "";
         $x = new channelIterator( $shortenSource = true );
@@ -593,21 +513,6 @@ class HTMLOutputRenderSource {
         }
         $html_table .= "</table></div>\n";
         return $html_table;
-    }
-
-    private function addCustomChannelList( $statement ){
-        $list = "";
-        $x = new channelIterator( $shortenSource = true );
-        $x->init2( $statement );
-        while ($x->moveToNextChannel() !== false){
-            $ch = $x->getCurrentChannelObject();
-            $labelparts = explode(".", $ch->getXLabel());
-            $list .= $this->HTMLFragments->getFlagIcon($labelparts[0], $this->relPath).
-                //lock icon taken from http://www.openwebgraphics.com/resources/data/1629/lock.png
-                (($ch->getCAID() !== "0")? '<img src="'.$this->relPath.'../res/icons/lock.png" class="lock_icon" title="'.htmlspecialchars($ch->getCAID()).'" />':'');
-            $list .= htmlspecialchars( $ch->getChannelString() )."\n";
-        }
-        return $list;
     }
 }
 ?>

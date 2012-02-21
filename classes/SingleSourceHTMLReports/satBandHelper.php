@@ -1,0 +1,117 @@
+<?php
+/***************************************************************
+*  Copyright notice
+*
+*  (c) 2011 - 2012 Henning Pingel
+*  All rights reserved
+*
+*  This script is part of the yaVDR project. yaVDR is
+*  free software; you can redistribute it and/or modify
+*  it under the terms of the GNU General Public License as published by
+*  the Free Software Foundation; either version 2 of the License, or
+*  (at your option) any later version.
+*
+*  The GNU General Public License can be found at
+*  http://www.gnu.org/copyleft/gpl.html.
+*  A copy is found in the textfile GPL.txt.
+*
+*  This script is distributed in the hope that it will be useful,
+*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*  GNU General Public License for more details.
+*
+*/
+class satBandHelper extends singleSourceHTMLReportBase{
+
+    public function popuplatePageBody(){
+        $this->setPageTitle( "LNB Setup helper table for satellite position " .$this->parent->getSource() );
+        $this->addBodyHeader();
+        $this->appendToBody(
+            "<p>This page contains all TV and FTA radio channels sorted by transponders and grouped by the four different sat bands:</br><ul>
+               <li>Horizontal High Band (11700 MHz to 12750 MHz)</li>
+               <li>Vertical High Band (11700 MHz to 12750 MHz)</li>
+               <li>Horizontal Low Band (10700 MHz to 11700 MHz)</li>
+               <li>Vertical Low Band (10700 Mhz to 11700 MHz)</li>
+                </ul><p>A channel list specifically grouped by sat bands might be helpful when testing a new sat cable setup, ".
+                "a new LNB/Multiswitch or when evaluating VDR with LNB sharing feature enabled. ".
+                "Basically, if your setup is flawless you should be able to receive something on any of the four sat bands ".
+                //"(as long as there are FTA channels available on each band). ".
+                //"Encrypted channels are excluded from the tables below to reduce the amount of data.".
+                "</p>\n<pre>".
+            $this->addChannelSection( "H", "High", "TV", false ).
+            $this->addChannelSection( "H", "High", "TV", true ).
+            $this->addChannelSection( "H", "High", "Radio", false ).
+            $this->addChannelSection( "V", "High", "TV", false ).
+            $this->addChannelSection( "V", "High", "TV", true ).
+            $this->addChannelSection( "V", "High", "Radio", false ).
+            $this->addChannelSection( "H", "Low", "TV", false ).
+            $this->addChannelSection( "H", "Low", "TV", true ).
+            $this->addChannelSection( "H", "Low", "Radio", false ).
+            $this->addChannelSection( "V", "Low", "TV", false ).
+            $this->addChannelSection( "V", "Low", "TV", true ).
+            $this->addChannelSection( "V", "Low", "Radio", false ).
+            "\n<b>:End of list. The following channels were added by VDR automatically</b>\n".
+            "</pre>\n"
+        );
+        $this->addToOverviewAndSave( "LNB setup help", "LNBSetupHelperTable.html");
+    }
+
+    private function addChannelSection( $direction, $band, $type, $encrypted = false ){
+        if ($direction == "H")
+            $direction_long = "Horizontal";
+        else if ($direction == "V")
+            $direction_long = "Vertical";
+        else
+            throw new Exception("direction should either be H or V");
+        if ($band == "High"){
+            $lowfreq = 10700;
+            $hifreq = 11700;
+        }
+        else if ($band == "Low"){
+            $lowfreq = 11700;
+            $hifreq = 12750;
+        }
+        else
+            throw new Exception("band should either be High or Low");
+        if ($type == "TV")
+            $type_where = "AND vpid != '0'";
+        else if ($type == "Radio")
+            $type_where = "AND vpid = '0' AND apid != '0'";
+        else
+            $type = "";
+
+        if ($encrypted)
+            $caidflag = "!=";
+        else
+            $caidflag = "=";
+
+        return
+            "\n<b>:".($encrypted?"Scrambled":"FTA"). " " .$type." channels on " . $direction_long . " ".$band." Band ".htmlspecialchars($this->parent->getSource())."</b>\n\n".
+            $this->addCustomChannelList( "
+                SELECT * FROM channels WHERE source = ".$this->db->quote($this->parent->getSource())."
+                AND caid $caidflag '0'
+                AND frequency >= ".$lowfreq."
+                AND frequency <= ".$hifreq."
+                AND substr(parameter,1,1) = '".$direction."'
+                ".$type_where."
+                ORDER BY frequency, parameter, symbolrate, sid
+            " );
+    }
+
+    private function addCustomChannelList( $statement ){
+        $list = "";
+        $x = new channelIterator( $shortenSource = true );
+        $x->init2( $statement );
+        while ($x->moveToNextChannel() !== false){
+            $ch = $x->getCurrentChannelObject();
+            $labelparts = explode(".", $ch->getXLabel());
+            $list .= $this->pageFragments->getFlagIcon($labelparts[0], $this->parent->getRelPath()).
+                //lock icon taken from http://www.openwebgraphics.com/resources/data/1629/lock.png
+                (($ch->getCAID() !== "0")? '<img src="'.$this->parent->getRelPath().'../res/icons/lock.png" class="lock_icon" title="'.htmlspecialchars($ch->getCAID()).'" />':'');
+            $list .= htmlspecialchars( $ch->getChannelString() )."\n";
+        }
+        return $list;
+    }
+
+}
+?>

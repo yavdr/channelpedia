@@ -26,26 +26,20 @@
 class singleSourceHTMLReportBase extends HTMLPage{
 
     protected
+        $parent = null,
         $config,
-        $fullPage = "",
-        $relPath = "",
-        $source = "",
-        $languages = array(),
-        $visibletype = "",
-        $puresource = "",
         $parentPageLink = null,
         $db;
 
-    function __construct($relPath, $source, $languages){
-        $this->relPath = $relPath;
-        $this->source = $source;
+    //function __construct($relPath, $source, $languages){
+    function __construct( HTMLOutputRenderSource $obj ){
+        $this->parent = & $obj;
         $this->db = dbConnection::getInstance();
         $this->config = config::getInstance();
-        $this->languages = $languages;
-        parent::__construct($relPath);
+        parent::__construct( $this->parent->getRelPath() );
     }
 
-    protected function renderHTMLPage(){
+    protected function addBodyHeader(){
         $this->appendToBody(
             $this->getSectionTabmenu("").
             '<h1>'.htmlspecialchars( $this->pageTitle ).'</h1>
@@ -53,36 +47,31 @@ class singleSourceHTMLReportBase extends HTMLPage{
         );
     }
 
-    protected function getHTMLPage(){
-        return $this->getContents();
-    }
-
     public function getParentPageLink(){
+        if ($this->parentPageLink === null)
+            throw new Exception("getParentPageLink is empty. It must be called after addToOverviewAndSave.\n");
         return $this->parentPageLink;
     }
 
-    protected function addToOverviewAndSave( $link, $filename, $filecontent ){
-        $this->config->save($filename, $filecontent);
-        $this->parentPageLink = array( $link, $this->relPath . $this->pageFragments->getCrispFilename($filename));
+    protected function addToOverviewAndSave( $link, $filename ){
+        $this->config->save( $this->parent->getCraftedPath() . $filename, $this->getContents());
+        $this->parentPageLink = array( $link, $this->parent->getRelPath() . $this->pageFragments->getCrispFilename( $this->parent->getCraftedPath() . $filename));
     }
 
     protected  function getSectionTabmenu($language){
         $class = "";
         if ("overview" == $language){
             $language = "";
-            $tabmenu = $this->getMenuItem( $this->source, "index.html", "active", false );
-            $this->setCraftedPath();
+            $tabmenu = $this->getMenuItem( $this->parent->getSource(), "index.html", "active", false );
         }
         else if ("" == $language){
             $language = "";
-            $tabmenu = $this->getMenuItem( $this->source, "index.html", "", false );
-            $this->setCraftedPath();
+            $tabmenu = $this->getMenuItem( $this->parent->getSource(), "index.html", "", false );
         }
         else{
-            $tabmenu = $this->getMenuItem( $this->source, "../index.html", "", false );
-            $this->setCraftedPath("/" . $language);
+            $tabmenu = $this->getMenuItem( $this->parent->getSource(), "../index.html", "", false );
         }
-        foreach ($this->languages as $language_temp){
+        foreach ($this->parent->getLanguages() as $language_temp){
             if ("" == $language)
                 $tabmenu .= $this->getMenuItem($language_temp, $language_temp."/index.html", "", true);
             else{
@@ -99,18 +88,7 @@ class singleSourceHTMLReportBase extends HTMLPage{
         $path = $this->config->getValue("exportfolder") . substr( $filename, 0, strrpos ( $filename , "/" ) );
         $this->config->addToDebugLog( "HTMLOutputRenderer/getMenuItem: file '".$filename."', link: '$link'\n" );
         return '<li'.$class.'><a href="'.$this->pageFragments->getCrispFilename($filename).'">'.
-            ($showflagicon ? $this->pageFragments->getFlagIcon($link, $this->relPath) : "") . $link .'</a></li>'."\n";
-    }
-
-    private function setCraftedPath( $suffix = ""){
-        //print "Old craftedpath: $this->craftedPath\n";
-        $this->craftedPath = $this->visibletype ."/". strtr(strtr( trim($this->puresource," _"), "/", ""),"_","/"). $suffix . "/";
-        $this->relPath = "";
-        $dirjumps = substr_count( $this->craftedPath, "/");
-        for ($z = 0; $z < $dirjumps; $z++){
-            $this->relPath .= '../';
-        }
-        //print "New craftedpath: $this->craftedPath\n";
+            ($showflagicon ? $this->pageFragments->getFlagIcon($link, $this->parent->getRelPath()) : "") . $link .'</a></li>'."\n";
     }
 }
 ?>
