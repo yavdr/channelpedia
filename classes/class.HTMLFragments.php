@@ -46,7 +46,10 @@ class HTMLFragments{
         //TODO: delete old stylesheet files before copying new one
         if (!file_exists( config::getInstance()->getValue("exportfolder") . $stylefile)){
             if (!copy( $this->exportpath . HTMLFragments::stylesheet, config::getInstance()->getValue("exportfolder") . $stylefile )){
-                die("copy failed: " .  $this->exportpath . HTMLFragments::stylesheet . " -> " . config::getInstance()->getValue("exportfolder") . $stylefile . "\n");
+                die(
+                    "File not present: ".config::getInstance()->getValue("exportfolder") . $stylefile.
+                    "</br>copy failed: " . $this->exportpath . HTMLFragments::stylesheet . " -> " . config::getInstance()->getValue("exportfolder") . $stylefile . "\n"
+                );
             }
         }
         $this->html_header_template =
@@ -88,7 +91,7 @@ class HTMLFragments{
         if (CUT_OFF_INDEX_HTML){
             $retVal = str_replace("index.html","", $filename);
             if ($retVal == "")
-                $retVal = "/";
+                $retVal = "./";
         }
         return $retVal;
     }
