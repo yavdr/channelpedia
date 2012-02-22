@@ -28,13 +28,9 @@ class HTMLChangelog {
         $db,
         $page;
 
-    function __construct( $where, $pagetitle, $limit, $importance, $relPath) {
+    function __construct( $where, $limit, $importance) {
         $this->db = dbConnection::getInstance();
-        $this->page = new HTMLPage($relPath);
-        $this->page->setPageTitle($pagetitle);
-        $this->page->appendToBody(
-            '<h1>'.htmlspecialchars($pagetitle).'</h1><p>Last updated on: '. date("D M j G:i:s T Y")."</p>\n<table>\n"
-        );
+        $this->page = "<table>\n";
         if ($importance === 1 ){
             $where[] = " importance = $importance ";
         }
@@ -56,20 +52,19 @@ class HTMLChangelog {
                     htmlspecialchars( substr( $descitem, $delimiter)) . "<br/>";
             }
             $class = "changelog_row_style_".$row["importance"];
-            $this->page->appendToBody(
+            $this->page .=
                 '<tr class="'.$class.'"><td>'.
                 htmlspecialchars( $row["datestamp"] ). "</td><td>".
                 htmlspecialchars( $row["combined_id"] ). "</td><td>".
                 htmlspecialchars( $row["name"] ). "</td><td>".
                 $desc.
-                "</td></tr>\n"
-            );
+                "</td></tr>\n";
         }
-        $this->page->appendToBody( "<table>\n" );
+        $this->page .= "</table>\n";
     }
 
     public function getContents(){
-        return $this->page->getContents();
+        return $this->page;
     }
 }
 ?>

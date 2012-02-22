@@ -31,7 +31,6 @@ class singleSourceHTMLReportBase extends HTMLPage{
         $parentPageLink = null,
         $db;
 
-    //function __construct($relPath, $source, $languages){
     function __construct( HTMLOutputRenderSource $obj ){
         $this->parent = & $obj;
         $this->db = dbConnection::getInstance();
@@ -39,9 +38,9 @@ class singleSourceHTMLReportBase extends HTMLPage{
         parent::__construct( $this->parent->getRelPath() );
     }
 
-    protected function addBodyHeader(){
+    protected function addBodyHeader( $language = ""){
         $this->appendToBody(
-            $this->getSectionTabmenu("").
+            $this->getSectionTabmenu( $language ).
             '<h1>'.htmlspecialchars( $this->pageTitle ).'</h1>
             <p>Last updated on: '. date("D M j G:i:s T Y").'</p>'
         );
@@ -60,16 +59,17 @@ class singleSourceHTMLReportBase extends HTMLPage{
 
     protected  function getSectionTabmenu($language){
         $class = "";
+        $sourceMenuItem = $this->parent->getVisibleType() . ": " . $this->parent->getPureSource();
         if ("overview" == $language){
             $language = "";
-            $tabmenu = $this->getMenuItem( $this->parent->getSource(), "index.html", "active", false );
+            $tabmenu = $this->getMenuItem( $sourceMenuItem, "index.html", "active", false );
         }
         else if ("" == $language){
             $language = "";
-            $tabmenu = $this->getMenuItem( $this->parent->getSource(), "index.html", "", false );
+            $tabmenu = $this->getMenuItem( $sourceMenuItem, "index.html", "", false );
         }
         else{
-            $tabmenu = $this->getMenuItem( $this->parent->getSource(), "../index.html", "", false );
+            $tabmenu = $this->getMenuItem( $sourceMenuItem, "../index.html", "", false );
         }
         foreach ($this->parent->getLanguages() as $language_temp){
             if ("" == $language)

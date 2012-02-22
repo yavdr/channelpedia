@@ -145,18 +145,8 @@ class channelImport extends channelFileIterator{
         $this->deleteOutdatedChannelsForNonSatProvider( "A" );
     }
 
-    private function getLastConfirmedTimestamp($source){
-        $timestamp = 0;
-        $sqlquery = "SELECT x_last_confirmed FROM channels WHERE source = ".$this->db->quote($source)." ORDER BY x_last_confirmed DESC LIMIT 1";
-        $result = $this->db->query($sqlquery);
-        $timestamp_raw = $result->fetchAll();
-        if (isset($timestamp_raw[0][0]))
-            $timestamp = intval($timestamp_raw[0][0]);
-        return $timestamp;
-    }
-
     private function deleteOutdatedChannelsForSource( $source ){
-        $lastConfirmedTimestamp = $this->getLastConfirmedTimestamp($source);
+        $lastConfirmedTimestamp = dbVariousTools::getInstance()->getLastConfirmedTimestamp( $source );
         $statement = "DELETE FROM channels WHERE source = ".$this->db->quote($source)." AND x_last_confirmed < ".$lastConfirmedTimestamp;
         $this->config->addToDebugLog( "Deleting outdated channels for $source: $statement\n");
         $query = $this->db->exec( $statement );

@@ -27,7 +27,7 @@ class HTMLOutputRenderer{
     private
         $db,
         $config,
-        $craftedPath = "",
+        //$craftedPath = "",
         $homepageLinkList = array(),
         $relPath;
 
@@ -40,25 +40,12 @@ class HTMLOutputRenderer{
     public function renderAllHTMLPages(){
         $this->addDividerTitle("DVB sources");
 
-        $this->addDividerTitle("Satellite positions");
-        foreach ($this->config->getValue("sat_positions") as $sat => $languages){
-            $this->renderPagesOfSingleSource( "S", $sat, $languages );
-        }
-        $this->closeHierarchy();
+        $this->addDVBType( "S", "sat_positions", "Satellite positions");
+        $this->addDVBType( "C", "cable_providers", "Cable providers");
+        $this->addDVBType( "T", "terr_providers", "Terrestrial providers");
 
-        $this->addDividerTitle("Cable providers");
-        foreach ($this->config->getValue("cable_providers") as $cablep => $languages){
-            $this->renderPagesOfSingleSource( "C", $cablep, $languages );
-        }
-        $this->closeHierarchy();
-
-        $this->addDividerTitle("Terrestrial providers");
-        foreach ($this->config->getValue("terr_providers") as $terrp => $languages){
-            $this->renderPagesOfSingleSource( "T", $terrp, $languages );
-        }
         $this->craftedPath = "";
         $this->relPath = "";
-        $this->closeHierarchy();
 
         $this->closeHierarchy();
 
@@ -71,6 +58,17 @@ class HTMLOutputRenderer{
         $this->renderIndexPage();
     }
 
+    private function addDVBType( $key, $configValue, $title){
+        if (count($this->config->getValue($configValue)) > 0 ){
+            $this->addDividerTitle($title);
+            foreach ($this->config->getValue($configValue) as $provider => $languages){
+                $x = new HTMLOutputRenderSource( $key, $provider, $languages );
+                $this->homepageLinkList[] = $x->render();
+            }
+            $this->closeHierarchy();
+        }
+    }
+/*
     private function setCraftedPath($visibletype, $puresource ){
         //print "Old craftedpath: $this->craftedPath\n";
         $this->craftedPath = $visibletype ."/". strtr(strtr( trim($puresource," _"), "/", ""),"_","/"). "/";
@@ -81,13 +79,7 @@ class HTMLOutputRenderer{
         }
         //print "New craftedpath: $this->craftedPath\n";
     }
-
-    public function renderPagesOfSingleSource( $type, $puresource, $languages ){
-        $x = new HTMLOutputRenderSource( $type, $puresource, $languages );
-        $this->setCraftedPath($x->getVisibletype(), $puresource);
-        $this->addToOverview( $puresource, HTMLFragments::getInstance()->getCrispFilename( $this->craftedPath."index.html" ));
-    }
-
+*/
     private function addDividerTitle( $title ){
         $this->addToOverview( $title, "");
     }
@@ -107,10 +99,16 @@ class HTMLOutputRenderer{
 
     //general changelog for all sources
     public function writeGeneralChangelog(){
-        //$this->relPath = "";
         $pagetitle = 'Changelog for all sources';
-        $changelog = new HTMLChangelog( array(), $pagetitle, " LIMIT 100", 1, $this->relPath);
-        $this->addLinkToHomepageAndSavePage($pagetitle, "changelog.html", $changelog->getContents());
+        $page = new HTMLPage($this->relPath);
+        $page->setPageTitle($pagetitle);
+        $page->appendToBody(
+            '<h1>'.htmlspecialchars( $pagetitle ).'</h1>
+            <p>Last updated on: '. date("D M j G:i:s T Y").'</p>'
+        );
+        $changelog = new HTMLChangelog( array(), " LIMIT 100", 1);
+        $page->appendToBody( $changelog->getContents());
+        $this->addLinkToHomepageAndSavePage($pagetitle, "changelog.html", $page->getContents());
     }
 
     public function writeUploadLog(){
@@ -182,7 +180,7 @@ class HTMLOutputRenderer{
         $html_table .= "</table></div>\n";
         $page->appendToBody( $html_table );
         $filename = "parameter_comparison_de.html";
-        $this->addLinkToHomepageAndSavePage( "Comparison: Parameters of German public TV channels at different providers", $filename, $page->getContents() );
+        $this->addLinkToHomepageAndSavePage( "de_Comparison: Parameters of German public TV channels at different providers", $filename, $page->getContents() );
     }
 
     private function renderIndexPage(){
@@ -194,7 +192,15 @@ class HTMLOutputRenderer{
             <ul>
         ');
         foreach ($this->homepageLinkList as $line){
-           $title = $line[0];
+            $title = $line[0];
+            $sourceParts = explode("_", $title);
+            if (count($sourceParts) > 1){
+                $flag = HTMLFragments::getFlagIcon($sourceParts[0], "");
+                $title = $flag;
+                foreach ($sourceParts as $part){
+                    $title .= " " . $part;
+                }
+            }
            $url = $line[1];
            if($url == "")
                $page->appendToBody( '<li><b>'.htmlspecialchars( $title )."</b></li>\n<ul>");

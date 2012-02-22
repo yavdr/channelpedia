@@ -42,6 +42,7 @@ require_once PATH_TO_CLASSES.'class.HTMLOutputRenderer.php';
 require_once PATH_TO_CLASSES.'class.HTMLOutputRenderSource.php';
 require_once PATH_TO_CLASSES.'class.HTMLChangelog.php';
 require_once PATH_TO_CLASSES.'class.epg2vdrMapper.php';
+require_once PATH_TO_CLASSES.'class.dbVariousTools.php';
 
 class config {
 
