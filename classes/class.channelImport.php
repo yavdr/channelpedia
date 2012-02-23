@@ -170,7 +170,6 @@ class channelImport extends channelFileIterator{
 
     public function updateAffectedDataAndFiles(){
         $this->htmlOutput = new HTMLOutputRenderer();
-        $this->htmlOutput->writeUploadLog();
         if ( $this->metaData->getAddedChannelCount() + $this->metaData->getChangedChannelCount() > 0){
             $this->labeller = channelGroupingManager::getInstance();
             $this->rawOutput = new rawOutputRenderer();
@@ -184,7 +183,6 @@ class channelImport extends channelFileIterator{
             $this->updateAffectedDataAndFilesForNonSatProvider("C");
             $this->updateAffectedDataAndFilesForNonSatProvider("T");
             $this->updateAffectedDataAndFilesForNonSatProvider("A");
-            $this->htmlOutput->writeGeneralChangelog();
         }
         else{
             $this->config->addToDebugLog( "No need for label update.\n");
@@ -202,6 +200,10 @@ class channelImport extends channelFileIterator{
             $this->rawOutput->writeRawOutputForSingleSource( $type, $provider, $languages);
             $this->htmlOutput->renderPagesOfSingleSource( $type, $rawprovider, $languages);
         }
+    }
+
+    public function renderGlobalReports(){
+        $this->htmlOutput->renderGlobalReports();
     }
 }
 ?>

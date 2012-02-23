@@ -54,6 +54,7 @@ class channelsupload extends Resource {
                             $response->body .= $importer->getTextualSummary() . "\n";
                             $importer->updateAffectedDataAndFiles();
                             $importer->addToUpdateLog( "-", "Processing finished.");
+                            $importer->renderGlobalReports();
                             unset($importer);
                         }
                         else{

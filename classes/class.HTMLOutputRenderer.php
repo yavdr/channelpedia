@@ -27,7 +27,6 @@ class HTMLOutputRenderer{
     private
         $db,
         $config,
-        //$craftedPath = "",
         $homepageLinkList = array(),
         $relPath;
 
@@ -40,9 +39,9 @@ class HTMLOutputRenderer{
     public function renderAllHTMLPages(){
         $this->addDividerTitle("DVB sources");
 
-        $this->addDVBType( "S", "sat_positions", "Satellite positions");
+        $this->addDVBType( "S", "sat_positions",   "Satellite positions");
         $this->addDVBType( "C", "cable_providers", "Cable providers");
-        $this->addDVBType( "T", "terr_providers", "Terrestrial providers");
+        $this->addDVBType( "T", "terr_providers",  "Terrestrial providers");
 
         $this->craftedPath = "";
         $this->relPath = "";
@@ -50,9 +49,7 @@ class HTMLOutputRenderer{
         $this->closeHierarchy();
 
         $this->addDividerTitle("Reports");
-        $this->writeGeneralChangelog();
-        $this->writeUploadLog();
-        $this->renderDEComparison();
+        $this->renderGlobalReports();
         $this->closeHierarchy();
 
         $this->renderIndexPage();
@@ -62,24 +59,24 @@ class HTMLOutputRenderer{
         if (count($this->config->getValue($configValue)) > 0 ){
             $this->addDividerTitle($title);
             foreach ($this->config->getValue($configValue) as $provider => $languages){
-                $x = new HTMLOutputRenderSource( $key, $provider, $languages );
-                $this->homepageLinkList[] = $x->render();
+                $this->renderPagesOfSingleSource( $key, $provider, $languages );
             }
             $this->closeHierarchy();
         }
     }
-/*
-    private function setCraftedPath($visibletype, $puresource ){
-        //print "Old craftedpath: $this->craftedPath\n";
-        $this->craftedPath = $visibletype ."/". strtr(strtr( trim($puresource," _"), "/", ""),"_","/"). "/";
-        $this->relPath = "";
-        $dirjumps = substr_count( $this->craftedPath, "/");
-        for ($z = 0; $z < $dirjumps; $z++){
-            $this->relPath .= '../';
-        }
-        //print "New craftedpath: $this->craftedPath\n";
+
+    public function renderPagesOfSingleSource( $type, $puresource, $languages ){
+        $x = new HTMLOutputRenderSource( $type, $puresource, $languages );
+        $this->homepageLinkList[] = $x->render();
     }
-*/
+
+    public function renderGlobalReports(){
+        $this->writeGeneralChangelog();
+        $this->writeUploadLog();
+        $this->renderDEComparison();
+    }
+
+
     private function addDividerTitle( $title ){
         $this->addToOverview( $title, "");
     }

@@ -30,7 +30,7 @@ class changelog extends singleSourceHTMLReportBase{
             "timestamp >= " . $this->db->quote( $this->parent->getLastConfirmedTimestamp() - 60*60*24*2 ), //last confirmed + the 2 previous days
             "combined_id LIKE ".$this->db->quote( $this->parent->getSource()."%" ) . " "
         );
-        $changelog = new HTMLChangelog( array(), " LIMIT 100", 1);
+        $changelog = new HTMLChangelog( $where, " LIMIT 100", 1);
         $this->appendToBody( $changelog->getContents() );
         $this->addToOverviewAndSave('Changelog', "changelog.html");
     }
