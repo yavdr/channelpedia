@@ -23,6 +23,7 @@
 */
 
 define( 'PATH_TO_REPORT_CLASSES', dirname(__FILE__) );
+require_once PATH_TO_REPORT_CLASSES . '/HTMLReportBase.php';
 require_once PATH_TO_REPORT_CLASSES . '/singleSourceHTMLReportBase.php';
 require_once PATH_TO_REPORT_CLASSES . '/SingleSourceHTMLReports/indexPage.php';
 require_once PATH_TO_REPORT_CLASSES . '/SingleSourceHTMLReports/latestChannels.php';
@@ -117,6 +118,10 @@ class HTMLOutputRenderSource {
         return $this->craftedPath;
     }
 
+    public function getRelPath(){
+        return $this->relPath;
+    }
+
     public function getLanguages(){
         return $this->languages;
     }
@@ -127,10 +132,6 @@ class HTMLOutputRenderSource {
 
     public function getPureSource(){
         return $this->puresource;
-    }
-
-    public function getRelPath(){
-        return $this->relPath;
     }
 
     public function getLastConfirmedTimestamp(){

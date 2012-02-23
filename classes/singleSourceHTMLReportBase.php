@@ -22,42 +22,19 @@
 *
 */
 
-
-class singleSourceHTMLReportBase extends HTMLPage{
-
-    protected
-        $parent = null,
-        $config,
-        $parentPageLink = null,
-        $db;
+class singleSourceHTMLReportBase extends HTMLReportBase{
 
     function __construct( HTMLOutputRenderSource $obj ){
         $this->parent = & $obj;
-        $this->db = dbConnection::getInstance();
-        $this->config = config::getInstance();
         parent::__construct( $this->parent->getRelPath() );
     }
 
     protected function addBodyHeader( $language = ""){
-        $this->appendToBody(
-            $this->getSectionTabmenu( $language ).
-            '<h1>'.htmlspecialchars( $this->pageTitle ).'</h1>
-            <p>Last updated on: '. date("D M j G:i:s T Y").'</p>'
-        );
+        $this->appendToBody( $this->getSectionTabmenu( $language ) );
+        parent::addBodyHeader();
     }
 
-    public function getParentPageLink(){
-        if ($this->parentPageLink === null)
-            throw new Exception("getParentPageLink is empty. It must be called after addToOverviewAndSave.\n");
-        return $this->parentPageLink;
-    }
-
-    protected function addToOverviewAndSave( $link, $filename ){
-        $this->config->save( $this->parent->getCraftedPath() . $filename, $this->getContents());
-        $this->parentPageLink = array( $link, $this->parent->getRelPath() . $this->pageFragments->getCrispFilename( $this->parent->getCraftedPath() . $filename));
-    }
-
-    protected  function getSectionTabmenu($language){
+    private  function getSectionTabmenu($language){
         $class = "";
         $sourceMenuItem = $this->parent->getVisibleType() . ": " . $this->parent->getPureSource();
         if ("overview" == $language){
@@ -83,7 +60,7 @@ class singleSourceHTMLReportBase extends HTMLPage{
         return $tabmenu;
     }
 
-    protected function getMenuItem( $link, $filename, $class = "", $showflagicon = false){
+    private function getMenuItem( $link, $filename, $class = "", $showflagicon = false){
         $class = ($class === "") ? "" : ' class="'.$class.'"';
         $path = $this->config->getValue("exportfolder") . substr( $filename, 0, strrpos ( $filename , "/" ) );
         $this->config->addToDebugLog( "HTMLOutputRenderer/getMenuItem: file '".$filename."', link: '$link'\n" );

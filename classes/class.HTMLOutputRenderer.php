@@ -22,6 +22,12 @@
 *
 */
 
+define( 'PATH_TO_GLOBAL_REPORT_CLASSES', dirname(__FILE__) );
+require_once PATH_TO_GLOBAL_REPORT_CLASSES . '/HTMLReportBase.php';
+require_once PATH_TO_GLOBAL_REPORT_CLASSES . '/globalHTMLReportBase.php';
+require_once PATH_TO_GLOBAL_REPORT_CLASSES . '/GlobalHTMLReports/globalChangelog.php';
+//require_once PATH_TO_GLOBAL_REPORT_CLASSES . '/GlobalHTMLReportBase/indexPage.php';
+
 class HTMLOutputRenderer{
 
     private
@@ -36,6 +42,14 @@ class HTMLOutputRenderer{
         $this->relPath = "";
     }
 
+    public function getCraftedPath(){
+        return "";
+    }
+
+    public function getRelPath(){
+        return $this->relPath;
+    }
+
     public function renderAllHTMLPages(){
         $this->addDividerTitle("DVB sources");
 
@@ -43,7 +57,7 @@ class HTMLOutputRenderer{
         $this->addDVBType( "C", "cable_providers", "Cable providers");
         $this->addDVBType( "T", "terr_providers",  "Terrestrial providers");
 
-        $this->craftedPath = "";
+        //$this->craftedPath = "";
         $this->relPath = "";
 
         $this->closeHierarchy();
@@ -71,7 +85,9 @@ class HTMLOutputRenderer{
     }
 
     public function renderGlobalReports(){
-        $this->writeGeneralChangelog();
+        $x = new globalChangelog( & $this);
+        $x->popuplatePageBody();
+        $this->homepageLinkList[] = $x->getParentPageLink();
         $this->writeUploadLog();
         $this->renderDEComparison();
     }
@@ -92,20 +108,6 @@ class HTMLOutputRenderer{
 
     private function closeHierarchy(){
         $this->homepageLinkList[] = array( "", "close");
-    }
-
-    //general changelog for all sources
-    public function writeGeneralChangelog(){
-        $pagetitle = 'Changelog for all sources';
-        $page = new HTMLPage($this->relPath);
-        $page->setPageTitle($pagetitle);
-        $page->appendToBody(
-            '<h1>'.htmlspecialchars( $pagetitle ).'</h1>
-            <p>Last updated on: '. date("D M j G:i:s T Y").'</p>'
-        );
-        $changelog = new HTMLChangelog( array(), " LIMIT 100", 1);
-        $page->appendToBody( $changelog->getContents());
-        $this->addLinkToHomepageAndSavePage($pagetitle, "changelog.html", $page->getContents());
     }
 
     public function writeUploadLog(){
