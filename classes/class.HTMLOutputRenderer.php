@@ -26,20 +26,20 @@ define( 'PATH_TO_GLOBAL_REPORT_CLASSES', dirname(__FILE__) );
 require_once PATH_TO_GLOBAL_REPORT_CLASSES . '/HTMLReportBase.php';
 require_once PATH_TO_GLOBAL_REPORT_CLASSES . '/globalHTMLReportBase.php';
 require_once PATH_TO_GLOBAL_REPORT_CLASSES . '/GlobalHTMLReports/globalChangelog.php';
-//require_once PATH_TO_GLOBAL_REPORT_CLASSES . '/GlobalHTMLReportBase/indexPage.php';
+require_once PATH_TO_GLOBAL_REPORT_CLASSES . '/GlobalHTMLReports/deComparison.php';
+require_once PATH_TO_GLOBAL_REPORT_CLASSES . '/GlobalHTMLReports/uploadLog.php';
+require_once PATH_TO_GLOBAL_REPORT_CLASSES . '/GlobalHTMLReports/globalIndexPage.php';
 
 class HTMLOutputRenderer{
 
     private
         $db,
         $config,
-        $homepageLinkList = array(),
-        $relPath;
+        $homepageLinkList = array();
 
     function __construct(){
         $this->db = dbConnection::getInstance();
         $this->config = config::getInstance();
-        $this->relPath = "";
     }
 
     public function getCraftedPath(){
@@ -47,26 +47,24 @@ class HTMLOutputRenderer{
     }
 
     public function getRelPath(){
-        return $this->relPath;
+        return "";
+    }
+
+    public function getHomepageLinkList(){
+        return $this->homepageLinkList;
     }
 
     public function renderAllHTMLPages(){
         $this->addDividerTitle("DVB sources");
-
         $this->addDVBType( "S", "sat_positions",   "Satellite positions");
         $this->addDVBType( "C", "cable_providers", "Cable providers");
         $this->addDVBType( "T", "terr_providers",  "Terrestrial providers");
-
-        //$this->craftedPath = "";
-        $this->relPath = "";
-
         $this->closeHierarchy();
-
         $this->addDividerTitle("Reports");
         $this->renderGlobalReports();
         $this->closeHierarchy();
-
-        $this->renderIndexPage();
+        $x = new globalIndexPage( & $this);
+        $x->popuplatePageBody();
     }
 
     private function addDVBType( $key, $configValue, $title){
@@ -88,129 +86,21 @@ class HTMLOutputRenderer{
         $x = new globalChangelog( & $this);
         $x->popuplatePageBody();
         $this->homepageLinkList[] = $x->getParentPageLink();
-        $this->writeUploadLog();
-        $this->renderDEComparison();
+        $x = new uploadLog( & $this);
+        $x->popuplatePageBody();
+        $this->homepageLinkList[] = $x->getParentPageLink();
+        $x = new deComparison( & $this);
+        $x->popuplatePageBody();
+        $this->homepageLinkList[] = $x->getParentPageLink();
     }
-
 
     private function addDividerTitle( $title ){
-        $this->addToOverview( $title, "");
-    }
-
-    private function addToOverview( $param, $value ){
-        $this->homepageLinkList[] = array( $param, $value);
-    }
-
-    private function addLinkToHomepageAndSavePage( $link, $filename, $filecontent ){
-        $this->config->save($filename, $filecontent);
-        $this->homepageLinkList[] = array( $link, $this->relPath . HTMLFragments::getInstance()->getCrispFilename($filename));
+        $this->homepageLinkList[] = array( $title, "");
     }
 
     private function closeHierarchy(){
         $this->homepageLinkList[] = array( "", "close");
     }
 
-    public function writeUploadLog(){
-        $pagetitle = "Upload log";
-        $page = new HTMLPage($this->relPath);
-        $page->setPageTitle($pagetitle);
-        $page->appendToBody(
-            "<h1>".htmlspecialchars($pagetitle)."</h1>\n".
-            '<p>Last updated on: '. date("D M j G:i:s T Y")."</p>\n".
-            "<table><tr><th>Timestamp</th><th>Channels.conf of user</th><th>Source</th><th>Description</th></tr>\n"
-        );
-        $result = $this->db->query(
-            "SELECT DATETIME( timestamp, 'unixepoch', 'localtime' ) AS datestamp, user, description, source ".
-            "FROM upload_log ORDER BY timestamp DESC LIMIT 100"
-        );
-        foreach ($result as $row) {
-            $page->appendToBody(
-                '<tr><td>'.
-                htmlspecialchars( $row["datestamp"] ). "</td><td>".
-                htmlspecialchars( substr($row["user"],0,2)."..." ). "</td><td>".
-                htmlspecialchars( $row["source"] ). "</td><td>".
-                htmlspecialchars( $row["description"] ). "</td>".
-                "</tr>\n"
-            );
-        }
-        $page->appendToBody( "<table>\n" );
-        $this->addLinkToHomepageAndSavePage($pagetitle, "upload_log.html", $page->getContents() );
-    }
-
-    private function renderDEComparison(){
-        $pagetitle = "Comparison: Parameters of German public TV channels at different providers";
-        $page = new HTMLPage($this->relPath);
-        $page->setPageTitle($pagetitle);
-        $page->appendToBody(
-            '<h1>'.htmlspecialchars( $pagetitle ).'</h1>
-            <p>Last updated on: '. date("D M j G:i:s T Y").'</p>'
-        );
-        $html_table = "";
-        $x = new channelIterator( $shortenSource = false );
-        $x->init2( "SELECT * FROM channels WHERE x_label LIKE 'de.%' AND lower(x_label) LIKE '%public%' ORDER by x_label ASC, lower(name) ASC, source ASC");
-        $lastname = "";
-        while ($x->moveToNextChannel() !== false){
-            $carray = $x->getCurrentChannelObject()->getAsArray();
-            if (strtolower($carray["name"]) != strtolower($lastname)){
-                if ($lastname != ""){
-                    $html_table .= "</table>\n</div>\n";
-                }
-                $html_table .= "<h2>".htmlspecialchars($carray["name"])."</h2>\n<h3>Table view</h3>\n<div class=\"tablecontainer\"><table>\n<tr>";
-                foreach ($x->getCurrentChannelArrayKeys() as $header){
-                    $html_table .= '<th class="'.htmlspecialchars($header).'">'.htmlspecialchars(ucfirst($header))."</th>\n";
-                }
-                $html_table .= "</tr>\n";
-            }
-            $html_table .= "<tr>\n";
-            foreach ($carray as $param => $value){
-                if ($param == "apid" || $param == "caid"){
-                    $value = str_replace ( array(",",";"), ",<br/>", htmlspecialchars($value ));
-                }
-                elseif ($param == "x_last_changed"){
-                    $value = date("D, d M Y H:i:s", $value);
-                }
-                else
-                    $value = htmlspecialchars($value);
-                $html_table .= '<td class="'.htmlspecialchars($param).'">'.$value."</td>\n";
-            }
-            $html_table .= "</tr>\n";
-            $lastname = $carray["name"];
-        }
-        $html_table .= "</table></div>\n";
-        $page->appendToBody( $html_table );
-        $filename = "parameter_comparison_de.html";
-        $this->addLinkToHomepageAndSavePage( "de_Comparison: Parameters of German public TV channels at different providers", $filename, $page->getContents() );
-    }
-
-    private function renderIndexPage(){
-        $pagetitle = "Overview";
-        $page = new HTMLPage($this->relPath);
-        $page->setPageTitle($pagetitle);
-        $page->appendToBody(
-            '<h1>'.htmlspecialchars( $pagetitle ).'</h1>
-            <ul>
-        ');
-        foreach ($this->homepageLinkList as $line){
-            $title = $line[0];
-            $sourceParts = explode("_", $title);
-            if (count($sourceParts) > 1){
-                $flag = HTMLFragments::getFlagIcon($sourceParts[0], "");
-                $title = $flag;
-                foreach ($sourceParts as $part){
-                    $title .= " " . $part;
-                }
-            }
-           $url = $line[1];
-           if($url == "")
-               $page->appendToBody( '<li><b>'.htmlspecialchars( $title )."</b></li>\n<ul>");
-           elseif($url == "close")
-               $page->appendToBody( "<br clear=\"all\" /></ul>\n" );
-           else
-              $page->appendToBody( '<li><a href="'. urldecode( $url ) .'">'.$title ."</a></li>\n" );
-        }
-
-        $page->appendToBody( "<br clear=\"all\" /></ul>\n");
-        $this->config->save("index.html", $page->getContents() );
-    }
 }
 ?>

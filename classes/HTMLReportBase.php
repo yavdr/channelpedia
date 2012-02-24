@@ -38,9 +38,13 @@ class HTMLReportBase extends HTMLPage{
 
     protected function addBodyHeader(){
         $this->appendToBody(
-            '<h1>'.htmlspecialchars( $this->pageTitle ).'</h1>
-            <p>Last updated on: '. date("D M j G:i:s T Y").'</p>'
+            '<h1>'.htmlspecialchars( $this->pageTitle )."</h1>\n".
+            $this->getLastUpdated()
         );
+    }
+
+    private function getLastUpdated(){
+        return '<p>Last updated on: '. date("D M j G:i:s T Y")."</p>\n";
     }
 
     public function getParentPageLink(){
