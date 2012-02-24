@@ -32,6 +32,7 @@ class globalIndexPage extends globalHTMLReportBase{
         $title = 'Overview';
         $this->setPageTitle( $title );
         $this->addBodyHeader();
+        $this->appendToBody( "<ul>\n");
 
         foreach ($this->parent->getHomepageLinkList() as $line){
             $title = $line[0];
