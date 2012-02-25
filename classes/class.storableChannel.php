@@ -28,7 +28,7 @@ class storableChannel extends channel{
         $metaData,
         $sourceDB; //needed for db
 
-    public function __construct( $channelparams, $metaDataObj ){
+    public function __construct( $channelparams, & $metaDataObj ){
         $this->metaData = $metaDataObj;
         $this->metaData->increaseCheckedChannelCount();
         try{

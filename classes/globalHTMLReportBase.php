@@ -24,7 +24,7 @@
 
 class globalHTMLReportBase extends HTMLReportBase{
 
-    function __construct( HTMLOutputRenderer $obj ){
+    function __construct( HTMLOutputRenderer & $obj ){
         $this->parent = $obj;
         parent::__construct( $this->parent->getRelPath() );
     }

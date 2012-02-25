@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2011 Henning Pingel
+*  (c) 2011 - 2012 Henning Pingel
 *  All rights reserved
 *
 *  This script is part of the yaVDR project. yaVDR is
@@ -30,6 +30,7 @@ class updateFromScan extends channelFileIterator{
 
     public function __construct($cableSourceType, $terrSourceType){
         parent::__construct($cableSourceType, $terrSourceType);
+        //look for a special folder called scancompare
         $checkpath = $this->config->getValue("userdata"). "scancompare/";
         $infofile = $checkpath."info.txt";
         $cableProvider = "";

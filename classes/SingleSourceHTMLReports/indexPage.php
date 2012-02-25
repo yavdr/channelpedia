@@ -25,7 +25,7 @@ class indexPage extends singleSourceHTMLReportBase{
 
     private $linklist;
 
-    function __construct( HTMLOutputRenderSource $obj, $linklist ){
+    function __construct( HTMLOutputRenderSource & $obj, $linklist ){
         $this->linklist = $linklist;
         parent::__construct( $obj );
     }

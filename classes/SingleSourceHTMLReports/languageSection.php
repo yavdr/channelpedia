@@ -26,7 +26,7 @@ class languageSection extends singleSourceHTMLReportBase{
     private
         $language;
 
-    function __construct( HTMLOutputRenderSource $obj, $language ){
+    function __construct( HTMLOutputRenderSource & $obj, $language ){
         $this->language = $language;
         parent::__construct( $obj );
     }
