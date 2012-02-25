@@ -63,7 +63,7 @@ class HTMLOutputRenderer{
         $this->addDividerTitle("Reports");
         $this->renderGlobalReports();
         $this->closeHierarchy();
-        $x = new globalIndexPage( & $this);
+        $x = new globalIndexPage( $this);
         $x->popuplatePageBody();
     }
 
@@ -83,13 +83,13 @@ class HTMLOutputRenderer{
     }
 
     public function renderGlobalReports(){
-        $x = new globalChangelog( & $this);
+        $x = new globalChangelog( $this);
         $x->popuplatePageBody();
         $this->homepageLinkList[] = $x->getParentPageLink();
-        $x = new uploadLog( & $this);
+        $x = new uploadLog( $this);
         $x->popuplatePageBody();
         $this->homepageLinkList[] = $x->getParentPageLink();
-        $x = new deComparison( & $this);
+        $x = new deComparison( $this);
         $x->popuplatePageBody();
         $this->homepageLinkList[] = $x->getParentPageLink();
     }

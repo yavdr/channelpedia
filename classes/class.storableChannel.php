@@ -28,7 +28,7 @@ class storableChannel extends channel{
         $metaData,
         $sourceDB; //needed for db
 
-    public function __construct( $channelparams, & $metaDataObj ){
+    public function __construct( $channelparams, $metaDataObj ){
         $this->metaData = $metaDataObj;
         $this->metaData->increaseCheckedChannelCount();
         try{
@@ -207,7 +207,7 @@ class storableChannel extends channel{
                         "UPDATE channels SET x_last_confirmed = '" . $this->metaData->getTimestamp()."'",
                         $this->getWhereArray( "source, nid, tid, sid" )
                     );
-                    //$this->config->addToDebugLog( "updated x_last_confirmed = db response: ". $query . "\n");                   
+                    //$this->config->addToDebugLog( "updated x_last_confirmed = db response: ". $query . "\n");
                 }
             }
         }

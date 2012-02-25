@@ -67,33 +67,33 @@ class HTMLOutputRenderSource {
     public function render(){
         foreach ($this->languages as $language){
             $this->setCraftedPath( '/'.$language );
-            $x = new languageSection(& $this, $language);
+            $x = new languageSection($this, $language);
             $x->popuplatePageBody();
         }
         $this->setCraftedPath();
 
-        $x = new latestChannels(& $this);
+        $x = new latestChannels($this);
         $x->popuplatePageBody();
         $this->source_linklist[] = $x->getParentPageLink();
 
-        $x = new changelog(& $this);
+        $x = new changelog($this);
         $x->popuplatePageBody();
         $this->source_linklist[] = $x->getParentPageLink();
 
-        $x = new outdatedChannels(& $this);
+        $x = new outdatedChannels($this);
         $x->popuplatePageBody();
         $this->source_linklist[] = $x->getParentPageLink();
 
-        $x = new transponderList(& $this);
+        $x = new transponderList($this);
         $x->popuplatePageBody();
         $this->source_linklist[] = $x->getParentPageLink();
 
-        $x = new NIDCheck(& $this);
+        $x = new NIDCheck($this);
         $x->popuplatePageBody();
         $this->source_linklist[] = $x->getParentPageLink();
 
         if ($this->type === "S"){
-            $x = new satBandHelper( & $this );
+            $x = new satBandHelper( $this );
             $x->popuplatePageBody();
             $this->source_linklist[] = $x->getParentPageLink();
         }
@@ -104,7 +104,7 @@ class HTMLOutputRenderSource {
         }
         $this->setCraftedPath();
 
-        $x = new indexPage(& $this, $this->source_linklist);
+        $x = new indexPage($this, $this->source_linklist);
         $x->popuplatePageBody();
         return array( $this->puresource, "./" . HTMLFragments::getCrispFilename( $this->getCraftedPath() . "index.html"));
 

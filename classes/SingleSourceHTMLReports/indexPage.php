@@ -27,7 +27,7 @@ class indexPage extends singleSourceHTMLReportBase{
 
     function __construct( HTMLOutputRenderSource $obj, $linklist ){
         $this->linklist = $linklist;
-        parent::__construct( & $obj );
+        parent::__construct( $obj );
     }
 
     public function popuplatePageBody(){

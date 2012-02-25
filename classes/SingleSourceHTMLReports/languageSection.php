@@ -28,7 +28,7 @@ class languageSection extends singleSourceHTMLReportBase{
 
     function __construct( HTMLOutputRenderSource $obj, $language ){
         $this->language = $language;
-        parent::__construct( & $obj );
+        parent::__construct( $obj );
     }
 
     public function popuplatePageBody(){

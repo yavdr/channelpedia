@@ -25,7 +25,7 @@
 class singleSourceHTMLReportBase extends HTMLReportBase{
 
     function __construct( HTMLOutputRenderSource $obj ){
-        $this->parent = & $obj;
+        $this->parent = $obj;
         parent::__construct( $this->parent->getRelPath() );
     }
 
