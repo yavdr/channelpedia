@@ -25,6 +25,7 @@ class transponderList extends singleSourceHTMLReportBase{
 
     public function popuplatePageBody(){
         $this->setPageTitle( "Transponder list of ".$this->parent->getSource() );
+        $this->setDescription("A list of all transponder frequencies found for  DVB source ". $this->parent->getPureSource());
         $this->addBodyHeader();
 
         $result = $this->db->query(

@@ -25,11 +25,8 @@ class NIDCheck extends singleSourceHTMLReportBase{
 
     public function popuplatePageBody(){
         $this->setPageTitle( "Transponder sanity check for " .$this->parent->getSource() );
+        $this->setDescription('Report that helps to discover possibly faulty channel lists. It shows channels that share the same transponder but have different NID values. If no such channels were found, this report remains empty. There should only be one NID per transponder.');
         $this->addBodyHeader();
-        $this->appendToBody(
-            '<p>This page only has content if the channel list of this source is faulty. This means that some channel data is wrong or outdated. There should only be one NID per transponder.</p>'
-        );
-
         $result = $this->db->query(
             "SELECT channels1.frequency as fre, channels1.parameter as mod, channels1.symbolrate as sym, channels1.nid, channels2.nid
             FROM channels AS channels1

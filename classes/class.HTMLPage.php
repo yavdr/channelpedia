@@ -25,6 +25,7 @@
 class HTMLPage {
 
     protected
+        $pageTitleWasSet = false,
         $relPath = "",
         $pageBody = "",
         $keywords = "",
@@ -36,10 +37,12 @@ class HTMLPage {
     function __construct( $relPath ){
         $this->relPath = $relPath;
         $this->pageFragments = HTMLFragments::getInstance();
+        $this->pageTitleWasSet = false;
     }
 
     public function setPageTitle( $title ){
         $this->pageTitle = $title;
+        $this->pageTitleWasSet = true;
     }
 
     public function setKeywords( $keywords ){
@@ -55,6 +58,10 @@ class HTMLPage {
     }
 
     public function appendToBody( $content ){
+        $this->pageBody .= $content . "\n";
+    }
+
+    public function appendToBodyNLF( $content ){
         $this->pageBody .= $content;
     }
 

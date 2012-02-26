@@ -60,7 +60,7 @@ class HTMLOutputRenderer{
         $this->addDVBType( "C", "cable_providers", "Cable providers");
         $this->addDVBType( "T", "terr_providers",  "Terrestrial providers");
         $this->closeHierarchy();
-        $this->addDividerTitle("Reports");
+        $this->addDividerTitle("Global reports");
         $this->renderGlobalReports();
         $this->closeHierarchy();
         $x = new globalIndexPage( $this);

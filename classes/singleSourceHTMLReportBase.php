@@ -34,6 +34,10 @@ class singleSourceHTMLReportBase extends HTMLReportBase{
         parent::addBodyHeader();
     }
 
+    protected function addToOverviewAndSave( $menuLabel, $filename ){
+        parent::addToOverviewAndSave( $menuLabel, $filename, $this->description );
+    }
+
     private  function getSectionTabmenu($language){
         $menu = new HTMLControlTabMenu( $this->parent->getRelPath(), $this->config->getValue("exportfolder"));
         $sourceMenuItem = $this->parent->getVisibleType() . ": " . $this->parent->getPureSource();

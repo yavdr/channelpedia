@@ -25,19 +25,23 @@ class satBandHelper extends singleSourceHTMLReportBase{
 
     public function popuplatePageBody(){
         $this->setPageTitle( "LNB Setup helper table for satellite position " .$this->parent->getSource() );
+        $this->setDescription("Clarifies what band of satellite position " . $this->parent->getPureSource() . " provides which channels. Lists all TV and FTA radio channels grouped by the four different sat bands.");
+
         $this->addBodyHeader();
         $this->appendToBody(
-            "<p>This page contains all TV and FTA radio channels sorted by transponders and grouped by the four different sat bands:</br><ul>
-               <li>Horizontal High Band (11700 MHz to 12750 MHz)</li>
-               <li>Vertical High Band (11700 MHz to 12750 MHz)</li>
-               <li>Horizontal Low Band (10700 MHz to 11700 MHz)</li>
-               <li>Vertical Low Band (10700 Mhz to 11700 MHz)</li>
-                </ul><p>A channel list specifically grouped by sat bands might be helpful when testing a new sat cable setup, ".
+            "<p>A channel list specifically grouped by sat bands might be helpful when testing a complex DiSEqC setup, ".
                 "a new LNB/Multiswitch or when evaluating VDR with LNB sharing feature enabled. ".
                 "Basically, if your setup is flawless you should be able to receive something on any of the four sat bands ".
                 //"(as long as there are FTA channels available on each band). ".
                 //"Encrypted channels are excluded from the tables below to reduce the amount of data.".
-                "</p>\n<pre>".
+                "</p>
+            <ul>
+               <li>Horizontal High Band (11700 MHz to 12750 MHz)</li>
+               <li>Vertical High Band (11700 MHz to 12750 MHz)</li>
+               <li>Horizontal Low Band (10700 MHz to 11700 MHz)</li>
+               <li>Vertical Low Band (10700 Mhz to 11700 MHz)</li>
+                </ul>
+                <pre>".
             $this->addChannelSection( "H", "High", "TV", false ).
             $this->addChannelSection( "H", "High", "TV", true ).
             $this->addChannelSection( "H", "High", "Radio", false ).

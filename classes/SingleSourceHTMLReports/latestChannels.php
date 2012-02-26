@@ -35,8 +35,8 @@ class latestChannels extends singleSourceHTMLReportBase{
 
     public function popuplatePageBody(){
         $this->setPageTitle( "Latest channel additions on ".$this->parent->getSource() );
+        $this->setDescription("A listing of new channels on " . $this->parent->getPureSource() . " that were recently found. If an existing channel changes its name but its unique channel parameters (SID,NID,TID) stay the same, it won't show up in this list.");
         $this->addBodyHeader();
-        $this->appendToBody("<p>Channels that were recently found (only the latest 25 channels that were added after the initial upload of this source).</p>\n");
         $html_table = "";
         $timestamp = intval($this->getEarliestChannelAddedTimestamp());
         if ($timestamp != 0){

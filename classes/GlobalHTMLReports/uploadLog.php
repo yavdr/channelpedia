@@ -26,6 +26,7 @@ class uploadLog extends globalHTMLReportBase{
     public function popuplatePageBody(){
         $title = "Upload log";
         $this->setPageTitle( $title );
+        $this->setDescription( "Chronological list of the most recent channel list uploads contributed by the Channelpedia community supporters" );
         $this->addBodyHeader();
         $this->appendToBody(
             "<table><tr><th>Timestamp</th><th>Channels.conf of user</th><th>Source</th><th>Description</th></tr>\n"

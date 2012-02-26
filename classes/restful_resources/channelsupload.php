@@ -8,6 +8,8 @@
  *
  */
 
+ini_set("max_execution_time", 240); //safety buffer
+
 class channelsupload extends Resource {
 
     /**

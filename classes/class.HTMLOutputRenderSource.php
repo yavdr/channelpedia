@@ -84,10 +84,6 @@ class HTMLOutputRenderSource {
         $x->popuplatePageBody();
         $this->source_linklist[] = $x->getParentPageLink();
 
-        $x = new transponderList($this);
-        $x->popuplatePageBody();
-        $this->source_linklist[] = $x->getParentPageLink();
-
         $x = new NIDCheck($this);
         $x->popuplatePageBody();
         $this->source_linklist[] = $x->getParentPageLink();
@@ -98,6 +94,11 @@ class HTMLOutputRenderSource {
             $this->source_linklist[] = $x->getParentPageLink();
         }
 
+        $x = new transponderList($this);
+        $x->popuplatePageBody();
+        $this->source_linklist[] = $x->getParentPageLink();
+
+        //now add download links
         $this->addCompleteListLink();
         if (in_array("de", $this->languages)){
             $this->addEPGChannelmapLink();
@@ -150,17 +151,21 @@ class HTMLOutputRenderSource {
     }
 
     private function addCompleteListLink(){
-        $filename = $this->source."_complete.channels.conf";
-        $this->source_linklist[] = array("Download channels.conf (complete, sorted by transponder)", $filename);
-        $filename = $this->source."_complete_sorted_by_groups.channels.conf";
-        $this->source_linklist[] = array("Download channels.conf (complete, sorted by language sections)", $filename);
+        $this->source_linklist[] = array(
+            "Download channels.conf",
+            $this->source."_complete_sorted_by_groups.channels.conf",
+            "A complete and ready-to-use channel file with group delimiters, grouped by the regional sections and channel groups configured for this DVB source. The regional sections are sorted in alphabetical order."
+        );
+        $this->source_linklist[] = array(
+            "Download channels.conf",
+            $this->source."_complete.channels.conf",
+            "A complete and ready-to-use channel file with group delimiters, grouped by transponders and ordered by the frequency and band of the transponder"
+        );
     }
 
     private function addEPGChannelmapLink(){
-        $filename = $this->source.".epgdata2vdr_channelmap.conf";
-        $this->source_linklist[] = array("Download epgdata2vdr Channelmap", $filename);
-        $filename = $this->source.".tvm2vdr_channelmap.conf";
-        $this->source_linklist[] = array("Download tvm2vdr Channelmap", $filename);
+        $this->source_linklist[] = array("Download epgdata2vdr Channelmap", $this->source.".epgdata2vdr_channelmap.conf", "To be used with VDR plugin epgdata2vdr. Also contains NoEPG configuration string.");
+        $this->source_linklist[] = array("Download tvm2vdr Channelmap", $this->source.".tvm2vdr_channelmap.conf", "");
     }
 
     /*unused

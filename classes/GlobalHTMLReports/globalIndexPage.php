@@ -23,37 +23,35 @@
 */
 class globalIndexPage extends globalHTMLReportBase{
 
-
-    private function getLastUpdated(){
-        return '';
-    }
-
     public function popuplatePageBody(){
         $title = 'Overview';
         $this->setPageTitle( $title );
         $this->addBodyHeader();
-        $this->appendToBody( "<ul>\n");
+        $this->appendToBody( '<ul class="entryMenu">');
 
         foreach ($this->parent->getHomepageLinkList() as $line){
             $title = $line[0];
             $sourceParts = explode("_", $title);
             if (count($sourceParts) > 1){
-                $flag = $this->pageFragments->getFlagIcon($sourceParts[0], "");
+                $flag = $this->pageFragments->getFlagIcon($sourceParts[0], '');
                 $title = $flag;
                 foreach ($sourceParts as $part){
                     $title .= " " . $part;
                 }
             }
+           $ulClass = ($title === "Satellite positions") ? ' class="satPos"' : '';
            $url = $line[1];
-           if($url == "")
-               $this->appendToBody( '<li><b>'.htmlspecialchars( $title )."</b></li>\n<ul>");
+           if($url == ""){
+               $this->appendToBody( '<li><b>'.htmlspecialchars( $title ).'</b></li>');
+               $this->appendToBody( '<ul'.$ulClass.'>');
+           }
            elseif($url == "close")
-               $this->appendToBody( "<br clear=\"all\" /></ul>\n" );
+               $this->appendToBody( '<br clear="all" /></ul>' );
            else
-              $this->appendToBody( '<li><a href="'. urldecode( $url ) .'">'.$title ."</a></li>\n" );
+              $this->appendToBody( '<li><a href="'. urldecode( $url ) .'">'.$title .'</a></li>' );
         }
 
-        $this->appendToBody( "<br clear=\"all\" /></ul>\n");
+        $this->appendToBody( '<br clear="all" /></ul>');
         $this->addToOverviewAndSave("","index.html");
     }
 }

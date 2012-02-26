@@ -25,6 +25,7 @@ class outdatedChannels extends singleSourceHTMLReportBase{
 
     public function popuplatePageBody(){
         $this->setPageTitle( "Outdated channels of " .$this->parent->getSource() );
+        $this->setDescription("List of recently eclipsed channels within the portfolio of DVB source " . $this->parent->getPureSource() . ".");
         $this->addBodyHeader();
         $html_table = "";
         $timestamp = intval($this->parent->getLastConfirmedTimestamp());

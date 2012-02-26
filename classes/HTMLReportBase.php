@@ -37,14 +37,18 @@ class HTMLReportBase extends HTMLPage{
     }
 
     protected function addBodyHeader(){
-        $this->appendToBody(
-            '<h1>'.htmlspecialchars( $this->pageTitle )."</h1>\n".
-            $this->getLastUpdated()
-        );
+        if ($this->pageTitleWasSet){
+            $this->appendToBody(
+                '<h1>'.htmlspecialchars( $this->pageTitle )."</h1>\n".
+                ($this->description !== "" ? '<p class="description"><b>Description:</b> '.$this->description.'</p>' : '')
+            );
+        }
+        else
+            throw new Exception("addBodyHeader can only be called after pageTitle was set!");
     }
 
     private function getLastUpdated(){
-        return '<p>Last updated on: '. date("D M j G:i:s T Y")."</p>\n";
+        return '<p class="timestamp">This page was generated on: '. date("D M j G:i:s T Y")."</p>\n";
     }
 
     public function getParentPageLink(){
@@ -53,9 +57,15 @@ class HTMLReportBase extends HTMLPage{
         return $this->parentPageLink;
     }
 
-    protected function addToOverviewAndSave( $menuLabel, $filename ){
+    protected function addToOverviewAndSave( $menuLabel, $filename, $description = "" ){
+        $this->appendToBody($this->getLastUpdated());
         $this->config->save( $this->parent->getCraftedPath() . $filename, $this->getContents());
-        $this->parentPageLink = array( $menuLabel, $this->parent->getRelPath() . $this->pageFragments->getCrispFilename( $this->parent->getCraftedPath() . $filename));
+        $this->parentPageLink = array(
+            $menuLabel,
+            $this->parent->getRelPath() . $this->pageFragments->getCrispFilename( $this->parent->getCraftedPath() . $filename),
+            $description
+        );
     }
+
 }
 ?>

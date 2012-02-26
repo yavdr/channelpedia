@@ -25,6 +25,7 @@ class changelog extends singleSourceHTMLReportBase{
 
     public function popuplatePageBody(){
         $this->setPageTitle( 'Changelog for '.$this->parent->getSource() );
+        $this->setDescription("List of the most recent channel attribute changes on DVB source " . $this->parent->getPureSource() . ".");
         $this->addBodyHeader();
         $where = array(
             "timestamp >= " . $this->db->quote( $this->parent->getLastConfirmedTimestamp() - 60*60*24*2 ), //last confirmed + the 2 previous days

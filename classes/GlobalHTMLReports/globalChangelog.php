@@ -26,6 +26,8 @@ class globalChangelog extends globalHTMLReportBase{
     public function popuplatePageBody(){
         $title = 'Changelog for all sources';
         $this->setPageTitle( $title );
+        $this->setKeywords("changelog, changes");
+        $this->setDescription("List of the most recent channel attribute changes within all regularly uploaded DVB sources. Some lesser important changes are filtered here. Those changes are still visible in the individual changelog of the corresponding DVB source.");
         $this->addBodyHeader();
         $changelog = new HTMLChangelog( array(), " LIMIT 100", 1);
         $this->appendToBody( $changelog->getContents());

@@ -35,15 +35,6 @@ class languageSection extends singleSourceHTMLReportBase{
         $this->setPageTitle( $this->parent->getSource() . " - Section " . $this->language );
         $this->addBodyHeader( $this->language );
         $this->appendToBody("");
-
-        //$sectionTabmenu = $this->getSectionTabmenu($language); // this updates craftedPath and relpath! use before HTMLPage
-        //$page = new HTMLPage($this->relPath);
-        //$page->setPageTitle( $pagetitle );
-        /*$this->appendToBody(
-            $sectionTabmenu .
-            '<h1>'.$this->source.': Section '. $this->HTMLFragments->getFlagIcon($language, $this->relPath) .$language ."</h1>\n".
-            "<p>Last updated on: ". date("D M j G:i:s T Y")."</p>\n"
-        );*/
         $nice_html_body = "";
         $nice_html_linklist = "";
         $groupIterator = new channelGroupIterator();
@@ -59,18 +50,20 @@ class languageSection extends singleSourceHTMLReportBase{
             else
                 $shortlabel = $cols["x_label"];
             $prestyle = (strstr($shortlabel, "FTA") === false  || strstr($shortlabel, "scrambled") !== false) ? ' class = "scrambled" ' : '';
-            $escaped_shortlabel = htmlspecialchars($shortlabel);
             $icons = "";
             $icons .= (strstr($shortlabel, "FTA") === false  || strstr($shortlabel, "scrambled") !== false) ? ' <img src="'.$this->relPath.'../res/icons/lock.png" class="lock_icon" />' : '';
+            $escaped_anchor = htmlspecialchars($shortlabel);
+            $escaped_shortlabel = $escaped_anchor. " " . $icons;
             $nice_html_body .=
                 '<h2'.$prestyle.'>'.
-                '<a name ="'.$escaped_shortlabel.'">'.$escaped_shortlabel . $icons. " (" . $cols["channelcount"] . ' channels)</a>'.
+                '<a name ="'.$escaped_anchor.'">'.$escaped_shortlabel . " (" . $cols["channelcount"] . ' channels)</a>'.
                 "</h2>\n".
                 //"<h3>VDR channel format</h3>\n".
                 "<pre".$prestyle.">";
             $x = new channelIterator( $shortenSource = true);
             //print $this->source. "/" . $cols["x_label"]."\n";
             $x->init1($cols["x_label"], $this->parent->getSource(), $orderby = "UPPER(name) ASC");
+            $channelNameList = array();
             while ($x->moveToNextChannel() !== false){
                 if ($html_table == ""){
                     $html_table = "<h3>Table view</h3>\n<div class=\"tablecontainer\"><table class=\"nice_table\">\n<tr>";
@@ -81,6 +74,14 @@ class languageSection extends singleSourceHTMLReportBase{
                 }
                 $curChan = $x->getCurrentChannelObject();
                 $curChanString = htmlspecialchars($curChan->getChannelString());
+                if (strlen($curChan->getName()) >2 && substr($curChan->getName(),0,1) !== "."){
+                    if (count($channelNameList) < 16){
+                        $channelNameSegments = explode(',', $curChan->getName());
+                        $channelNameList[] = htmlspecialchars( count($channelNameSegments) > 0 ? $channelNameSegments[0] : $curChan->getName() );
+                    }
+                    elseif (count($channelNameList) === 16)
+                        $channelNameList[] = '... ';
+                }
                 $popuptitle = "". $curChan->getName(). " | ".
                     ($curChan->isSatelliteSource() ?
                         "Type: DVB-S"    . ( $curChan->onS2SatTransponder()   ? "2"        : ""           ) ." | ".
@@ -96,14 +97,14 @@ class languageSection extends singleSourceHTMLReportBase{
                     "Date last seen: "    . date("D, d M Y H:i:s", $curChan->getXLastConfirmed()  ) . " ".
                     "";
                 //check if channel might be outdated, if so, apply additional css class
-                if ( $x->getCurrentChannelObject()->getXLastConfirmed() < $this->parent->getLastConfirmedTimestamp())
+                if ( $curChan->getXLastConfirmed() < $this->parent->getLastConfirmedTimestamp())
                     $nice_html_body .= "<span title=\"".$popuptitle."\" class=\"outdated\">". $curChanString ."</span>\n";
                 else
                     $nice_html_body .= "<span title=\"".$popuptitle."\">".$curChanString."</span>\n";
 
                 $html_table .= "<tr".$prestyle.">\n";
                 //FIXME use channel object here
-                foreach ($x->getCurrentChannelObject()->getAsArray() as $param => $value){
+                foreach ($curChan->getAsArray() as $param => $value){
                     switch ($param){
                         case "apid":
                         case "caid":
@@ -139,11 +140,15 @@ class languageSection extends singleSourceHTMLReportBase{
             $html_table .= "</table></div>";
             $nice_html_body .= "</pre>\n";
             //$nice_html_body .= "</pre>\n".$html_table;
-            $nice_html_linklist .= '<li><a href="#'.$escaped_shortlabel.'">'.$escaped_shortlabel. " (" . $cols["channelcount"] . " channels)</a></li>\n";
+            // . $cols["channelcount"] . " channels: "
+            $nice_html_linklist .=
+                '<li><a href="#'.$escaped_anchor.'"><span class="anchorlist_groupname">'.$escaped_shortlabel. "</span> ".
+                (count($channelNameList) > 0 ? '<span class="anchorlist_channelnames"> (<span class="single">'.implode('</span>, <span class="single">',$channelNameList).'</span>)</span></span>':'').
+                '</a></li>'."\n";
         }
 
         $this->appendToBody(
-            "<h2>Overview</h2><ul class=\"overview\">" .
+            "<h2>Groups Overview</h2><ul class=\"group_anchors\">" .
             $nice_html_linklist . "</ul>\n".
             $nice_html_body
         );

@@ -80,6 +80,11 @@ pre {
     font-size: 1em;
 }
 
+pre.changelog {
+    border: none;
+    background-color: #eeeeee; 
+}
+
 pre span:hover{
     background-color: #eeeeee;
 }
@@ -156,14 +161,14 @@ ul li {
     color: #4E78B1;
 }
 
-ul ul li {
+ul.entryMenu ul li {
     padding: 2px 0px 2px 0px;
     font-size: 1.15em;
     color: #4E78B1;
     margin: 2px;
 }
 
-ul ul ul ul li, 
+ul.entryMenu ul.satPos li, 
 ul.section_menu li{
     display: inline;
     float: left;
@@ -175,8 +180,8 @@ ul.section_menu{
     padding: 0px;
 }
 
-ul ul li a, 
-ul ul ul ul li a, 
+ul.entryMenu ul li a, 
+ul.entryMenu ul ul ul li a, 
 ul.section_menu li a,
 ul.section_menu li.active span{
     font-weight: bold;
@@ -210,8 +215,8 @@ ul.section_menu li.active span{
 
 }
 
-ul ul li a:hover,
-ul ul ul ul li a:hover,
+ul.entryMenu ul li a:hover,
+ul.entryMenu ul ul ul li a:hover,
 ul.section_menu li a:hover
 {
     background-color: orange;
@@ -224,31 +229,61 @@ ul.section_menu li.active span{
     filter: none;
     background-color: white;
     color: black;
-    
 }
 
-
- /*
-ul.overview{
-    border: 1px solid #4E78B1; 
-    -moz-border-radius: 10px;
-    border-radius: 10px;
+/*ul.group_anchors li{
+    font-size: 1.0em;
 }*/
 
-ul.overview li{
+ul.group_anchors li a{
     font-size: 1.0em;
-}
-
-ul.overview li a{
-    font-size: 1.0em;
-    font-weight: bold;
     text-decoration: none;
-    color: #4E78B1;
 }
 
-ul.overview li a:hover{
-   color: orange;
+ul.group_anchors li a span.anchorlist_channelnames{
+    color: #E57A3C;
+    font-weight: bold;
+    font-size: 0.80em;
 }
+
+ul.group_anchors li a span.anchorlist_channelnames span.single{
+    color: #888888;
+    font-weight: normal;
+    white-space: nowrap;
+}
+
+
+ul.group_anchors li a span.anchorlist_groupname{
+    font-weight: bold;
+    color: #4E78B1;
+    font-size: 1.0em;
+}
+
+/*
+ul.group_anchors li:hover{
+   background-color: orange;
+}*/
+
+
+ul.singleSourceMainMenu{
+}
+
+ul.singleSourceMainMenu li{
+}
+
+ul.singleSourceMainMenu li a {
+    font-weight: bold;
+    color: #4E78B1;
+    font-size: 1.0em;
+    text-decoration: none;
+}
+
+ul.singleSourceMainMenu li span{
+    color: #888888;
+    font-size: 0.8em;
+}
+
+
 
 p.warning{
     border: 1px solid wheat; 
@@ -261,6 +296,15 @@ p.warning{
     padding: 2px;
 }
 
+p.description{
+    /*border: 1px solid wheat;*/ 
+    background-color: Moccasin;
+    border-color: #E57A3C;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    padding: 10px;
+}
+
 img.flag_icon{
   padding-right: 3px;
 }
@@ -271,4 +315,11 @@ div#logoimage{
     height: 50px;
     margin-left: auto;
     margin-right: auto;
+}
+
+p.timestamp{
+    font-size: 1.0em;
+    color: #333333;
+    text-align: center;
+    margin-top: 20px;
 }

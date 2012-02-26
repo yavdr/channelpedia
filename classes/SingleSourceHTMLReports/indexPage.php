@@ -32,10 +32,12 @@ class indexPage extends singleSourceHTMLReportBase{
 
     public function popuplatePageBody(){
         $this->setPageTitle( $this->parent->getSource() . " - Overview");
+        $this->setDescription("All regional sections, reports and downloads for ". $this->parent->getPureSource() . " in a nutshell.");
         $this->addBodyHeader( "overview" );
-        $this->appendToBody("<ul>\n");
+        $this->appendToBody('<ul class="singleSourceMainMenu">'."\n");
         foreach ($this->linklist as $linkarray){
-            $this->appendToBody('<li><a href="'.$linkarray[1].'">'.$linkarray[0].'</a></li>'."\n");
+            $description = ( $linkarray[2] !== "" ? ': <span>'.$linkarray[2] .'</span>' : '');
+            $this->appendToBody('<li><a href="'.$linkarray[1].'">'.$linkarray[0].'</a>' . $description . '</li>'."\n");
         }
         $this->appendToBody("</ul>");
         $this->addToOverviewAndSave( $this->parent->getPureSource(), "index.html");

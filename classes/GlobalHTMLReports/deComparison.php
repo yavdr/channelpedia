@@ -25,6 +25,8 @@ class deComparison extends globalHTMLReportBase{
 
     public function popuplatePageBody(){
         $this->setPageTitle( "Comparison: Parameters of German public TV channels at different providers" );
+        $this->setKeywords("german, deutsch, kanäle, vergleich");
+        $this->setDescription("Allows to compare channel attributes of selected German TV channels. It should help to find similarities and differences.");
         $this->addBodyHeader();
         $x = new channelIterator( $shortenSource = false );
         $x->init2( "SELECT * FROM channels WHERE x_label LIKE 'de.%' AND lower(x_label) LIKE '%public%' ORDER by x_label ASC, lower(name) ASC, source ASC");

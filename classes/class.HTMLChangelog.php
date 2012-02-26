@@ -30,7 +30,7 @@ class HTMLChangelog {
 
     function __construct( $where, $limit, $importance) {
         $this->db = dbConnection::getInstance();
-        $this->page = "<table>\n";
+        $this->page = "";
         if ($importance === 1 ){
             $where[] = " importance = $importance ";
         }
@@ -53,14 +53,13 @@ class HTMLChangelog {
             }
             $class = "changelog_row_style_".$row["importance"];
             $this->page .=
-                '<tr class="'.$class.'"><td>'.
-                htmlspecialchars( $row["datestamp"] ). "</td><td>".
-                htmlspecialchars( $row["combined_id"] ). "</td><td>".
-                htmlspecialchars( $row["name"] ). "</td><td>".
+                '<div class="'.$class.'">'.
+                "<p>On ". htmlspecialchars( $row["datestamp"] ). ", attributes of the channel called '<b>".
+                htmlspecialchars( $row["name"] ). "</b>' (with the unique ID ".htmlspecialchars( $row["combined_id"] ).
+                ') have changed: </p><pre class="changelog">'.
                 $desc.
-                "</td></tr>\n";
+                "</pre></div>\n";
         }
-        $this->page .= "</table>\n";
     }
 
     public function getContents(){
