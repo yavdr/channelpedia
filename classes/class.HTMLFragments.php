@@ -74,10 +74,24 @@ class HTMLFragments{
         return self::$instance;
     }
 
-    public function getHTMLHeader($pagetitle, $relPath){
+    public function getHTMLHeader($pagetitle = "", $relPath = "", $keywords = "", $description = ""){
+        if ($keywords === "")
+            $keywords = "";
+        if ($description === "")
+            $description = "Pre-sorted channel list collections for VDR 1.7.4+ and ReelBox";
         return preg_replace(
-            array( "/\[PAGE_TITLE\]/", "/\[CHANNELPEDIA_REL_PATH\]/" ),
-            array( htmlspecialchars( $pagetitle ), $relPath ),
+            array(
+                "/\[PAGE_TITLE\]/",
+                "/\[CHANNELPEDIA_REL_PATH\]/",
+                "/\[KEYWORDS\]/",
+                "/\[DESCRIPTION\]/",
+            ),
+            array(
+                htmlspecialchars( $pagetitle ),
+                htmlspecialchars( $relPath ),
+                htmlspecialchars( $keywords ),
+                htmlspecialchars( $description )
+            ),
             $this->html_header_template
         );
     }
@@ -111,4 +125,36 @@ class HTMLFragments{
         return $image;
     }
 }
+
+class HTMLControlTabMenu{
+
+    private
+        $relPath,
+        $controlMarkup,
+        $exportfolder;
+
+    function __construct($relPath, $exportfolder){
+        $this->relPath = $relPath;
+        $this->controlMarkup = "";
+        $this->exportfolder = $exportfolder;
+    }
+
+    public function addMenuItem( $label, $filename, $class = "", $showflagicon = false){
+        $classAttr = ($class === "") ? "" : ' class="'.$class.'"';
+        $path = $this->exportfolder . substr( $filename, 0, strrpos ( $filename , "/" ) );
+        //$this->config->addToDebugLog( "HTMLOutputRenderer/getMenuItem: file '".$filename."', link: '$link'\n" );
+        $label = ($showflagicon ? HTMLFragments::getFlagIcon($label, $this->relPath) : "") . $label;
+        if ($class !== "active")
+            $label = '<a href="'.HTMLFragments::getCrispFilename($filename).'">'. $label .'</a>';
+        else
+            $label = '<span>'. $label .'</span>';
+        $this->controlMarkup .= '<li'.$classAttr.'>' . $label . '</li>'."\n";
+    }
+
+    public function getMarkup(){
+        return "<ul class=\"section_menu\">\n" . $this->controlMarkup . "<br clear=\"all\" /></ul>\n";
+
+    }
+}
+
 ?>

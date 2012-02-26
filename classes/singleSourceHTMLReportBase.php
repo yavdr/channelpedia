@@ -35,37 +35,30 @@ class singleSourceHTMLReportBase extends HTMLReportBase{
     }
 
     private  function getSectionTabmenu($language){
-        $class = "";
+        $menu = new HTMLControlTabMenu( $this->parent->getRelPath(), $this->config->getValue("exportfolder"));
         $sourceMenuItem = $this->parent->getVisibleType() . ": " . $this->parent->getPureSource();
-        if ("overview" == $language){
+        switch ($language){
+        case "overview":
             $language = "";
-            $tabmenu = $this->getMenuItem( $sourceMenuItem, "index.html", "active", false );
-        }
-        else if ("" == $language){
+            $menu->addMenuItem( $sourceMenuItem, "index.html", "active", false );
+            break;
+        case "":
             $language = "";
-            $tabmenu = $this->getMenuItem( $sourceMenuItem, "index.html", "", false );
-        }
-        else{
-            $tabmenu = $this->getMenuItem( $sourceMenuItem, "../index.html", "", false );
+            $menu->addMenuItem( $sourceMenuItem, "index.html", "", false );
+            break;
+        default:
+            $menu->addMenuItem( $sourceMenuItem, "../index.html", "", false );
+            break;
         }
         foreach ($this->parent->getLanguages() as $language_temp){
             if ("" == $language)
-                $tabmenu .= $this->getMenuItem($language_temp, $language_temp."/index.html", "", true);
+                $menu->addMenuItem($language_temp, $language_temp."/index.html", "", true);
             else{
                 $class = ($language_temp == $language) ? "active" : "";
-                $tabmenu .= $this->getMenuItem($language_temp, "../". $language_temp."/index.html", $class, true );
+                $menu->addMenuItem($language_temp, "../". $language_temp."/index.html", $class, true );
             }
         }
-        $tabmenu = "<ul class=\"section_menu\">" . $tabmenu . "<br clear=\"all\" /></ul>";
-        return $tabmenu;
-    }
-
-    private function getMenuItem( $link, $filename, $class = "", $showflagicon = false){
-        $class = ($class === "") ? "" : ' class="'.$class.'"';
-        $path = $this->config->getValue("exportfolder") . substr( $filename, 0, strrpos ( $filename , "/" ) );
-        $this->config->addToDebugLog( "HTMLOutputRenderer/getMenuItem: file '".$filename."', link: '$link'\n" );
-        return '<li'.$class.'><a href="'.$this->pageFragments->getCrispFilename($filename).'">'.
-            ($showflagicon ? $this->pageFragments->getFlagIcon($link, $this->parent->getRelPath()) : "") . $link .'</a></li>'."\n";
+        return $menu->getMarkup();
     }
 }
 ?>

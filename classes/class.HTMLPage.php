@@ -27,6 +27,8 @@ class HTMLPage {
     protected
         $relPath = "",
         $pageBody = "",
+        $keywords = "",
+        $description = "",
         $pageTitle = "undefined pagetitle",
         $pageFragments;
 
@@ -38,6 +40,14 @@ class HTMLPage {
 
     public function setPageTitle( $title ){
         $this->pageTitle = $title;
+    }
+
+    public function setKeywords( $keywords ){
+        $this->keywords = $keywords;
+    }
+
+    public function setDescription( $description ){
+        $this->description = $description;
     }
 
     protected function clearBody(){
@@ -53,7 +63,7 @@ class HTMLPage {
     }
 
     private function getHTMLHeader(){
-        return $this->pageFragments->getHTMLHeader($this->pageTitle, $this->relPath);
+        return $this->pageFragments->getHTMLHeader($this->pageTitle, $this->relPath, $this->keywords, $this->description);
     }
 
     private function getHTMLFooter(){

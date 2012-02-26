@@ -163,7 +163,8 @@ ul ul li {
     margin: 2px;
 }
 
-ul ul ul ul li, ul.section_menu li{
+ul ul ul ul li, 
+ul.section_menu li{
     display: inline;
     float: left;
 }
@@ -176,8 +177,8 @@ ul.section_menu{
 
 ul ul li a, 
 ul ul ul ul li a, 
-ul.section_menu li a
-{
+ul.section_menu li a,
+ul.section_menu li.active span{
     font-weight: bold;
     text-decoration: none;
     color: orange;
@@ -189,7 +190,8 @@ ul.section_menu li a
     border-radius: 10px;
  }
 
-ul.section_menu li a{
+ul.section_menu li a,
+ul.section_menu li.active span{
     border-width: 1px 1px 1px 1px;
     padding: 4px 8px 4px 8px;
     margin: 2px 0px 2px 0px;
@@ -216,13 +218,13 @@ ul.section_menu li a:hover
     color: red;
 }
 
-ul.section_menu li.active a,
-ul.section_menu li.active a:hover{
+ul.section_menu li.active span{
     border-width: 1px 1px 0px 1px;
     background: none;
     filter: none;
     background-color: white;
     color: black;
+    
 }
 
 
