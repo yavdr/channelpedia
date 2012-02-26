@@ -32,6 +32,7 @@ class languageSection extends singleSourceHTMLReportBase{
     }
 
     public function popuplatePageBody(){
+        $previewChannelLimit = 100;
         $this->setPageTitle( $this->parent->getSource() . " - Section " . $this->language );
         $this->addBodyHeader( $this->language );
         $this->appendToBody("");
@@ -49,17 +50,18 @@ class languageSection extends singleSourceHTMLReportBase{
                 $shortlabel =$shortlabelparts[1];
             else
                 $shortlabel = $cols["x_label"];
-            $prestyle = (strstr($shortlabel, "FTA") === false  || strstr($shortlabel, "scrambled") !== false) ? ' class = "scrambled" ' : '';
+            $prestyle = (strstr($shortlabel, "FTA") === false  || strstr($shortlabel, "scrambled") !== false) ? 'scrambled' : 'fta';
             $icons = "";
             $icons .= (strstr($shortlabel, "FTA") === false  || strstr($shortlabel, "scrambled") !== false) ? ' <img src="'.$this->relPath.'../res/icons/lock.png" class="lock_icon" />' : '';
             $escaped_anchor = htmlspecialchars($shortlabel);
             $escaped_shortlabel = $escaped_anchor. " " . $icons;
             $nice_html_body .=
-                '<h2'.$prestyle.'>'.
-                '<a name ="'.$escaped_anchor.'">'.$escaped_shortlabel . " (" . $cols["channelcount"] . ' channels)</a>'.
+                '<a name ="'.$escaped_anchor.'">'.
+                '<h2 class="'.$prestyle.'">'.
+                $escaped_shortlabel . " (" . $cols["channelcount"] . ' channel'.($cols["channelcount"] !== 1 ? 's':'').')'.
                 "</h2>\n".
                 //"<h3>VDR channel format</h3>\n".
-                "<pre".$prestyle.">";
+                '<pre class="'.$prestyle.'">';
             $x = new channelIterator( $shortenSource = true);
             //print $this->source. "/" . $cols["x_label"]."\n";
             $x->init1($cols["x_label"], $this->parent->getSource(), $orderby = "UPPER(name) ASC");
@@ -75,11 +77,11 @@ class languageSection extends singleSourceHTMLReportBase{
                 $curChan = $x->getCurrentChannelObject();
                 $curChanString = htmlspecialchars($curChan->getChannelString());
                 if (strlen($curChan->getName()) >2 && substr($curChan->getName(),0,1) !== "."){
-                    if (count($channelNameList) < 16){
+                    if (count($channelNameList) < $previewChannelLimit){
                         $channelNameSegments = explode(',', $curChan->getName());
                         $channelNameList[] = htmlspecialchars( count($channelNameSegments) > 0 ? $channelNameSegments[0] : $curChan->getName() );
                     }
-                    elseif (count($channelNameList) === 16)
+                    elseif (count($channelNameList) === $previewChannelLimit)
                         $channelNameList[] = '... ';
                 }
                 $popuptitle = "". $curChan->getName(). " | ".
@@ -102,7 +104,7 @@ class languageSection extends singleSourceHTMLReportBase{
                 else
                     $nice_html_body .= "<span title=\"".$popuptitle."\">".$curChanString."</span>\n";
 
-                $html_table .= "<tr".$prestyle.">\n";
+                $html_table .= '<tr class="'.$prestyle.'">'."\n";
                 //FIXME use channel object here
                 foreach ($curChan->getAsArray() as $param => $value){
                     switch ($param){
@@ -138,18 +140,18 @@ class languageSection extends singleSourceHTMLReportBase{
                 $html_table .= "</tr>\n";
             }
             $html_table .= "</table></div>";
-            $nice_html_body .= "</pre>\n";
+            $nice_html_body .= "</pre>\n</a>\n";
             //$nice_html_body .= "</pre>\n".$html_table;
             // . $cols["channelcount"] . " channels: "
             $nice_html_linklist .=
-                '<li><a href="#'.$escaped_anchor.'"><span class="anchorlist_groupname">'.$escaped_shortlabel. "</span> ".
-                (count($channelNameList) > 0 ? '<span class="anchorlist_channelnames"> (<span class="single">'.implode('</span>, <span class="single">',$channelNameList).'</span>)</span></span>':'').
+                '<li><a href="#'.$escaped_anchor.'"><span class="anchorlist_groupname '.$prestyle.'">'.$escaped_shortlabel. "</span><br/>".
+                (count($channelNameList) > 0 ? '<span class="anchorlist_channelnames"> <span class="single">'.implode('</span> / <span class="single">',$channelNameList).'</span></span></span>':'').
                 '</a></li>'."\n";
         }
 
         $this->appendToBody(
-            "<h2>Groups Overview</h2><ul class=\"group_anchors\">" .
-            $nice_html_linklist . "</ul>\n".
+            "<h2>Groups Overview</h2>\n<div class=\"group_anchors\"><ul class=\"group_anchors\">\n" .
+            $nice_html_linklist . "</ul></div>\n".
             $nice_html_body
         );
         $this->addToOverviewAndSave( "", "index.html");
