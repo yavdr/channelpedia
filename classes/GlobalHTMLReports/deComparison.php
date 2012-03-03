@@ -29,7 +29,17 @@ class deComparison extends globalHTMLReportBase{
         $this->setDescription("Allows to compare channel attributes of selected German TV channels. It should help to find similarities and differences.");
         $this->addBodyHeader();
         $x = new channelIterator( $shortenSource = false );
-        $x->init2( "SELECT * FROM channels WHERE x_label LIKE 'de.%' AND lower(x_label) LIKE '%public%' ORDER by x_label ASC, lower(name) ASC, source ASC");
+        $x->init2("
+            SELECT * FROM channels
+            WHERE
+                x_label LIKE 'de.%' AND
+                lower(x_label) LIKE '%public%'
+
+            ORDER BY
+                x_label ASC,
+                lower(name) ASC,
+                source ASC
+        ");
         $lastname = "";
         while ($x->moveToNextChannel() !== false){
             $carray = $x->getCurrentChannelObject()->getAsArray();

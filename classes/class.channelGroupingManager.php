@@ -345,13 +345,13 @@ class channelGroupingManager{
         }
 
         //this should be written into a separate log for grouping improvements
-        if (substr($label,0, 13) !== "uncategorized"){
+        /*if (substr($label,0, 13) !== "uncategorized"){
             $sqlquery = "SELECT * FROM channels $where2 x_label != '' AND x_label != ". $this->db->quote($label);
             $result = $this->db->query($sqlquery);
             foreach ($result as $row){
                 $this->config->addToDebugLog( "Notice: Channel '".$row["name"]."' is already tagged with '".$row["x_label"]."'. We just tried to tag it with '$label'\n" );
             }
-        }
+        }*/
 
         //now only update channels with EMPTY x_label field!
         $sqlquery = "UPDATE channels SET x_label=". $this->db->quote($label) ." $where";

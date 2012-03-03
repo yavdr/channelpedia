@@ -31,10 +31,16 @@ class uploadLog extends globalHTMLReportBase{
         $this->appendToBody(
             "<table><tr><th>Timestamp</th><th>Channels.conf of user</th><th>Source</th><th>Description</th></tr>\n"
         );
-        $result = $this->db->query(
-            "SELECT DATETIME( timestamp, 'unixepoch', 'localtime' ) AS datestamp, user, description, source ".
-            "FROM upload_log ORDER BY timestamp DESC LIMIT 100"
-        );
+        $result = $this->db->query("
+            SELECT
+                DATETIME( timestamp, 'unixepoch', 'localtime' ) AS datestamp,
+                user,
+                description,
+                source
+            FROM upload_log
+            ORDER BY timestamp
+            DESC LIMIT 100
+        ");
         foreach ($result as $row) {
             $this->appendToBody(
                 '<tr><td>'.

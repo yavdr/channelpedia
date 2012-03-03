@@ -100,10 +100,12 @@ class dbConnection {
     }
 
     public function query( $statement ){
-        //$this->config->addToDebugLog( "DB-Query: $statement\n");
+        //$starttime = time();
         $result = $this->dbh->query( $statement );
         if ($result === false)
             throw new Exception( $statement . "\n". print_r($this->dbh->errorInfo(), true) . "");
+        //$duration = (time() - $starttime) / 60;
+        //$this->config->addToDebugLog( "DB-Query: Duration: $duration seconds - $statement\n");
         return $result;
     }
 

@@ -154,7 +154,7 @@ class config {
 
     public function save( $filename, $filecontent ){
         $path = $this->getValue("exportfolder") . substr( $filename, 0, strrpos ( $filename , "/" ) );
-        $this->addToDebugLog( "save: file '".$filename."'\n" );
+        //$this->addToDebugLog( "save: file '".$filename."'\n" );
         if (!is_dir($path))
             mkdir($path, 0777, true);
         file_put_contents($this->getValue("exportfolder") .  $filename, $filecontent );

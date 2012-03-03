@@ -181,14 +181,6 @@ td.source{
 td.sid, td.nid, td.rid, td.rid, td.tpid, td.frequency, td.symbolrate{
     text-align: right;
 }
-
-table.nice_table th.source, table.nice_table td.source,
-th.x_label, td.x_label
-/*th.x_timestamp_added, td.x_timestamp_added,  
-th.x_last_confirmed, td.x_last_confirmed*/
-{ 
-    display: none;
-}
  
 ul li {
     padding: 10px 0px 2px 0px;
@@ -346,8 +338,14 @@ p.description{
     padding: 10px;
 }
 
+img.flag_icon,
+img.lock_icon{
+  border-width: 0px;
+  margin-width: 0px;
+}
+
 img.flag_icon{
-  padding-right: 3px;
+  padding: 0px 3px 0px 0px;
 }
 
 div#logoimage{

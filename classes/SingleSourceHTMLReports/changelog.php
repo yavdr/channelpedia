@@ -29,7 +29,8 @@ class changelog extends singleSourceHTMLReportBase{
         $this->addBodyHeader();
         $where = array(
             "timestamp >= " . $this->db->quote( $this->parent->getLastConfirmedTimestamp() - 60*60*24*2 ), //last confirmed + the 2 previous days
-            "combined_id LIKE ".$this->db->quote( $this->parent->getSource()."%" ) . " "
+            "combined_id LIKE ".$this->db->quote( $this->parent->getSource()."%" ) . " ",
+            "source = ".$this->db->quote( $this->parent->getSource() )
         );
         $changelog = new HTMLChangelog( $where, " LIMIT 100", 1);
         $this->appendToBody( $changelog->getContents() );
