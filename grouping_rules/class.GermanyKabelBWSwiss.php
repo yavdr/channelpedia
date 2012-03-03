@@ -21,19 +21,35 @@
 *  GNU General Public License for more details.
 *
 */
-class changelog extends singleSourceHTMLReportBase{
 
-    public function popuplatePageBody(){
-        $this->setPageTitle( 'Changelog for '.$this->parent->getSource() );
-        $this->setDescription("List of the most recent channel attribute changes on DVB source " . $this->parent->getPureSource() . ".");
-        $this->addBodyHeader();
-        $where = array(
-            "timestamp >= " . $this->db->quote( $this->parent->getLastConfirmedTimestamp() - 60*60*24*2 ), //last confirmed + the 2 previous days
-            "combined_id LIKE ".$this->db->quote( $this->parent->getSource()."%" )
-        );
-        $changelog = new HTMLChangelog( $where, " LIMIT 100", 1);
-        $this->appendToBody( $changelog->getContents() );
-        $this->addToOverviewAndSave('Changelog', "changelog.html");
+class GermanyKabelBWSwiss extends ruleBase {
+
+    function __construct(){
+
     }
+
+    function getConfig(){
+        return array(
+            "country" => "ch",
+            "lang" => "deu", //this is the language code used in the channels audio description
+            "validForSatellites" => array(),
+            "validForCableProviders" => array("C[de_KabelBW_Heidelberg]"),
+            "validForTerrProviders" => array(),//none
+        );
+    }
+
+    function getGroups(){
+        return array(
+            array(
+                "title" => "Public",
+                "outputSortPriority" => 1,
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeSDTV,
+                "customwhere" =>  " AND name LIKE 'SF%'"
+            ),
+        );
+    }
+
 }
+
 ?>

@@ -76,9 +76,9 @@ class HTMLOutputRenderSource {
         $x->popuplatePageBody();
         $this->source_linklist[] = $x->getParentPageLink();
 
-        //$x = new changelog($this);
-        //$x->popuplatePageBody();
-        //$this->source_linklist[] = $x->getParentPageLink();
+        $x = new changelog($this);
+        $x->popuplatePageBody();
+        $this->source_linklist[] = $x->getParentPageLink();
 
         $x = new outdatedChannels($this);
         $x->popuplatePageBody();

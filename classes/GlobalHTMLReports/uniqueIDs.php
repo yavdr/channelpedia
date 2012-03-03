@@ -63,7 +63,7 @@ class uniqueIDs extends globalHTMLReportBase{
                 x_label
             FROM channels
             WHERE
-                x_label LIKE 'de.%'
+                ( x_label LIKE 'de.%' OR x_label LIKE 'at.%' OR x_label LIKE 'ch.%' )
                 AND x_label NOT LIKE '%uncategorized.%'
                 AND NOT x_label = 'de.024.sky_de SDTV scrambled'
                 AND name NOT Like '.%'
@@ -185,7 +185,7 @@ class uniqueIDs extends globalHTMLReportBase{
         elseif (stristr($labelparts[2], "radio") !== false){
             $type = "radio";
         }
-        return "cp[v0.1]." . $labelparts[0] . "." . $type . ".". $name . $ext;
+        return "cp[v0.1]." . $type . "." . $labelparts[0] . "." . $name . $ext;
      }
 
     private function isBlacklisted ($name){

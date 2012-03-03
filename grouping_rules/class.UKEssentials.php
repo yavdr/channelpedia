@@ -224,7 +224,7 @@ class UKEssentials  extends ruleBase {
                 "outputSortPriority" => 40,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeHDTV,
-                "customwhere" => " AND (UPPER(name) LIKE '%SP NEWS%' OR UPPER(name) LIKE '%SPORT%' OR UPPER(name) LIKE 'ESPN%')"
+                "customwhere" => " AND (UPPER(name) LIKE '%SP NEWS%' OR UPPER(name) LIKE '%SPORT%' OR UPPER(name) LIKE 'ESPN%' OR UPPER(name) LIKE '%SPTS%')"
             ),
 
             array(
