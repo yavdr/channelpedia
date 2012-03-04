@@ -91,7 +91,7 @@ $global_source_config = array(
     ),
     "DVB-C" => array(
 /*
-        "de_KabelBW_Heidelberg"         => $default_lang_de_cable_provider,
+        "de_KabelBW_Heidelberg"         => array("de","ch","fr"),
         "de_KabelDeutschland_Flensburg" => $default_lang_de_cable_provider,
         "de_KabelDeutschland_Muenchen"  => $default_lang_de_cable_provider,
         "de_KabelDeutschland_Nuernberg" => $default_lang_de_cable_provider,

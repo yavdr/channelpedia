@@ -28,6 +28,7 @@ require_once PATH_TO_CLASSES . '../grouping_rules/class.GermanyEssentials.php';
 require_once PATH_TO_CLASSES . '../grouping_rules/class.GermanySatNonEssentials.php';
 require_once PATH_TO_CLASSES . '../grouping_rules/class.GermanyKabelBW.php';
 require_once PATH_TO_CLASSES . '../grouping_rules/class.GermanyKabelBWSwiss.php';
+require_once PATH_TO_CLASSES . '../grouping_rules/class.GermanyKabelBWFrench.php';
 require_once PATH_TO_CLASSES . '../grouping_rules/class.GermanyKabelDeutschland.php';
 require_once PATH_TO_CLASSES . '../grouping_rules/class.GermanyWilhelmTel.php';
 require_once PATH_TO_CLASSES . '../grouping_rules/class.GermanyUnityMedia.php';
@@ -149,6 +150,7 @@ class channelGroupingManager{
             "GermanyEssentials"        => new GermanyEssentials(),
             "GermanySatNonEssential"   => new GermanySatNonEssentials(),
 
+            "GermanyKabelBWFrench"     => new GermanyKabelBWFrench(),
             "GermanyKabelBWSwiss"      => new GermanyKabelBWSwiss(),
             "GermanyKabelBW"           => new GermanyKabelBW(),
 

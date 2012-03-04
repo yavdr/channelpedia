@@ -40,10 +40,14 @@ class uniqueIDs extends globalHTMLReportBase{
               '.' => '',
               ' ' => '',
               '!' => '',
-              $this->db->quote("'") => '',
+              '`' => '',
+              "'" => '',
+              '/' => '',
+              '?' => '',
               '|' => '',
-              '&' => '_',
-              '-' => '_',
+              '&' => '',
+              '-' => '',
+              '_' => '',
               'pro7' => 'prosieben',
               'rtlii' => 'rtl2',
               )
@@ -175,15 +179,24 @@ class uniqueIDs extends globalHTMLReportBase{
         $type = "data";
         if (stristr($labelparts[2], "sdtv") !== false){
             $type = "tv";
-            $ext = "";
         }
         elseif (stristr($labelparts[2], "hdtv") !== false){
             $type = "tv";
-            if ( substr($name,-2, 2) == "hd") $name = trim(substr($name,0, -2));
-            $ext = "[hd]";
+            if ( substr($name,-2, 2) == "hd")
+                $name = trim(substr($name,0, -2));
+            $ext .= "[hd]";
         }
         elseif (stristr($labelparts[2], "radio") !== false){
             $type = "radio";
+        }
+
+        if ( substr($name,-2, 2) == "+1"){
+            $name = trim(substr($name,0, -2));
+            $ext .= "[+1]";
+        }
+        else if ( substr($name,-3, 3) == "+24"){
+            $name = trim(substr($name,0, -3));
+            $ext .= "[+24]";
         }
         return "cp[v0.1]." . $type . "." . $labelparts[0] . "." . $name . $ext;
      }
@@ -213,7 +226,7 @@ class uniqueIDs extends globalHTMLReportBase{
     }
 
     private function sqlReplace($string, $from, $to){
-        return "REPLACE( ". $string .", '".$from."', '".$to. "')";
+        return "REPLACE( ". $string .", ". $this->db->quote($from) .", " . $this->db->quote($to) . ")";
     }
 }
 ?>
