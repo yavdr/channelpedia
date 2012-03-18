@@ -155,7 +155,7 @@ class channelImport extends channelFileIterator{
     private function deleteOutdatedChannelsForNonSatProvider( $type ){
         $rawprovider = $this->metaData->getPresentNonSatProvider( $type );
         if ($rawprovider != "" && $rawprovider != "none"){
-            $this->deleteOutdatedChannelsForSource( $type . '[' . $rawprovider . ']' );
+            $this->deleteOutdatedChannelsForSource( $rawprovider );
         }
     }
 
