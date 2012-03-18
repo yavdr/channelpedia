@@ -50,7 +50,7 @@ class uniqueIDs extends globalHTMLReportBase{
               '_' => '',
               'pro7' => 'prosieben',
               'rtlii' => 'rtl2',
-              )
+            )
         );
 
         $result = $this->db->query("
@@ -68,13 +68,13 @@ class uniqueIDs extends globalHTMLReportBase{
             FROM channels
             WHERE
                 ( x_label LIKE 'de.%' OR x_label LIKE 'at.%' OR x_label LIKE 'ch.%' )
-                AND x_label NOT LIKE '%uncategorized.%'
-                AND NOT x_label = 'de.024.sky_de SDTV scrambled'
-                AND name NOT Like '.%'
-                AND name NOT Like '%*'
-                AND name NOT Like '%.'
-                AND name NOT like '%test%'
-                AND name NOT like '%_alt'
+                AND x_label NOT LIKE '%uncategorized%'
+                AND NOT x_label LIKE 'de.024.sky_de%'
+                AND name NOT LIKE '.%'
+                AND name NOT LIKE '%*'
+                AND name NOT LIKE '%.'
+                AND name NOT LIKE '%test%'
+                AND name NOT LIKE '%_alt'
                 GROUP BY
                 x_label, nid, tid, sid, trimmed_name
             ORDER BY
@@ -110,8 +110,7 @@ class uniqueIDs extends globalHTMLReportBase{
             if (count($matching_name_array) > 1 ){
                 $strictlist .= "Warning: Channel name variants: " . $row["matching_names"] . "\n";
             }
-            $name = explode(",", $matching_name_array[0]);
-            $name = $this->repairChannelName($name[0]);
+            $name = $this->repairChannelName($matching_name_array[0]);
             if ( !$this->isBlacklisted($name)){
                 $row["matching_providers"] = implode($divider , array_unique( explode( $divider, $row["matching_providers"]) ));
                 if ($lastname != $name){
@@ -202,12 +201,25 @@ class uniqueIDs extends globalHTMLReportBase{
      }
 
     private function isBlacklisted ($name){
-        return !(strlen($name) > 1 && strstr($name, "test") === false && substr($name,-1) !== "*" && substr($name,-1) !== "." && substr($name,-4) !== "_alt");
+        return
+            !(
+                strlen($name) > 1 &&
+                strstr($name, "test") === false &&
+                substr($name,-1) !== "*" &&
+                substr($name,-1) !== "." &&
+                substr($name,-4) !== "_alt"
+            );
     }
 
-    private function repairChannelName( $name ){
-            $nameparts = explode("(", $name); //cut off brackets that are used by wilhelm.tel and unitymedia
+    private function repairChannelName( $namearray ){
+            $name = explode(",", $namearray);
+            $nameparts = explode("(", $name[0]); //cut off brackets that are used by wilhelm.tel and unitymedia
             $name = trim($nameparts[0]);
+            //this rtl hack can only be done here and not earlier
+            if ($name == "srtl") $name = "superrtl";
+            if ($name == "rtltelevision") $name = "rtl";
+            if ($name == "skychristmas") $name = "skycinemahits";
+
             //replace special characters - now done within sql replace function
             //$name = str_replace(array("-"), array("_"), $name);
             //$name = str_replace(array(".", "/", " ", "&", "!", "'", "(", ")", "|"), array(""), $name);

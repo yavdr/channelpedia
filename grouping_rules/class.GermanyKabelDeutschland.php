@@ -49,8 +49,24 @@ class GermanyKabelDeutschland  extends ruleBase{
                 "title" => "DigitalFree Private",
                 "outputSortPriority" => 5,
                 "caidMode" => self::caidModeScrambled,
+                "mediaType" => self::mediaTypeHDTV,
+                "customwhere" => "AND provider = 'Digital Free'"
+            ),
+
+            array(
+                "title" => "DigitalFree Private",
+                "outputSortPriority" => 5,
+                "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
                 "customwhere" => "AND provider = 'Digital Free'"
+            ),
+
+            array(
+                "title" => "KDHome Private",
+                "outputSortPriority" => 6,
+                "caidMode" => self::caidModeScrambled,
+                "mediaType" => self::mediaTypeHDTV,
+                "customwhere" => "AND provider = 'KD Home'"
             ),
 
             array(

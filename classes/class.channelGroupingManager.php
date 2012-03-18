@@ -84,10 +84,10 @@ define("AUSTRIA", " (".
     " UPPER(provider) LIKE '%ATV%'".
 ") ");
 
-define("SWITZERLAND",       " (UPPER(name) LIKE '% CH' OR LOWER(name) LIKE '% Schweiz' OR UPPER(name) LIKE 'SF%') ");
+define("SWITZERLAND",       " (UPPER(name) LIKE '% CH' OR UPPER(name) LIKE '% CH %' OR LOWER(name) LIKE '% Schweiz' OR UPPER(name) LIKE 'SF%') ");
 define("FRANCE_CSAT",       " (upper(provider)='CSAT') ");
 define("SPAIN_DIGITALPLUS", " (UPPER(provider) = 'DIGITAL +' OR UPPER(provider) = 'DIGITAL+') ");
-define("NL_PROVIDERS",      " UPPER(provider) = 'CANALDIGITAAL' ");
+define("NL_PROVIDERS",      " UPPER(provider) = 'CANALDIGITAAL' OR UPPER(provider) = 'CANAALDIGITAAL' ");
 
 
 define("FILTER_ASTRA1_FTA", " ((tid != '1092' AND tid != '1113' AND provider != '-') OR (name = 'DMAX')) AND provider != 'SKY' ".

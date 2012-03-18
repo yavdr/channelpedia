@@ -49,6 +49,7 @@ class dbVariousTools{
         $timestamp_raw = $result->fetchAll();
         if (isset($timestamp_raw[0][0]))
             $timestamp = intval($timestamp_raw[0][0]);
+//        else
         return $timestamp;
     }
 }
