@@ -112,8 +112,7 @@ class uniqueIDs extends globalHTMLReportBase{
             }
             $name = $this->repairChannelName($matching_name_array[0]);
             if ( !$this->isBlacklisted($name)){
-                $unique_matching_providers_array = array_unique( explode( $divider, $row["matching_providers"]) );
-                $row["matching_providers"] = implode($divider , $unique_matching_providers_array);
+                $row["matching_providers"] = implode($divider , array_unique( explode( $divider, $row["matching_providers"]) ));
                 if ($lastname != $name){
                     $idstring = $this->getIDString( $name, $row["x_label"]);
                     if (!array_key_exists( $idstring, $uidlist)){
@@ -124,17 +123,17 @@ class uniqueIDs extends globalHTMLReportBase{
                     else
                         $strictlist .= "Warning: Channel is already in array '" . $idstring . "'\n";
                 }
-                $related_sources_info = explode($divider, $row["matching_sources"]);
                 if (array_key_exists($idstring, $pure_id_list))
-                    $pure_id_list[ $idstring ] += count($related_sources_info);
+                    $pure_id_list[ $idstring ]++;
                 else
-                    $pure_id_list[ $idstring ] = count($related_sources_info);
+                    $pure_id_list[ $idstring ] = 1;
                 $ntsid = $row["nid"] . "-" . $row["tid"] . "-". $row["sid"];
                 if (!array_key_exists( $ntsid, $snt2cp_list ))
                     $snt2cp_list[ $ntsid ] = $idstring;
                 else if ( $snt2cp_list[ $ntsid ] !== $idstring )
                     $strictlist .= "Warning: Doublette NID_TID_SID : '" . $ntsid. "' <b>". $snt2cp_list[ $ntsid ]. "</b> new: <b>" . $idstring. "</b>\n";
                 $lastname = $name;
+                $related_sources_info = explode($divider, $row["matching_sources"]);
                 sort( $related_sources_info );
                 $uidlist[ $idstring ][ "nidtidsids" ][] = array(
                     'nid' => intval($row["nid"]),
