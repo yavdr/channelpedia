@@ -49,7 +49,9 @@ class dbVariousTools{
         $timestamp_raw = $result->fetchAll();
         if (isset($timestamp_raw[0][0]))
             $timestamp = intval($timestamp_raw[0][0]);
-//        else
+        else{
+            throw new Exception("getLastConfirmedTimestamp: query didn't return expected result: " . print_r( $timestamp_raw, true) . $sqlquery);
+        }
         return $timestamp;
     }
 }

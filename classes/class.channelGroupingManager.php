@@ -180,17 +180,17 @@ class channelGroupingManager{
 
     public function updateAllLabels(){
         foreach ($this->config->getValue("sat_positions") as $sat => $languages){
-            $this->updateAllLabelsOfSource($sat);
+            $this->updateAllLabelsOfSource($sat, $languages);
         }
         foreach ($this->config->getValue("cable_providers") as $cablep => $languages){
-            $this->updateAllLabelsOfSource("C[$cablep]");
+            $this->updateAllLabelsOfSource("C[$cablep]", $languages);
         }
         foreach ($this->config->getValue("terr_providers") as $terrp => $languages){
-            $this->updateAllLabelsOfSource("T[$terrp]");
+            $this->updateAllLabelsOfSource("T[$terrp]", $languages);
         }
     }
 
-    public function updateAllLabelsOfSource( $source ){
+    public function updateAllLabelsOfSource( $source, $languages ){
         $this->config->addToDebugLog( "Updating labels for channels belonging to $source.\n" );
         //reset all labels in DB to empty strings before updating them
         $temp = $this->db->query("UPDATE channels SET x_label='' WHERE source = ".$this->db->quote($source));
@@ -199,52 +199,39 @@ class channelGroupingManager{
         foreach ( $this->rulesets as $title => $object){
             $config = $object->getConfig();
             if ($config["lang"] === "uncategorized") $object->setSource($source);
-            if ( $sourcetype == "S"){
-                if ( $config["validForSatellites"] === "all" || ( is_array( $config["validForSatellites"] ) && in_array( $source, $config["validForSatellites"], true)) ){
-                    foreach ($object->getGroups() as $groupsettings){
-                        $this->updateLabelsOfChannelSelection(
-                            $label = $config["country"] . "." . str_pad($groupsettings["outputSortPriority"], 3, "0", STR_PAD_LEFT) . "." . $groupsettings["title"],
-                            $source,
-                            $outputSortPriority = $groupsettings["outputSortPriority"],
-                            $caidMode           = $groupsettings["caidMode"],
-                            $mediaType          = $groupsettings["mediaType"],
-                            $language           = array_key_exists ("languageOverrule",$groupsettings) ? $groupsettings["languageOverrule"] : $config["lang"],
-                            $customwhere        = $groupsettings["customwhere"],
-                            $title
-                        );
-                    }
-                }
+            switch ($sourcetype){
+                case "S":
+                    $validFor = "validForSatellites";
+                    break;
+                case "C":
+                    $validFor = "validForCableProviders";
+                    break;
+                case "T":
+                    $validFor = "validForTerrProviders";
+                    break;
+                case "A":
+                    $validFor = "validForATSCProviders";
+                    throw new Exception("updateAllLabelsOfSource: sourcetype ATSC not yet fully implemented");
+                    break;
+                default:
+                    throw new Exception("updateAllLabelsOfSource: invalid sourcetype ");
+                    break;
             }
-            elseif ( $sourcetype == "C"){
-                if ( $config["validForCableProviders"] === "all" || ( is_array( $config["validForCableProviders"] ) && in_array( $source, $config["validForCableProviders"], true)) ){
-                    foreach ($object->getGroups() as $groupsettings){
-                        $this->updateLabelsOfChannelSelection(
-                            $label = $config["country"] . ".". str_pad($groupsettings["outputSortPriority"], 3, "0", STR_PAD_LEFT) . "." . $groupsettings["title"],
-                            $source,
-                            $outputSortPriority = $groupsettings["outputSortPriority"],
-                            $caidMode           = $groupsettings["caidMode"],
-                            $mediaType          = $groupsettings["mediaType"],
-                            $language           = array_key_exists ("languageOverrule",$groupsettings) ? $groupsettings["languageOverrule"] : $config["lang"],
-                            $customwhere        = $groupsettings["customwhere"],
-                            $title
-                        );
-                    }
-                }
-            }
-            elseif ( $sourcetype == "T"){
-                if ( $config["validForTerrProviders"] === "all" || ( is_array( $config["validForTerrProviders"] ) && in_array( $source, $config["validForTerrProviders"], true)) ){
-                    foreach ($object->getGroups() as $groupsettings){
-                        $this->updateLabelsOfChannelSelection(
-                            $label = $config["country"] . "." . str_pad($groupsettings["outputSortPriority"], 3, "0", STR_PAD_LEFT) . "." . $groupsettings["title"],
-                            $source,
-                            $outputSortPriority = $groupsettings["outputSortPriority"],
-                            $caidMode           = $groupsettings["caidMode"],
-                            $mediaType          = $groupsettings["mediaType"],
-                            $language           = array_key_exists ("languageOverrule",$groupsettings) ? $groupsettings["languageOverrule"] : $config["lang"],
-                            $customwhere        = $groupsettings["customwhere"],
-                            $title
-                        );
-                    }
+            if (
+                ($config[$validFor] === "all" && ( $config["lang"] == "uncategorized" || in_array( $config["country"], $languages ))) ||
+                ( is_array( $config[$validFor] ) && in_array( $source, $config[$validFor], true))
+            ){
+                foreach ($object->getGroups() as $groupsettings){
+                    $this->updateLabelsOfChannelSelection(
+                        $label = $config["country"] . ".". str_pad($groupsettings["outputSortPriority"], 3, "0", STR_PAD_LEFT) . "." . $groupsettings["title"],
+                        $source,
+                        $outputSortPriority = $groupsettings["outputSortPriority"],
+                        $caidMode           = $groupsettings["caidMode"],
+                        $mediaType          = $groupsettings["mediaType"],
+                        $language           = array_key_exists ("languageOverrule",$groupsettings) ? $groupsettings["languageOverrule"] : $config["lang"],
+                        $customwhere        = $groupsettings["customwhere"],
+                        $title
+                    );
                 }
             }
         }
