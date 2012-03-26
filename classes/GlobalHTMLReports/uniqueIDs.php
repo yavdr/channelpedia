@@ -110,7 +110,8 @@ class uniqueIDs extends globalHTMLReportBase{
             if (count($matching_name_array) > 1 ){
                 $strictlist .= "Warning: Channel name variants: " . $row["matching_names"] . "\n";
             }
-            $name = $this->repairChannelName($matching_name_array[0]);
+            $labelparts = explode(".", $row["x_label"]);
+            $name = $this->repairChannelName($matching_name_array[0], $labelparts[0]);
             if ( !$this->isBlacklisted($name)){
                 $unique_matching_providers_array = array_unique( explode( $divider, $row["matching_providers"]) );
                 $row["matching_providers"] = implode($divider , $unique_matching_providers_array);
@@ -121,8 +122,8 @@ class uniqueIDs extends globalHTMLReportBase{
                         $uidlist[ $idstring ][ "naming_variants" ] = array();
                         $uidlist[ $idstring ][ "nidtidsids" ] = array();
                     }
-                    else
-                        $strictlist .= "Warning: Channel is already in array '" . $idstring . "'\n";
+                    //else
+                    //    $strictlist .= "Warning: Channel is already in array '" . $idstring . "'\n";
                 }
                 $related_sources_info = explode($divider, $row["matching_sources"]);
                 if (array_key_exists($idstring, $pure_id_list))
@@ -173,8 +174,7 @@ class uniqueIDs extends globalHTMLReportBase{
         $this->addToOverviewAndSave( "de_uniqueIDs", $filename );
     }
 
-    private function getIDString( $name, $label){
-        $labelparts = explode(".", $label);
+    private function getIDString( $name, $labelparts){
         $ext = "";
         $type = "data";
         if (stristr($labelparts[2], "sdtv") !== false){
@@ -212,7 +212,7 @@ class uniqueIDs extends globalHTMLReportBase{
             );
     }
 
-    private function repairChannelName( $namearray ){
+    private function repairChannelName( $namearray, $country ){
             $name = explode(",", $namearray);
             $nameparts = explode("(", $name[0]); //cut off brackets that are used by wilhelm.tel and unitymedia
             $name = trim($nameparts[0]);
@@ -221,6 +221,18 @@ class uniqueIDs extends globalHTMLReportBase{
             if ($name == "rtltelevision") $name = "rtl";
             if ($name == "skychristmas") $name = "skycinemahits";
 
+            if ($country === "at"){
+                if (substr(strtolower($name), -7) === "austria")
+                    $name = substr($name, 0, strlen($name) -7 );
+            }
+            elseif ($country === "ch"){
+                if (substr(strtolower($name), -7) === "schweiz")
+                    $name = substr($name, 0, strlen($name) -7 );
+                elseif (substr(strtolower($name), -2) === "ch")
+                    $name = substr($name, 0, strlen($name) -2 );
+                elseif (substr(strtolower($name), -5) === "chneu")
+                    $name = substr($name, 0, strlen($name) -5 );
+            }
             //replace special characters - now done within sql replace function
             //$name = str_replace(array("-"), array("_"), $name);
             //$name = str_replace(array(".", "/", " ", "&", "!", "'", "(", ")", "|"), array(""), $name);

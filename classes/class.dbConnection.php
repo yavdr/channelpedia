@@ -53,8 +53,10 @@ class dbConnection {
     }
 
     public function connect(){
-        $this->dbh = new PDO('sqlite:'.$this->dbfile);
+        //$this->dbh = new PDO('sqlite:'.$this->dbfile );
+        $this->dbh = new PDO('sqlite:'.$this->dbfile , '', '', array( PDO::ATTR_PERSISTENT => true ));
         //$this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
+        //see http://www.php.net/manual/en/pdo.connections.php
     }
 
     public function getDBHandle(){

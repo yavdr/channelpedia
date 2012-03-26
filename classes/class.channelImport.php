@@ -176,7 +176,7 @@ class channelImport extends channelFileIterator{
             foreach ($this->metaData->getPresentSatProviders() as $sat => $dummy){
                 $this->config->addToDebugLog( "updateAffectedDataAndFiles: Processing DVB-S: " . $sat . ".\n");
                 $languages = $this->config->getLanguageGroupsOfSource( "DVB-S", $sat);
-                $this->labeller->updateAllLabelsOfSource($sat);
+                $this->labeller->updateAllLabelsOfSource($sat, $languages);
                 $this->rawOutput->writeRawOutputForSingleSource( $sat, $sat, $languages);
                 $this->htmlOutput->renderPagesOfSingleSource("S", $sat, $languages);
             }
@@ -196,7 +196,7 @@ class channelImport extends channelFileIterator{
             $this->config->addToDebugLog( "updateAffectedDataAndFiles: Processing $visibletype: " . $rawprovider . ".\n");
             $languages = $this->config->getLanguageGroupsOfSource( $visibletype, $rawprovider);
             $provider = $type. "[".$rawprovider."]";
-            $this->labeller->updateAllLabelsOfSource( $provider );
+            $this->labeller->updateAllLabelsOfSource( $provider, $languages );
             $this->rawOutput->writeRawOutputForSingleSource( $type, $provider, $languages);
             $this->htmlOutput->renderPagesOfSingleSource( $type, $rawprovider, $languages);
         }

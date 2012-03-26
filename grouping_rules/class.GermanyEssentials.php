@@ -33,8 +33,8 @@ class GermanyEssentials  extends ruleBase{
             "country" => "de",
             "lang" => "deu", //this is the language code used in the channels audio description
             "validForSatellites" => array( "S19.2E"),
-            "validForCableProviders" => "all",//TODO, exclude non-de
-            "validForTerrProviders" => "all",//TODO, exclude non-de
+            "validForCableProviders" => "all",
+            "validForTerrProviders" => "all",
         );
     }
 
