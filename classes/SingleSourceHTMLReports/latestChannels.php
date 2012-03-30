@@ -41,19 +41,19 @@ class latestChannels extends singleSourceHTMLReportBase{
         $timestamp = intval($this->getEarliestChannelAddedTimestamp());
         if ($timestamp != 0){
             $x = new channelIterator( $shortenSource = true );
-            $x->init2( "SELECT name, provider, source, frequency, parameter, symbolrate, vpid, apid, tpid, caid, sid, nid, tid, x_timestamp_added FROM channels WHERE source = ".$this->db->quote($this->parent->getSource())." AND x_timestamp_added > " . $this->db->quote($timestamp) . " ORDER BY x_timestamp_added DESC, name DESC LIMIT 25");
-            $lastname = "";
+            $x->init2( "SELECT * FROM channels WHERE source = ".$this->db->quote($this->parent->getSource())." AND x_timestamp_added > " . $this->db->quote($timestamp) . " ORDER BY x_timestamp_added DESC, name DESC LIMIT 25");
             while ($x->moveToNextChannel() !== false){
-                $carray = $x->getCurrentChannelObject()->getAsArray();
-                if ($lastname == ""){
-                    $this->appendToBody("<h3>Table view</h3>\n<div class=\"tablecontainer\"><table>\n<tr>");
-                    foreach ($x->getCurrentChannelArrayKeys() as $header){
-                        $this->appendToBody( '<th class="'.htmlspecialchars($header).'">'.htmlspecialchars(ucfirst($header))."</th>\n" );
-                    }
-                    $this->appendToBody( "</tr>\n" );
-                }
-                $this->appendToBody( "<tr>\n");
-                foreach ($carray as $param => $value){
+                $currChan = $x->getCurrentChannelObject();
+
+                $region = $currChan->getXLabelRegion();
+                if ($region !== "")
+                    $region = $this->pageFragments->getFlagIcon( $region, $this->parent->getRelPath() );
+                $this->appendToBody(
+                    "<p><b>". $region . $currChan->getName() . "</b> ".
+                    "(added on " . date("D, d M Y H:i:s", $currChan->getXTimestampAdded()) . ")</p>".
+                    "<pre>". $currChan->getChannelString() ."</pre>"
+                );
+/*                foreach ($carray as $param => $value){
                     if ($param == "apid" || $param == "caid"){
                         $value = str_replace ( array(",",";"), ",<br/>", htmlspecialchars($value ));
                     }
@@ -63,11 +63,8 @@ class latestChannels extends singleSourceHTMLReportBase{
                     else
                         $value = htmlspecialchars($value);
                     $this->appendToBody( '<td class="'.htmlspecialchars($param).'">'.$value."</td>\n" );
-                }
-                $this->appendToBody( "</tr>\n" );
-                $lastname = $carray["name"];
+                }*/
             }
-            $this->appendToBody( "</table></div>\n" );
         }
         $this->addToOverviewAndSave( "New channels", "latest_channel_additions.html" );
     }

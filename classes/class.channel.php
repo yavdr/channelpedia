@@ -230,6 +230,14 @@ class channel{
         return $this->params["x_label"];
     }
 
+    public function getXLabelRegion(){
+        $parts = explode(".",$this->getXLabel());
+        if (count($parts) > 0 )
+            return $parts[0];
+        else
+            return "";
+    }
+
     //FIXME temp
     public function getAsArray(){
         //hotfix modulation - we need modulation in json structure!
