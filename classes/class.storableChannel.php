@@ -126,6 +126,7 @@ class storableChannel extends channel{
             );
             $this->params["source"] = $this->sourceDB;
             $this->params["parameter"] = strtoupper( $this->params["parameter"] ); //w_scan has lower case, we don't want that
+            //$this->params["x_cpid"] = "";
 
             $query = $this->db->insert( "channels", $this->params);
             //19 = channel already exists, couldn't be inserted

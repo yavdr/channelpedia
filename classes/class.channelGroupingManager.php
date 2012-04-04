@@ -49,7 +49,8 @@ require_once PATH_TO_CLASSES . '../grouping_rules/class.ItalyEssentials.php';
 require_once PATH_TO_CLASSES . '../grouping_rules/class.GreeceSatEssentials.php';
 require_once PATH_TO_CLASSES . '../grouping_rules/class.Uncategorized.php';
 
-define("HD_CHANNEL"," (UPPER(name) LIKE '% HD%' OR UPPER(name) LIKE 'HD %' OR UPPER(parameter) LIKE '%S1%' ) ");
+define("HD_CHANNEL"," ( name LIKE '% HD%' OR name LIKE 'HD %' ) ");
+// OR UPPER(parameter) LIKE '%S1%'
 
 define("DE_PRIVATE_PRO7_RTL"," (".
     "provider = 'ProSiebenSat.1' OR ".
@@ -194,7 +195,7 @@ class channelGroupingManager{
         $this->config->addToDebugLog( "Updating labels for channels belonging to $source.\n" );
         //reset all labels in DB to empty strings before updating them
         $temp = $this->db->query("UPDATE channels SET x_label='' WHERE source = ".$this->db->quote($source));
-        $query = $this->db->exec("BEGIN TRANSACTION");
+        $query = $this->db->beginTransaction();
         $sourcetype = substr($source, 0, 1);
         foreach ( $this->rulesets as $title => $object){
             $config = $object->getConfig();
@@ -235,7 +236,7 @@ class channelGroupingManager{
                 }
             }
         }
-        $query = $this->db->exec("COMMIT TRANSACTION");
+        $query = $this->db->commit();
     }
 
     /*

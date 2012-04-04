@@ -52,10 +52,11 @@ function importFromAllChannelSources($config){
     //delete outdated logs to keep db small
     $db = dbConnection::getInstance();
     $twomonthsago = time() - (60 * 24 * 60 * 60);
-    $query = $db->exec( "BEGIN TRANSACTION" );
+    $query = $db->beginTransaction();
     $query = $db->exec( "DELETE FROM channel_update_log WHERE timestamp <= " . $twomonthsago );
     $query = $db->exec( "DELETE FROM upload_log WHERE timestamp <= " . $twomonthsago );
-    $query = $db->exec( "END TRANSACTION" );
+    $query = $db->commit();
+    $query = $db->exec( "VACUUM" );
 
     $dir = new DirectoryIterator( $config->getValue("userdata")."sources/" );
     foreach ($dir as $fileinfo) {

@@ -149,10 +149,16 @@ class dbConnection {
         return $result;
     }
 
-
     public function quote( $string ){
         return $this->dbh->quote( $string );
     }
 
+    public function commit(){
+        $this->dbh->commit();
+    }
+
+    public function beginTransaction(){
+        $this->dbh->beginTransaction();
+    }
 }
 ?>

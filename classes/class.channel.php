@@ -30,6 +30,8 @@ class channel{
         $params,
 
         $channelstring = "",
+
+        $cpid = "",
         $uniqueID = "",
         $longUniqueID = "",
         $isCheckedSatelliteSource = false,
@@ -212,6 +214,10 @@ class channel{
 
     public function getLongUniqueID(){
         return $this->longUniqueID;
+    }
+
+    public function getCPID(){
+        return $this->cpid;
     }
 
     public function getXLastConfirmed(){

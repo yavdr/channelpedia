@@ -85,7 +85,7 @@ class channelImport extends channelFileIterator{
             //read channels.conf line by line
             $this->openChannelFile($filename);
             $cgroup = "";
-            $query = $this->db->exec("BEGIN TRANSACTION");
+            $query = $this->db->beginTransaction();
             while ($this->moveToNextLine() !== false) {
                 //$msg_prefix = "try to add channel: ";
                 if ($this->isCurrentLineAGroupDelimiter()){
@@ -111,7 +111,7 @@ class channelImport extends channelFileIterator{
                     }
                 }
             }
-            $query = $this->db->exec("COMMIT TRANSACTION");
+            $query = $this->db->commit();
             //rename read channels.conf file
             if (file_exists($filename . ".old"))
                 unlink($filename . ".old");

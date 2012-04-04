@@ -45,7 +45,7 @@ class updateFingerprintDB {
         $this->dbh = new PDO( 'sqlite:'. $fpdb );
 
         $this->exec("ATTACH DATABASE '".$channeldbfile."' AS chandb;");
-        $this->exec("BEGIN EXCLUSIVE TRANSACTION;");
+        $this->dbh->beginTransaction();
         $this->exec("DROP TABLE IF EXISTS fingerprints;");
         $this->exec("CREATE TABLE fingerprints (
           source TEXT,
@@ -84,7 +84,7 @@ class updateFingerprintDB {
           ORDER BY COUNT(DISTINCT t2.source) DESC
           LIMIT 1
         );");
-        $this->exec("COMMIT TRANSACTION;");
+        $this->dbh->commit();
         //FIXME: find workaround for problematic drop...
         /*$this->exec("BEGIN EXCLUSIVE TRANSACTION;");
         $this->exec("DROP TABLE temp_channels;");

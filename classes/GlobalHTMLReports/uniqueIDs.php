@@ -97,7 +97,7 @@ class uniqueIDs extends globalHTMLReportBase{
                 "</tr>\n"
             );*/
         $strictlist = "";
-        $lastname = "";
+        $lastid = "";
         $uidlist = array();
         $snt2cp_list = array();
         $pure_id_list = array();
@@ -113,10 +113,10 @@ class uniqueIDs extends globalHTMLReportBase{
             $labelparts = explode(".", $row["x_label"]);
             $name = $this->repairChannelName($matching_name_array[0], $labelparts[0]);
             if ( !$this->isBlacklisted($name)){
-                $unique_matching_providers_array = array_unique( explode( $divider, $row["matching_providers"]) );
-                $row["matching_providers"] = implode($divider , $unique_matching_providers_array);
-                if ($lastname != $name){
-                    $idstring = $this->getIDString( $name, $row["x_label"]);
+                $row["matching_providers"] = implode($divider , array_unique( explode( $divider, $row["matching_providers"]) ));
+                $tempidstring = $this->getIDString( $name, $labelparts);
+                if ($lastid != $tempidstring){
+                    $idstring = $tempidstring;
                     if (!array_key_exists( $idstring, $uidlist)){
                         $uidlist[ $idstring ] = array();
                         $uidlist[ $idstring ][ "naming_variants" ] = array();
@@ -135,7 +135,7 @@ class uniqueIDs extends globalHTMLReportBase{
                     $snt2cp_list[ $ntsid ] = $idstring;
                 else if ( $snt2cp_list[ $ntsid ] !== $idstring )
                     $strictlist .= "Warning: Doublette NID_TID_SID : '" . $ntsid. "' <b>". $snt2cp_list[ $ntsid ]. "</b> new: <b>" . $idstring. "</b>\n";
-                $lastname = $name;
+                $lastid = $name;
                 sort( $related_sources_info );
                 $uidlist[ $idstring ][ "nidtidsids" ][] = array(
                     'nid' => intval($row["nid"]),
