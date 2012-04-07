@@ -62,8 +62,10 @@ function importFromAllChannelSources($config){
     foreach ($dir as $fileinfo) {
         if ( $fileinfo->isDir() && !$fileinfo->isDot()){
             $metaData = new channelImportMetaData( $fileinfo->getFilename() );
+            $metaData->setForceReparsing( FORCE_REPARSING );
+            $metaData->setDeleteOutdated( DELETE_OUTDATED );
             if ( $metaData->userNameExists()){
-                $importer = new channelImport( $metaData, FORCE_REPARSING, DELETE_OUTDATED );
+                $importer = new channelImport( $metaData );
                 $importer->addToUpdateLog( "-", "Manually forced update: Checking for presence of unprocessed channels.conf to analyze.");
                 $importer->insertChannelsConfIntoDB();
             }

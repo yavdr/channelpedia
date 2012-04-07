@@ -35,7 +35,10 @@ class channelImportMetaData{
         $numChanIgnored = 0,
         $username,
         $currentUserConfig,
-        $lastProviderName;
+        $lastProviderName,
+        $reparsingTookPlace = false,
+        $forceReparsing = false,
+        $deleteOutdated = false;
 
 
     public function __construct( $username ){
@@ -63,6 +66,30 @@ class channelImportMetaData{
         else
             $this->currentUserConfig = false;
 
+    }
+
+    public function setReparsingTookPlace( $value ){
+        $this->reparsingTookPlace = $value;
+    }
+
+    public function setForceReparsing( $value ){
+        $this->forceReparsing = $value;
+    }
+
+    public function setDeleteOutdated( $value ){
+        $this->deleteOutdated = $value;
+    }
+
+    public function getReparsingTookPlace(){
+        return $this->reparsingTookPlace;
+    }
+
+    public function getForceReparsing(){
+        return $this->forceReparsing;
+    }
+
+    public function getDeleteOutdated(){
+        return $this->deleteOutdated;
     }
 
     public function userNameExists(){

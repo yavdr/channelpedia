@@ -180,10 +180,10 @@ class storableChannel extends channel{
                         $update_data[] = "$key = ".$this->db->quote( $value);
                     }
                 }
-                $update_data[] = "x_last_changed = "   . $this->metaData->getTimestamp();
-                $update_data[] = "x_last_confirmed = " . $this->metaData->getTimestamp();
-
                 if (count ($changes) != 0){
+                    $update_data[] = "x_last_changed = "   . $this->metaData->getTimestamp();
+                    if ( ! $this->metaData->getReparsingTookPlace() )
+                        $update_data[] = "x_last_confirmed = " . $this->metaData->getTimestamp();
                     $this->config->addToDebugLog( "Changed: ".$this->getUniqueID() . "-" . $this->params["name"] . ": " . implode(", ",$changes)."\n");
                     $query = $this->db->exec2(
                         "UPDATE channels SET ".implode(", " , $update_data),
@@ -201,7 +201,7 @@ class storableChannel extends channel{
                     if ( $this->metaData !== null)
                         $this->metaData->increaseChangedChannelCount();
                 }
-                else{
+                else if ( ! $this->metaData->getReparsingTookPlace() ){
                     //$this->config->addToDebugLog( "channel unchanged, but update x_last_confirmed\n");
                     //channel unchanged, but update x_last_confirmed
                     $query = $this->db->exec2(

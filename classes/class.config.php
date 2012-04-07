@@ -117,6 +117,24 @@ class config {
         return $this->sourcelist;
     }
 
+    public function getLongNameOfSatSource( $source){
+        global $global_sat_long_names; //FIXME: ugly
+        return $global_sat_long_names[$source]["name"];
+    }
+
+    public function getUploadUserConfigBySource( $type, $puresource ){
+        global $global_user_config;
+        $result = null;
+        foreach ($global_user_config as $user =>  $settings ){
+            $sources = $settings["announcedProviders"][$type];
+            if ((is_array( $sources ) && in_array($puresource, $sources)) ||  $sources === $puresource){
+                $result = $settings;
+                break;
+            }
+        }
+        return $result;
+    }
+
     public function getValue($key){
 
         $value = null;

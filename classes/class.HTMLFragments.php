@@ -114,11 +114,13 @@ class HTMLFragments{
         $image = "";
         if ($label != "uncategorized"){
             if ($label == "uk"){
-                $label = "gb";
+                $filename = "gb";
             }
-            $checkpath = config::getInstance()->getValue("data_path")."/res/icons/flags/".$label.".png";
+            else
+                $filename = $label;
+            $checkpath = config::getInstance()->getValue("data_path")."/res/icons/flags/".$filename.".png";
             if (file_exists( $checkpath ))
-                $image = "<img src=\"".$relPath."../res/icons/flags/".$label.".png\" class=\"flag_icon\" />";
+                $image = "<img src=\"".$relPath."../res/icons/flags/".$filename.".png\" title=\"".$label."\" class=\"flag_icon\" />";
             //else
                 //die("image $checkpath does not exist! Stopping\n");
         }

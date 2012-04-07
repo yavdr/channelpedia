@@ -111,6 +111,10 @@ class HTMLOutputRenderSource {
 
     }
 
+    public function getType(){
+        return $this->type;
+    }
+
     public function getVisibleType(){
         return $this->visibletype;
     }

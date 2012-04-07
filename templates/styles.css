@@ -200,6 +200,23 @@ ul.section_menu li{
     display: inline;
     float: left;
 }
+ul.entryMenu ul li a{
+    text-decoration: none;
+    margin: 2px;
+    padding: 1px 5px 1px 5px;
+    border: 1px solid transparent;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    color: #191970;
+}
+
+ul.entryMenu ul li a:hover,
+ul.entryMenu ul ul ul li a:hover{
+    color: orange;
+    background-color: Moccasin;
+    border: 1px solid orange;
+}
+
 
 ul.section_menu{
     list-style-position:inside;
@@ -207,8 +224,6 @@ ul.section_menu{
     padding: 0px;
 }
 
-ul.entryMenu ul li a, 
-ul.entryMenu ul ul ul li a, 
 ul.section_menu li a,
 ul.section_menu li.active span{
     font-weight: bold;
@@ -242,8 +257,6 @@ ul.section_menu li.active span{
 
 }
 
-ul.entryMenu ul li a:hover,
-ul.entryMenu ul ul ul li a:hover,
 ul.section_menu li a:hover
 {
     background-color: orange;

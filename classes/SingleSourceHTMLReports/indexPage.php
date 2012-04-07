@@ -31,9 +31,14 @@ class indexPage extends singleSourceHTMLReportBase{
     }
 
     public function popuplatePageBody(){
-        $this->setPageTitle( $this->parent->getSource() . " - Overview");
+        $descr =  ($this->parent->getType() === "S" ) ?
+            $this->parent->getPureSource() . " - " . $this->config->getLongNameOfSatSource( $this->parent->getSource()) :
+            $this->parent->getPureSource() . " (" . $this->parent->getVisibleType()  . ")";
+        $this->setPageTitle( "Overview: " . $descr );
         $this->setDescription("All regional sections, reports and downloads for ". $this->parent->getPureSource() . " in a nutshell.");
         $this->addBodyHeader( "overview" );
+        //$userconfig = $this->config->getUploadUserConfigBySource( $this->parent->getType(), $this->parent->getPureSource());
+        //$this->appendToBody('<p> This source is being provided by: ' . $userconfig["visibleName"] . '</p>'."\n");
         $this->appendToBody('<ul class="singleSourceMainMenu">'."\n");
         foreach ($this->linklist as $linkarray){
             $description = ( $linkarray[2] !== "" ? ': <span>'.$linkarray[2] .'</span>' : '');

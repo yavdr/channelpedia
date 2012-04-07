@@ -25,21 +25,15 @@
 class channelImport extends channelFileIterator{
 
     private
-        $reparseOldFile = false,
-        $deleteOutdatedChannels = false,
         $metaData,
         $textualSummary,
-        $username,
         $htmlOutput,
         $labeller,
         $rawOutput;
 
-    public function __construct( & $metaData, $forceReparsing = false, $deleteOutdated = false ){
+    public function __construct( & $metaData ){
         parent::__construct();
-        $this->reparseOldFile = $forceReparsing;
-        $this->deleteOutdatedChannels = $deleteOutdated;
-        $this->metaData = $metaData;
-        $this->username = $this->metaData->getUsername();
+        $this->metaData  = $metaData;
         $this->textualSummary = "undefined";
         //$this->addToUpdateLog( "-", "Processing users channels.conf.");
     }
@@ -47,11 +41,11 @@ class channelImport extends channelFileIterator{
     public function addToUpdateLog( $source, $description ){
         $query = $this->db->insert( "upload_log", array(
             "timestamp" => time(), //$this->timestamp,
-            "user" => $this->username,
+            "user" => $this->metaData->getUsername(),
             "source" => $source,
             "description" => $description
         ));
-        $this->config->addToDebugLog( $this->username . ": " . $description."\n");
+        $this->config->addToDebugLog( $this->metaData->getUsername() . ": " . $description."\n");
 
     }
 
@@ -61,17 +55,19 @@ class channelImport extends channelFileIterator{
      */
 
     public function insertChannelsConfIntoDB(){
-        $sourcepath = $this->config->getValue("userdata")."sources/".$this->username."/";
+        $sourcepath = $this->config->getValue("userdata")."sources/" . $this->metaData->getUsername() . "/";
 
         $msg_prefix = "";
         $filename = $sourcepath . 'channels.conf';
-        if ($this->reparseOldFile) {
+        if ($this->metaData->getForceReparsing()) {
             $this->config->addToDebugLog( "Reparsing of old channel file forced.\n");
             if (file_exists($sourcepath . 'lockfile.txt')){
                 unlink($sourcepath . 'lockfile.txt');
             }
-            if (!file_exists($filename))
+            if (!file_exists($filename)){
                 rename($filename . ".old", $filename);
+                $this->metaData->setReparsingTookPlace( true );
+            }
         }
         if (!file_exists($filename)) {
             $this->addToUpdateLog( "-", "No unprocessed channels.conf exists. Nothing to do.");
@@ -116,13 +112,11 @@ class channelImport extends channelFileIterator{
             if (file_exists($filename . ".old"))
                 unlink($filename . ".old");
             rename($filename, $filename . ".old");
-            //now cleanup database content from outdated channels
-            //$this->deleteOutdatedChannels();
             //summary
             $this->updateTextualSummary();
             $this->addToUpdateLog( "-", $this->textualSummary);
             unlink($sourcepath . 'lockfile.txt');
-            if ($this->deleteOutdatedChannels)
+            if ($this->metaData->getDeleteOutdated())
                 $this->deleteOutdatedChannelsForPresentSources();
         }
     }

@@ -29,6 +29,7 @@ class globalIndexPage extends globalHTMLReportBase{
         $this->addBodyHeader();
         $this->appendToBody( '<ul class="entryMenu">');
 
+        $isSat = false;
         foreach ($this->parent->getHomepageLinkList() as $line){
             $title = $line[0];
             $sourceParts = explode("_", $title);
@@ -39,16 +40,25 @@ class globalIndexPage extends globalHTMLReportBase{
                     $title .= " " . $part;
                 }
             }
-           $ulClass = ($title === "Satellite positions") ? ' class="satPos"' : '';
-           $url = $line[1];
-           if($url == ""){
+            $ulClass =  '';
+            if ($title === "Satellite positions"){
+                $isSat = true;
+                //$ulClass =  ' class="satPos"';
+            }
+            $url = $line[1];
+            if($url == ""){
                $this->appendToBody( '<li><b>'.htmlspecialchars( $title ).'</b></li>');
                $this->appendToBody( '<ul'.$ulClass.'>');
-           }
-           elseif($url == "close")
+            }
+            elseif($url == "close"){
                $this->appendToBody( '<br clear="all" /></ul>' );
-           else
-              $this->appendToBody( '<li><a href="'. urldecode( $url ) .'">'.$title .'</a></li>' );
+               $isSat = false;
+            }
+            else{
+                $desc = "";
+                if ($isSat) $desc = " - ". $this->config->getLongNameOfSatSource( $title );
+                $this->appendToBody( '<li><a href="'. urldecode( $url ) .'"><b>'.$title . '</b>' . $desc  . '</a></li>' );
+            }
         }
 
         $this->appendToBody( '<br clear="all" /></ul>');
