@@ -34,7 +34,7 @@ class uniqueIDs extends globalHTMLReportBase{
         $this->appendToBody( '<p>View complete list of all generated IDs: <a href="de_pureidlist.json" target="_blank">de_pureidlist.json</a></p> ' );
 
         $divider = ",/,/,";
-
+/*
         $replacer = $this->sqlMultiReplace( "lower(name)",
             array(
               '.' => '',
@@ -52,6 +52,11 @@ class uniqueIDs extends globalHTMLReportBase{
               'rtlii' => 'rtl2',
             )
         );
+*/
+
+        $this->db->getDBHandle()->sqliteCreateFunction('convertchannelname', 'global_convertChannelNameForCPID', 2);
+
+        $replacer = " convertchannelname( name, x_label) ";
 
         $result = $this->db->query("
             SELECT
@@ -112,6 +117,9 @@ class uniqueIDs extends globalHTMLReportBase{
             }
             $labelparts = explode(".", $row["x_label"]);
             $name = $this->repairChannelName($matching_name_array[0], $labelparts[0]);
+            if ($name !== $row["trimmed_name"]){
+                $strictlist .= "Warning: sqlite convertchannelname brings up different result than repairchannelname: " .$name . " - ". $row["trimmed_name"] . "\n";
+            }
             if ( !$this->isBlacklisted($name)){
                 $row["matching_providers"] = implode($divider , array_unique( explode( $divider, $row["matching_providers"]) ));
                 $tempidstring = $this->getIDString( $name, $labelparts);
@@ -233,11 +241,6 @@ class uniqueIDs extends globalHTMLReportBase{
                 elseif (substr(strtolower($name), -5) === "chneu")
                     $name = substr($name, 0, strlen($name) -5 );
             }
-            //replace special characters - now done within sql replace function
-            //$name = str_replace(array("-"), array("_"), $name);
-            //$name = str_replace(array(".", "/", " ", "&", "!", "'", "(", ")", "|"), array(""), $name);
-            //for German prosieben.de: replace 7 -> sieben
-            //$name = str_replace(array("pro7"), array("prosieben"), $name);
 
         return $name;
     }
@@ -254,4 +257,50 @@ class uniqueIDs extends globalHTMLReportBase{
         return "REPLACE( ". $string .", ". $this->db->quote($from) .", " . $this->db->quote($to) . ")";
     }
 }
+
+//global function to be called from pdo
+
+function global_convertChannelNameForCPID( $name, $label){
+    $labelparts = explode( '.', $label);
+    $country = $labelparts[0];
+    $name = explode(",", $name);
+    $nameparts = explode("(", $name[0]); //cut off brackets that are used by wilhelm.tel and unitymedia
+    $name = trim($nameparts[0]);
+    $name = str_replace(
+        array(
+            '.',
+            '/',
+            ' ',
+            '&',
+            '!',
+            "'",
+            '(',
+            ')',
+            '|',
+            '`',
+            '?',
+            '-',
+            '_'
+        ), "", trim($name));
+
+        if ($country === "at" || $country === "de" || $country === "ch"){
+            $name = str_replace(array( 'pro7', 'rtlii', 'srtl', 'rtltelevision'), array( 'prosieben', 'rtl2', 'superrtl', 'rtl' ), $name);
+            if ($name == "skychristmas") $name = "skycinemahits";
+        }
+        if ($country === "at"){
+            if (substr(strtolower($name), -7) === "austria")
+                $name = substr($name, 0, strlen($name) -7 );
+        }
+        elseif ($country === "ch"){
+            if (substr(strtolower($name), -7) === "schweiz")
+                $name = substr($name, 0, strlen($name) -7 );
+            elseif (substr(strtolower($name), -2) === "ch")
+                $name = substr($name, 0, strlen($name) -2 );
+            elseif (substr(strtolower($name), -5) === "chneu")
+                $name = substr($name, 0, strlen($name) -5 );
+        }
+
+    return $name;
+}
+
 ?>
