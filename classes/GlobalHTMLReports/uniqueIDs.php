@@ -56,7 +56,7 @@ class uniqueIDs extends globalHTMLReportBase{
 
         $this->db->getDBHandle()->sqliteCreateFunction('convertchannelname', 'global_convertChannelNameForCPID', 2);
 
-        $replacer = " convertchannelname( name, x_label) ";
+        $replacer = " convertchannelname( lower(name), x_label) ";
 
         $result = $this->db->query("
             SELECT
@@ -299,7 +299,32 @@ function global_convertChannelNameForCPID( $name, $label){
             elseif (substr(strtolower($name), -5) === "chneu")
                 $name = substr($name, 0, strlen($name) -5 );
         }
+/*
+        $ext = "";
+        $type = "data";
+        if (stristr($labelparts[2], "sdtv") !== false){
+            $type = "tv";
+        }
+        elseif (stristr($labelparts[2], "hdtv") !== false){
+            $type = "tv";
+            if ( substr($name,-2, 2) == "hd")
+                $name = trim(substr($name,0, -2));
+            $ext .= "[hd]";
+        }
+        elseif (stristr($labelparts[2], "radio") !== false){
+            $type = "radio";
+        }
 
+        if ( substr($name,-2, 2) == "+1"){
+            $name = trim(substr($name,0, -2));
+            $ext .= "[+1]";
+        }
+        else if ( substr($name,-3, 3) == "+24"){
+            $name = trim(substr($name,0, -3));
+            $ext .= "[+24]";
+        }
+        return "cp[v0.1]." . $type . "." . $labelparts[0] . "." . $name . $ext;
+*/
     return $name;
 }
 
