@@ -144,6 +144,7 @@ class channelGroupingManager{
     protected function __construct(){
         $this->config = config::getInstance();
         $this->db = dbConnection::getInstance();
+        $this->db->getDBHandle()->sqliteCreateFunction('getcpid', 'global_convertChannelNameToCPID', 2);
         $this->rulesets = array(
 
             "AustriaSatEssentials"     => new AustriaSatEssentials(),
@@ -189,6 +190,22 @@ class channelGroupingManager{
         foreach ($this->config->getValue("terr_providers") as $terrp => $languages){
             $this->updateAllLabelsOfSource("T[$terrp]", $languages);
         }
+
+        $result = $this->db->query("UPDATE channels SET x_xmltv_id = ''" );
+        $sqlquery = "UPDATE channels SET x_xmltv_id = getcpid( lower(name), x_label )
+            WHERE
+                ( x_label LIKE 'de.%' OR x_label LIKE 'at.%' OR x_label LIKE 'ch.%' )
+                AND x_label NOT LIKE '%uncategorized%'
+                AND NOT x_label LIKE 'de.024.sky_de%'
+                AND name NOT LIKE '.%'
+                AND name NOT LIKE '%*'
+                AND name NOT LIKE '%.'
+                AND name NOT LIKE '%test%'
+                AND name NOT LIKE '%_alt'
+        ";
+        $this->config->addToDebugLog( "Now updating cpids\n" );
+        $result = $this->db->query($sqlquery);
+        $this->config->addToDebugLog( "Now finished updating cpids\n" );
     }
 
     public function updateAllLabelsOfSource( $source, $languages ){
@@ -351,6 +368,79 @@ class channelGroupingManager{
         $result = $this->db->query($sqlquery);
         //$this->config->addToDebugLog( "Updating labels for channels belonging to $title / $source / $label.\n" );
     }
-
 }
+
+//global function to be called from pdo
+
+function global_convertChannelNameToCPID( $name, $label){
+    $labelparts = explode( '.', $label);
+    $country = $labelparts[0];
+    $name = explode(",", $name);
+    $nameparts = explode("(", $name[0]); //cut off brackets that are used by wilhelm.tel and unitymedia
+    $name = trim($nameparts[0]);
+    if ($country === "at" || $country === "de" || $country === "ch"){
+        if (substr(strtolower($name), -4) === " neu")
+            $name = substr($name, 0, strlen($name) -4 );
+        $name = str_replace(array( 'pro7', 'rtlii', 'srtl', 'rtltelevision'), array( 'prosieben', 'rtl2', 'superrtl', 'rtl' ), $name);
+        if ($name == "skychristmas") $name = "skycinemahits";
+    }
+    if ($country === "at"){
+        if (substr(strtolower($name), -7) === "austria")
+            $name = substr($name, 0, strlen($name) -7 );
+    }
+    elseif ($country === "ch"){
+        if (substr(strtolower($name), -7) === "schweiz")
+            $name = substr($name, 0, strlen($name) -7 );
+        elseif (substr(strtolower($name), -2) === "ch")
+            $name = substr($name, 0, strlen($name) -2 );
+        elseif (substr(strtolower($name), -5) === "chneu")
+            $name = substr($name, 0, strlen($name) -5 );
+    }
+
+    $name = str_replace(
+        array(
+            '.',
+            '/',
+            ' ',
+            '&',
+            '!',
+            "'",
+            '(',
+            ')',
+            '|',
+            '`',
+            '?',
+            '-',
+            '_'
+        ), "", trim($name));
+
+
+        $ext = "";
+        $type = "data";
+        if (stristr($labelparts[2], "sdtv") !== false){
+            $type = "tv";
+        }
+        elseif (stristr($labelparts[2], "hdtv") !== false){
+            $type = "tv";
+            if ( substr($name,-2, 2) == "hd")
+                $name = trim(substr($name,0, -2));
+            $ext .= "[hd]";
+        }
+        elseif (stristr($labelparts[2], "radio") !== false){
+            $type = "radio";
+        }
+
+        if ( substr($name,-2, 2) == "+1"){
+            $name = trim(substr($name,0, -2));
+            $ext .= "[+1]";
+        }
+        else if ( substr($name,-3, 3) == "+24"){
+            $name = trim(substr($name,0, -3));
+            $ext .= "[+24]";
+        }
+        return "cp[v0.1]." . $type . "." . $labelparts[0] . "." . $name . $ext;
+
+    return $name;
+}
+
 ?>

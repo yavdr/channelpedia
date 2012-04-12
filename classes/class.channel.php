@@ -236,6 +236,10 @@ class channel{
         return $this->params["x_label"];
     }
 
+    public function getXCPID(){
+        return $this->params["x_xmltv_id"];
+    }
+
     public function getXLabelRegion(){
         $parts = explode(".",$this->getXLabel());
         if (count($parts) > 0 )

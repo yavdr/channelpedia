@@ -168,11 +168,7 @@ class channelImport extends channelFileIterator{
             $this->labeller = channelGroupingManager::getInstance();
             $this->rawOutput = new rawOutputRenderer();
             foreach ($this->metaData->getPresentSatProviders() as $sat => $dummy){
-                $this->config->addToDebugLog( "updateAffectedDataAndFiles: Processing DVB-S: " . $sat . ".\n");
-                $languages = $this->config->getLanguageGroupsOfSource( "DVB-S", $sat);
-                $this->labeller->updateAllLabelsOfSource($sat, $languages);
-                $this->rawOutput->writeRawOutputForSingleSource( $sat, $sat, $languages);
-                $this->htmlOutput->renderPagesOfSingleSource("S", $sat, $languages);
+                $this->updateAffectedDataAndFilesPerProvider( "S", "DVB-S", $sat, $sat );
             }
             $this->updateAffectedDataAndFilesForNonSatProvider("C");
             $this->updateAffectedDataAndFilesForNonSatProvider("T");
@@ -187,13 +183,16 @@ class channelImport extends channelFileIterator{
         $rawprovider = $this->metaData->getPresentNonSatProvider( $type );
         if ($rawprovider != "" && $rawprovider != "none"){
             $visibletype = ($type == "A") ? "ATSC" : "DVB-". $type;
-            $this->config->addToDebugLog( "updateAffectedDataAndFiles: Processing $visibletype: " . $rawprovider . ".\n");
-            $languages = $this->config->getLanguageGroupsOfSource( $visibletype, $rawprovider);
-            $provider = $type. "[".$rawprovider."]";
-            $this->labeller->updateAllLabelsOfSource( $provider, $languages );
-            $this->rawOutput->writeRawOutputForSingleSource( $type, $provider, $languages);
-            $this->htmlOutput->renderPagesOfSingleSource( $type, $rawprovider, $languages);
+            $this->updateAffectedDataAndFilesPerProvider( $type, $visibletype, $rawprovider, $type. "[".$rawprovider."]" );
         }
+    }
+
+    private function updateAffectedDataAndFilesPerProvider( $type, $visibletype, $rawprovider, $provider ){
+        $this->config->addToDebugLog( "updateAffectedDataAndFilesPerProvider: Processing $visibletype: " . $rawprovider . ".\n");
+        $languages = $this->config->getLanguageGroupsOfSource( $visibletype, $rawprovider);
+        $this->labeller->updateAllLabelsOfSource( $provider, $languages );
+        $this->rawOutput->writeRawOutputForSingleSource( $type, $provider, $languages);
+        $this->htmlOutput->renderPagesOfSingleSource( $type, $rawprovider, $languages);
     }
 
     public function renderGlobalReports(){

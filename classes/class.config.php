@@ -92,7 +92,7 @@ class config {
     }
 
     public function addToDebugLog( $line ){
-        fputs( $this->debuglog, $line);
+        fputs( $this->debuglog, date(DATE_ATOM, time()) . " " . $line);
         //print "$line";
     }
 
