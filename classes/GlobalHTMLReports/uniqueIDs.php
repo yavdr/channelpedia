@@ -28,10 +28,11 @@ class uniqueIDs extends globalHTMLReportBase{
         $this->setKeywords("german, deutsch, kanäle, vergleich");
         $this->setDescription("Attempt to auto-create matchable unique IDs.");
         $this->addBodyHeader();
-        $this->appendToBody( '<p>Use Firefox Addon JSONView to view JSON data in a human readable way.</p>');
+        $this->appendToBody( "<h2>All data in JSON format for easy consumption</h2>" );
+        $this->appendToBody( '<p>Use Firefox Addon <a href="https://addons.mozilla.org/en-US/firefox/addon/jsonview/" target="_blank">JSONView</a> to view the condensed JSON data in a human readable way.</p>');
         $this->appendToBody( '<p>Channelpedia-IDs and their corresponding channels: <a href="de_unique_id_draft.json" target="_blank">de_unique_id_draft.json</a></p> ' );
-        $this->appendToBody( '<p>Lookup Channelpedia-ID by SID-NID-TID: <a href="de_snt2cp.json" target="_blank">de_snt2cp.json</a></p> ' );
-        $this->appendToBody( '<p>View complete list of all generated IDs: <a href="de_pureidlist.json" target="_blank">de_pureidlist.json</a></p> ' );
+        $this->appendToBody( '<p>Lookup table: Get a Channelpedia-ID if you know the SID-NID-TID: <a href="de_snt2cp.json" target="_blank">de_snt2cp.json</a></p> ' );
+        $this->appendToBody( '<p>View complete list of all generated IDs and how often the corresponding channel was found in the database: <a href="de_pureidlist.json" target="_blank">de_pureidlist.json</a></p> ' );
 
         $divider = ",/,/,";
 /*
@@ -174,6 +175,11 @@ class uniqueIDs extends globalHTMLReportBase{
         ksort($uidlist);
         ksort($pure_id_list);
         asort($snt2cp_list);
+        $this->appendToBody( "<h2>List of all generated IDs</h2>" );
+        foreach ($pure_id_list as $id => $occurences ){
+            $this->appendToBody( "<p><b>". $id."</b> (found <b>$occurences</b> time(s) in channelpedias database)</p>" );
+        }
+        $this->appendToBody( "<h2>Warning Log</h2>" );
         $this->appendToBody( "<pre>". $strictlist."</pre>" );
         $this->config->save( "de_unique_id_draft.json", json_encode( array("result" => $uidlist)) );
         $this->config->save( "de_snt2cp.json",          json_encode( array("result" => $snt2cp_list)) );
