@@ -25,7 +25,13 @@ class latestChannels extends singleSourceHTMLReportBase{
 
     private function getEarliestChannelAddedTimestamp(){
         $timestamp = 0;
-        $sqlquery = "SELECT x_timestamp_added FROM channels WHERE source = ".$this->db->quote($this->parent->getSource())." AND x_timestamp_added > 0 ORDER BY x_timestamp_added ASC LIMIT 1";
+        $sqlquery = "
+            SELECT x_timestamp_added
+            FROM channels
+            WHERE source = ".$this->db->quote($this->parent->getSource())." AND x_timestamp_added > 0
+            ORDER BY x_timestamp_added ASC
+            LIMIT 1
+        ";
         $result = $this->db->query($sqlquery);
         $timestamp_raw = $result->fetchAll();
         if (isset($timestamp_raw[0][0]))
@@ -35,13 +41,21 @@ class latestChannels extends singleSourceHTMLReportBase{
 
     public function popuplatePageBody(){
         $this->setPageTitle( "Latest channel additions on ".$this->parent->getSource() );
-        $this->setDescription("A listing of new channels on " . $this->parent->getPureSource() . " that were recently found. If an existing channel changes its name but its unique channel parameters (SID,NID,TID) stay the same, it won't show up in this list.");
+        $this->setDescription(
+            "A listing of new channels on " . $this->parent->getPureSource() . " that were recently found. ".
+            "If an existing channel changes its name but its unique channel parameters (SID,NID,TID) stay the same, it won't show up in this list."
+        );
         $this->addBodyHeader();
         $html_table = "";
         $timestamp = intval($this->getEarliestChannelAddedTimestamp());
         if ($timestamp != 0){
             $x = new channelIterator( $shortenSource = true );
-            $x->init2( "SELECT * FROM channels WHERE source = ".$this->db->quote($this->parent->getSource())." AND x_timestamp_added > " . $this->db->quote($timestamp) . " ORDER BY x_timestamp_added DESC, name DESC LIMIT 25");
+            $x->init2( "
+                SELECT * FROM channels
+                WHERE source = ".$this->db->quote($this->parent->getSource())." AND x_timestamp_added > " . $this->db->quote($timestamp) . "
+                ORDER BY x_timestamp_added DESC, name DESC
+                LIMIT 100
+            ");
             while ($x->moveToNextChannel() !== false){
                 $currChan = $x->getCurrentChannelObject();
 
@@ -53,17 +67,6 @@ class latestChannels extends singleSourceHTMLReportBase{
                     "(added on " . date("D, d M Y H:i:s", $currChan->getXTimestampAdded()) . ")</p>".
                     "<pre>". $currChan->getChannelString() ."</pre>"
                 );
-/*                foreach ($carray as $param => $value){
-                    if ($param == "apid" || $param == "caid"){
-                        $value = str_replace ( array(",",";"), ",<br/>", htmlspecialchars($value ));
-                    }
-                    elseif ($param == "x_last_changed" || $param == "x_timestamp_added" || $param == "x_last_confirmed"){
-                        $value = date("D, d M Y H:i:s", $value);
-                    }
-                    else
-                        $value = htmlspecialchars($value);
-                    $this->appendToBody( '<td class="'.htmlspecialchars($param).'">'.$value."</td>\n" );
-                }*/
             }
         }
         $this->addToOverviewAndSave( "New channels", "latest_channel_additions.html" );

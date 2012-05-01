@@ -28,10 +28,11 @@ class changelog extends singleSourceHTMLReportBase{
         $this->setDescription("List of the most recent channel attribute changes on DVB source " . $this->parent->getPureSource() . ".");
         $this->addBodyHeader();
         $where = array(
-            "timestamp >= " . $this->db->quote( $this->parent->getLastConfirmedTimestamp() - 60*60*24*2 ), //last confirmed + the 2 previous days
+            //"timestamp >= " . $this->db->quote( $this->parent->getLastConfirmedTimestamp() - 60*60*24*2 ), //last confirmed + the 2 previous days
             "combined_id LIKE ".$this->db->quote( $this->parent->getSource()."%" )
         );
-        $changelog = new HTMLChangelog( $where, " LIMIT 100", 1);
+        //$changelog = new HTMLChangelog( $where, " LIMIT 100", 1);
+        $changelog = new HTMLChangelog( $where, "", 1);
         $this->appendToBody( $changelog->getContents() );
         $this->addToOverviewAndSave('Changelog', "changelog.html");
     }
