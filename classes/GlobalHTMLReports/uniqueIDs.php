@@ -55,7 +55,7 @@ class uniqueIDs extends globalHTMLReportBase{
         );
 */
 
-        $this->db->getDBHandle()->sqliteCreateFunction('convertchannelname', 'global_convertChannelNameForCPID', 2);
+        $this->db->getDBHandle()->sqliteCreateFunction('convertchannelname', 'global_convertChannelNameToCPID', 2);
 
         $replacer = " convertchannelname( lower(name), x_label) ";
 
@@ -123,7 +123,7 @@ class uniqueIDs extends globalHTMLReportBase{
             }
             if ( !$this->isBlacklisted($name)){
                 $row["matching_providers"] = implode($divider , array_unique( explode( $divider, $row["matching_providers"]) ));
-                $tempidstring = $this->getIDString( $name, $labelparts);
+                $tempidstring = $name; //$this->getIDString( $name, $labelparts);
                 if ($lastid != $tempidstring){
                     $idstring = $tempidstring;
                     if (!array_key_exists( $idstring, $uidlist)){
@@ -177,7 +177,11 @@ class uniqueIDs extends globalHTMLReportBase{
         asort($snt2cp_list);
         $this->appendToBody( "<h2>List of all generated IDs</h2>" );
         foreach ($pure_id_list as $id => $occurences ){
-            $this->appendToBody( "<p><b>". $id."</b> (found <b>$occurences</b> time(s) in channelpedias database)</p>" );
+            $this->appendToBody(
+                '<div class="channel_illustration '. uniqueIDTools::getInstance()->getMatchingCSSClasses( $id, '_small') . '"></div>'.
+                '<br clear="all" />'.
+                '<p><b>'. $id."</b> (found <b>$occurences</b> time(s) in channelpedias database)</p>\n"
+            );
         }
         $this->appendToBody( "<h2>Warning Log</h2>" );
         $this->appendToBody( "<pre>". $strictlist."</pre>" );
@@ -212,7 +216,8 @@ class uniqueIDs extends globalHTMLReportBase{
             $name = trim(substr($name,0, -3));
             $ext .= "[+24]";
         }
-        return "cp[v0.1]." . $type . "." . $labelparts[0] . "." . $name . $ext;
+        //return "cpid_v1." . $type . ":" . $name . $ext . "." . $labelparts[0];
+        return $name . $labelparts[0];
      }
 
     private function isBlacklisted ($name){
@@ -251,6 +256,7 @@ class uniqueIDs extends globalHTMLReportBase{
         return $name;
     }
 
+    /*
     private function sqlMultiReplace($string, $from_to_array){
         $fragment = "";
         foreach ($from_to_array as $from => $to){
@@ -262,76 +268,7 @@ class uniqueIDs extends globalHTMLReportBase{
     private function sqlReplace($string, $from, $to){
         return "REPLACE( ". $string .", ". $this->db->quote($from) .", " . $this->db->quote($to) . ")";
     }
+    */
+
 }
-
-//global function to be called from pdo
-
-function global_convertChannelNameForCPID( $name, $label){
-    $labelparts = explode( '.', $label);
-    $country = $labelparts[0];
-    $name = explode(",", $name);
-    $nameparts = explode("(", $name[0]); //cut off brackets that are used by wilhelm.tel and unitymedia
-    $name = trim($nameparts[0]);
-    $name = str_replace(
-        array(
-            '.',
-            '/',
-            ' ',
-            '&',
-            '!',
-            "'",
-            '(',
-            ')',
-            '|',
-            '`',
-            '?',
-            '-',
-            '_'
-        ), "", trim($name));
-
-        if ($country === "at" || $country === "de" || $country === "ch"){
-            $name = str_replace(array( 'pro7', 'rtlii', 'srtl', 'rtltelevision'), array( 'prosieben', 'rtl2', 'superrtl', 'rtl' ), $name);
-            if ($name == "skychristmas") $name = "skycinemahits";
-        }
-        if ($country === "at"){
-            if (substr(strtolower($name), -7) === "austria")
-                $name = substr($name, 0, strlen($name) -7 );
-        }
-        elseif ($country === "ch"){
-            if (substr(strtolower($name), -7) === "schweiz")
-                $name = substr($name, 0, strlen($name) -7 );
-            elseif (substr(strtolower($name), -2) === "ch")
-                $name = substr($name, 0, strlen($name) -2 );
-            elseif (substr(strtolower($name), -5) === "chneu")
-                $name = substr($name, 0, strlen($name) -5 );
-        }
-/*
-        $ext = "";
-        $type = "data";
-        if (stristr($labelparts[2], "sdtv") !== false){
-            $type = "tv";
-        }
-        elseif (stristr($labelparts[2], "hdtv") !== false){
-            $type = "tv";
-            if ( substr($name,-2, 2) == "hd")
-                $name = trim(substr($name,0, -2));
-            $ext .= "[hd]";
-        }
-        elseif (stristr($labelparts[2], "radio") !== false){
-            $type = "radio";
-        }
-
-        if ( substr($name,-2, 2) == "+1"){
-            $name = trim(substr($name,0, -2));
-            $ext .= "[+1]";
-        }
-        else if ( substr($name,-3, 3) == "+24"){
-            $name = trim(substr($name,0, -3));
-            $ext .= "[+24]";
-        }
-        return "cp[v0.1]." . $type . "." . $labelparts[0] . "." . $name . $ext;
-*/
-    return $name;
-}
-
 ?>
