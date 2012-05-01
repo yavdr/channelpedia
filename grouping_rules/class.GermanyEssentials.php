@@ -40,6 +40,16 @@ class GermanyEssentials  extends ruleBase{
 
     function getGroups(){
         return array (
+
+            //group regional channels before the national channel are grouped
+            array(
+                "title" => "Public Regional",
+                "outputSortPriority" => 2,
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeHDTV,
+                "customwhere" => "AND ".DE_PUBLIC_REGIONAL
+            ),
+
             array(
                 "title" => "Public",
                 "outputSortPriority" => 1,
@@ -49,33 +59,48 @@ class GermanyEssentials  extends ruleBase{
             ),
 
             array(
-                "title" => "Public",
-                "outputSortPriority" => 2,
+                "title" => "Public OLD FREQUENCIES",
+                "outputSortPriority" => 3,
+                "languageOverrule" => "",
                 "caidMode" => self::caidModeFTA,
-                "mediaType" => self::mediaTypeSDTV,
-                "customwhere" =>
-                    "AND ( ".
-                    "(".DE_PROVIDER_ARD." AND ( UPPER(name) LIKE '%ERSTE%' OR UPPER(name) LIKE '%EINS%' OR UPPER(name) LIKE '%ARTE%' OR UPPER(name) LIKE '%PHOENIX%' )) ".
-                    " OR provider LIKE 'ZDF%'".
-                    ") "
+                "mediaType" => self::mediaTypeHDTV,
+                "customwhere" => "AND ".DE_PUBLIC_PROVIDER . " AND name LIKE '% alt'"
             ),
 
             array(
-                "title" => "Public Regional",
+                "title" => "Public OLD FREQUENCIES",
                 "outputSortPriority" => 3,
+                "languageOverrule" => "",
                 "caidMode" => self::caidModeFTA,
-                "mediaType" => self::mediaTypeSDTV,
-                "customwhere" =>
-                    "AND ".DE_PROVIDER_ARD." AND NOT ( UPPER(name) LIKE '%ERSTE%' OR UPPER(name) LIKE '%EINS%' OR UPPER(name) LIKE '%ARTE%' OR UPPER(name) LIKE '%PHOENIX%' OR UPPER(name) LIKE '%TEST%') "
+                "mediaType" => self::mediaTypeData,
+                "customwhere" => "AND ".DE_PUBLIC_PROVIDER . " AND name LIKE '% alt'"
             ),
 
+            //group test channels before the other channel are grouped
             array(
                 "title" => "Public ARD-Test",
                 "outputSortPriority" => 99, // 99 should just ensure it is at the end of the list
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
+                "customwhere" => "AND ".DE_PROVIDER_ARD." AND UPPER(name) LIKE '%TEST%' "
+            ),
+
+            //group regional channels before the national channel are grouped
+            array(
+                "title" => "Public Regional",
+                "outputSortPriority" => 5,
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeSDTV,
+                "customwhere" => "AND ".DE_PUBLIC_REGIONAL
+            ),
+
+            array(
+                "title" => "Public",
+                "outputSortPriority" => 4,
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeSDTV,
                 "customwhere" =>
-                    "AND ".DE_PROVIDER_ARD." AND UPPER(name) LIKE '%TEST%' "
+                    "AND ( ". DE_PROVIDER_ARD." OR provider LIKE 'ZDF%') "
             ),
 
             array(
