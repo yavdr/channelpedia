@@ -66,6 +66,41 @@ define("CUT_OFF_INDEX_HTML", false); //only set to true if serving rendered page
 
 $default_lang_de_cable_provider = array("de");
 
+$global_sat_long_names = array(
+        "S1W"  => array(
+            "name" => "Intelsat 10-02, Thor 5, Thor 6 (0.8°W)",
+            "descr" => ""
+        ),
+        "S4.8E"  => array(
+            "name" => "Astra 4A",
+            "descr" => ""
+        ),
+        "S9E"    => array(
+            "name" => "Eutelsat 9A",
+            "descr" => ""
+        ),
+        "S13E"   => array(
+            "name" => "Hot Bird 13A, Hot Bird 13B, Hot Bird 13C",
+            "descr" => ""
+        ),
+        "S19.2E" => array(
+            "name" => "Astra 1H, Astra 1KR, Astra 1L, Astra 1M, Astra 2C",
+            "descr" => ""
+        ),
+        "S26E"   => array(
+            "name" => "Badr 4, Badr 5, Badr 6",
+            "descr" => ""
+        ),
+        "S28.2E" => array(
+            "name" => "Astra 1N, Astra 2A, Astra 2B, Astra 2D, Eutelsat 28A (28.5°)",
+            "descr" => ""
+        ),
+        "S36E"   => array(
+            "name" => "Eutelsat 36A, Eutelsat 36B",
+            "descr" => ""
+        ),
+    );
+
 /*
  *  $global_source_config
  *
