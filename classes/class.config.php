@@ -43,6 +43,7 @@ require_once PATH_TO_CLASSES.'class.HTMLOutputRenderSource.php';
 require_once PATH_TO_CLASSES.'class.HTMLChangelog.php';
 require_once PATH_TO_CLASSES.'class.epg2vdrMapper.php';
 require_once PATH_TO_CLASSES.'class.dbVariousTools.php';
+require_once PATH_TO_CLASSES.'uniqueIDTools.php';
 
 class config {
 
