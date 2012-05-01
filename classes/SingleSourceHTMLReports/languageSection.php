@@ -42,31 +42,125 @@ class languageSection extends singleSourceHTMLReportBase{
         $groupIterator->init($this->parent->getSource(), $this->language);
         while ($groupIterator->moveToNextChannelGroup() !== false){
             $cols = $groupIterator->getCurrentChannelGroupArray();
-            //print "Processing channelgroup ".$cols["x_label"]."\n";
-            $html_table = "";
-            $shortlabel =
+            $x = new channelIterator( $shortenSource = true);
+            $x->init1($cols["x_label"], $this->parent->getSource(), $orderby = "UPPER(name) ASC");
+            $channelNameList = array();
+            $channelStringList = "";
+            while ($x->moveToNextChannel() !== false){
+                $curChan = $x->getCurrentChannelObject();
+                $curChanString = htmlspecialchars($curChan->getChannelString());
+                $channellogo = "";
+                if (strlen($curChan->getName()) > 2 && substr($curChan->getName(),0,1) !== "."){
+                    if (count($channelNameList) < $previewChannelLimit){
+                        $channelNameSegments = explode(',', $curChan->getName());
+                        $chname = htmlspecialchars( count($channelNameSegments) > 0 ? $channelNameSegments[0] : $curChan->getName() );
+                        //$chname = "";
+                        if ( $this->language === "de" || $this->language === "at" || $this->language === "ch"){
+                            if ($curChan->getXCPID() !== ""){
+                                $query = $this->db->query( "SELECT wikipedia_page_url FROM channel_meta_data WHERE cpid = ". $this->db->quote( $curChan->getXCPID() ) );
+                                $result = $query->fetch(PDO::FETCH_ASSOC);
+                                if ($result !== false)
+                                    $wurl = '<br/><a href="'. $result["wikipedia_page_url"] . '" target="_blank">Look it up on Wikipedia</a>' . "\n";
+                                else
+                                    $wurl = "";
+                                $chname =
+                                    '<div class="channel_illustration '.
+                                    uniqueIDTools::getInstance()->getMatchingCSSClasses( $curChan->getXCPID(), '_small').
+                                    '" title="'.$curChan->getXCPID().'">'.
+                                    "</div>\n".
+                                    '<div class="channel_details"><p><b>'. $chname . '</b>' . $wurl.
+                                    "</p></div>\n";
+                            }
+                            else{
+                                $chname =
+                                    '<div class="channel_illustration" '.
+                                    'title="No ID.">'.
+                                    "</div>\n".
+                                    '<div class="channel_details"><p><b>'. $chname . '</b><br/>NO ID'.
+                                    "</p></div>\n";
+                            }
+                        }
+                        $channelNameList[] = $chname;
+                    }
+                    else if (count($channelNameList) === $previewChannelLimit)
+                        $channelNameList[] = '... ';
+                }
+                $curChanString = $channellogo . $curChanString;
+                //check if channel might be outdated, if so, apply additional css class
+                $class = ( $curChan->getXLastConfirmed() < $this->parent->getLastConfirmedTimestamp()) ? ' class="outdated"' : '';
+                $channelStringList .=
+                    '<span title="'.$this->getPopupContent($curChan).'"'.$class.'>'. $curChanString ."</span>\n";
+            }
+
             preg_match ( "/.*?\.\d*?\.(.*)/" , $cols["x_label"], $shortlabelparts );
-            if (count($shortlabelparts) == 2)
-                $shortlabel =$shortlabelparts[1];
-            else
-                $shortlabel = $cols["x_label"];
+            $shortlabel = (count($shortlabelparts) == 2) ? $shortlabelparts[1] : $cols["x_label"];
             $prestyle = (strstr($shortlabel, "FTA") === false  || strstr($shortlabel, "scrambled") !== false) ? 'scrambled' : 'fta';
             $icons = "";
             $icons .= (strstr($shortlabel, "FTA") === false  || strstr($shortlabel, "scrambled") !== false) ? ' <img src="'.$this->relPath.'../res/icons/lock.png" class="lock_icon" />' : '';
             $escaped_anchor = htmlspecialchars($shortlabel);
-            $escaped_shortlabel = $escaped_anchor. " " . $icons;
             $nice_html_body .=
                 '<a name ="'.$escaped_anchor.'">'.
                 '<h2 class="'.$prestyle.'">'.
-                $escaped_shortlabel . " (" . $cols["channelcount"] . ' channel'.($cols["channelcount"] !== 1 ? 's':'').')'.
-                "</h2>\n".
-                //"<h3>VDR channel format</h3>\n".
-                '<pre class="'.$prestyle.'">';
-            $x = new channelIterator( $shortenSource = true);
-            //print $this->source. "/" . $cols["x_label"]."\n";
-            $x->init1($cols["x_label"], $this->parent->getSource(), $orderby = "UPPER(name) ASC");
-            $channelNameList = array();
-            while ($x->moveToNextChannel() !== false){
+                $escaped_anchor. " " . $icons . " (" . $cols["channelcount"] . ' channel'.($cols["channelcount"] !== 1 ? 's':'').')'.
+                "</h2>\n";
+
+            if ( $this->language === "de" || $this->language === "at" || $this->language === "ch"){
+                $nice_html_body .=
+                    '<div class="wikipedia_data '.$prestyle.'">'."\n" .
+                    (count($channelNameList) > 0 ? '<div class="single_channel">'."\n".implode("</div>\n".'<div class="single_channel">',$channelNameList)."</div>\n":'').
+                    '<br clear="all">'."\n".
+                    "</div>\n";
+            }
+
+            $nice_html_body.=
+                '<pre class="'.$prestyle.'">'.
+                $channelStringList.
+                "</pre>\n</a>\n";
+
+            if ( $this->language === "de" || $this->language === "at" || $this->language === "ch"){
+            }
+            else{
+                $separator = "/ ";
+                $nice_html_linklist .=
+                    '<li><a href="#'.$escaped_anchor.'"><span class="anchorlist_groupname '.$prestyle.'">'.$escaped_anchor. " " . $icons . "</span><br/>".
+                    (count($channelNameList) > 0 ? '<span class="anchorlist_channelnames"> <span class="single">'.implode('</span> '.$separator.'<span class="single">',$channelNameList).'</span></span></span>':'').
+                    '</a></li><br clear="all">'."\n";
+            }
+        }
+        if ( $this->language === "de" || $this->language === "at" || $this->language === "ch"){
+        }
+        else{
+            $this->appendToBody(
+                "<h2>Groups Overview</h2>\n<div class=\"group_anchors\"><ul class=\"group_anchors\">\n" .
+                $nice_html_linklist . "</ul></div>\n"
+            );
+        }
+        $this->appendToBody(
+            $nice_html_body
+        );
+        $this->addToOverviewAndSave( "", "index.html");
+    }
+
+    private function getPopupContent($curChan){
+        return $curChan->getName(). " | ".
+            ($curChan->isSatelliteSource() ?
+                "Type: DVB-S"    . ( $curChan->onS2SatTransponder()   ? "2"        : ""           ) ." | ".
+                "Polarisation: " . ( $curChan->belongsToSatVertical() ? "Vertical" : "Horizontal" ) ." | ".
+                "Band: "         . ( $curChan->belongsToSatHighBand() ? "High"     : "Low"        ) ." | ".
+                "FEC: "          . $curChan->getFECOfSatTransponder()                          ." | "
+            : "" ).
+            "Modulation: "        . $curChan->getModulation() ." | ".
+            "Frequency: "         . $curChan->getReadableFrequency() ." | ".
+            "Symbolrate: "        . $curChan->getSymbolrate() ." | ".
+            "Date added: "        . date("D, d M Y H:i:s", $curChan->getXTimestampAdded() ) . " | ".
+            "Date last changed: " . date("D, d M Y H:i:s", $curChan->getXLastChanged()    ) . " | ".
+            "Date last seen: "    . date("D, d M Y H:i:s", $curChan->getXLastConfirmed()  ) . " | ".
+            "CPID draft: "    . htmlspecialchars( $curChan->getXCPID() ) . " ".
+            "";
+    }
+
+/*
+ *
                 if ($html_table == ""){
                     $html_table = "<h3>Table view</h3>\n<div class=\"tablecontainer\"><table class=\"nice_table\">\n<tr>";
                     foreach ($x->getCurrentChannelArrayKeys() as $header){
@@ -74,35 +168,6 @@ class languageSection extends singleSourceHTMLReportBase{
                     }
                     $html_table .= "</tr>\n";
                 }
-                $curChan = $x->getCurrentChannelObject();
-                $curChanString = htmlspecialchars($curChan->getChannelString());
-                if (strlen($curChan->getName()) >2 && substr($curChan->getName(),0,1) !== "."){
-                    if (count($channelNameList) < $previewChannelLimit){
-                        $channelNameSegments = explode(',', $curChan->getName());
-                        $channelNameList[] = htmlspecialchars( count($channelNameSegments) > 0 ? $channelNameSegments[0] : $curChan->getName() );
-                    }
-                    elseif (count($channelNameList) === $previewChannelLimit)
-                        $channelNameList[] = '... ';
-                }
-                $popuptitle = "". $curChan->getName(). " | ".
-                    ($curChan->isSatelliteSource() ?
-                        "Type: DVB-S"    . ( $curChan->onS2SatTransponder()   ? "2"        : ""           ) ." | ".
-                        "Polarisation: " . ( $curChan->belongsToSatVertical() ? "Vertical" : "Horizontal" ) ." | ".
-                        "Band: "         . ( $curChan->belongsToSatHighBand() ? "High"     : "Low"        ) ." | ".
-                        "FEC: "          . $curChan->getFECOfSatTransponder()                          ." | "
-                    : "" ).
-                    "Modulation: "        . $curChan->getModulation() ." | ".
-                    "Frequency: "         . $curChan->getReadableFrequency() ." | ".
-                    "Symbolrate: "        . $curChan->getSymbolrate() ." | ".
-                    "Date added: "        . date("D, d M Y H:i:s", $curChan->getXTimestampAdded() ) . " | ".
-                    "Date last changed: " . date("D, d M Y H:i:s", $curChan->getXLastChanged()    ) . " | ".
-                    "Date last seen: "    . date("D, d M Y H:i:s", $curChan->getXLastConfirmed()  ) . " ".
-                    "";
-                //check if channel might be outdated, if so, apply additional css class
-                if ( $curChan->getXLastConfirmed() < $this->parent->getLastConfirmedTimestamp())
-                    $nice_html_body .= "<span title=\"".$popuptitle."\" class=\"outdated\">". $curChanString ."</span>\n";
-                else
-                    $nice_html_body .= "<span title=\"".$popuptitle."\">".$curChanString."</span>\n";
 
                 $html_table .= '<tr class="'.$prestyle.'">'."\n";
                 //FIXME use channel object here
@@ -137,25 +202,7 @@ class languageSection extends singleSourceHTMLReportBase{
                     }
                     $html_table .= '<td class="'.htmlspecialchars($param).'">'.$value."</td>\n";
                 }
-                $html_table .= "</tr>\n";
-            }
-            $html_table .= "</table></div>";
-            $nice_html_body .= "</pre>\n</a>\n";
-            //$nice_html_body .= "</pre>\n".$html_table;
-            // . $cols["channelcount"] . " channels: "
-            $nice_html_linklist .=
-                '<li><a href="#'.$escaped_anchor.'"><span class="anchorlist_groupname '.$prestyle.'">'.$escaped_shortlabel. "</span><br/>".
-                (count($channelNameList) > 0 ? '<span class="anchorlist_channelnames"> <span class="single">'.implode('</span> / <span class="single">',$channelNameList).'</span></span></span>':'').
-                '</a></li>'."\n";
-        }
-
-        $this->appendToBody(
-            "<h2>Groups Overview</h2>\n<div class=\"group_anchors\"><ul class=\"group_anchors\">\n" .
-            $nice_html_linklist . "</ul></div>\n".
-            $nice_html_body
-        );
-        $this->addToOverviewAndSave( "", "index.html");
-    }
+                $html_table .= "</tr>\n";*/
 
 }
 ?>

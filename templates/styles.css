@@ -65,6 +65,7 @@ h2.scrambled{
     margin-bottom: 0px;
 }
 
+div.fta,
 h2.fta{
     color: white;
     background-color: #4E78B1;
@@ -109,6 +110,7 @@ pre.fta {
     border-top-left-radius: 0px;
     margin-top: 0px;
     padding: 8px;
+    border-top-width: 0px;
 }
 
 pre.changelog {
@@ -182,7 +184,10 @@ td.sid, td.nid, td.rid, td.rid, td.tpid, td.frequency, td.symbolrate{
     text-align: right;
 }
  
-ul li {
+div.group_anchors ul.group_anchors li,
+ul.singleSourceMainMenu li,
+ul.entryMenu li,
+ul.section_menu li {
     padding: 10px 0px 2px 0px;
     font-size: 1.35em;
     color: #4E78B1;
@@ -284,7 +289,7 @@ ul.group_anchors li a{
 ul.group_anchors li a span.anchorlist_channelnames{
     color: #E57A3C;
     font-weight: bold;
-    font-size: 0.80em;
+    font-size: 0.8em;
 }
 
 ul.group_anchors li a span.anchorlist_channelnames span.single{
@@ -297,7 +302,6 @@ ul.group_anchors li a span.anchorlist_channelnames span.single{
 ul.group_anchors li a span.anchorlist_groupname{
     font-weight: bold;
     color: #4E78B1;
-    font-size: 1em;
     padding-right: 0.5em;
 }
 
@@ -328,8 +332,6 @@ ul.singleSourceMainMenu li span{
     color: #888888;
     font-size: 0.8em;
 }
-
-
 
 p.warning{
     border: 1px solid wheat; 
@@ -374,4 +376,66 @@ p.timestamp{
     color: #333333;
     text-align: center;
     margin-top: 20px;
+}
+
+div.wikipedia_data {
+    background-color: black;
+    padding: 4px;
+    background-color: MintCream;
+    border-style: solid;
+    border-color: #4E78B1; 
+    border-width: 1px 1px 0px 1px;
+}
+
+div.wikipedia_data div.single_channel{
+    float: left;
+    margin: 4px;
+    width: 214px;
+    height:64px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+}
+
+div.wikipedia_data div.single_channel div.channel_illustration,
+div.wikipedia_data div.single_channel div.channel_details{
+    margin: 4px;
+    float: right;
+}
+
+div.wikipedia_data div.single_channel div.channel_details{
+    padding-left: 4px;
+    float: left;
+    width: 112px;
+    color: white;
+    font-size: 0.8em;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+div.wikipedia_data div.single_channel div.channel_details a{
+    color: white;
+}
+
+div.fta div.single_channel{
+    background-color: #4E78B1;
+}
+
+div.scrambled div.single_channel{
+    background-color: #E57A3C;
+}
+
+div.fta{
+    border-color: #4E78B1; 
+}
+
+div.scrambled{
+    background-color: Moccasin;
+    border-color: #E57A3C;
+    color: white;
+}
+
+pre.scrambled, 
+pre.fta,
+div.wikipedia_data {
+  border-width: 0px;
 }

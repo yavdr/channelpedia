@@ -43,8 +43,17 @@ CREATE TABLE channels(
     x_last_changed TIMESTAMP,
     x_last_confirmed TIMESTAMP,
     x_utf8 BOOLEAN,
-    PRIMARY KEY ( source, nid, tid, sid)
+    PRIMARY KEY ( source, nid, tid, sid )
 );
+
+CREATE TABLE channel_meta_data(
+    cpid TEXT,
+    common_channel_name TEXT,
+    wikipedia_page_url TEXT,
+    website_url TEXT
+    PRIMARY KEY ( cpid )
+);
+
 
 /* FIXME: x_namespace should become a PRIMARY_KEY as soon as all selects, inserts and updates are aware of x_namespace!*/
 
