@@ -62,188 +62,88 @@ class uniqueIDTools {
         return $this->sanitizeID4cssClass( $id ) . $suffix . $alternative;
     }
 
-//global function to be called from pdo
+    //global function to be called from pdo
 
-public function convertChannelNameToCPID( $name, $label){
-    $labelparts = explode( '.', $label);
-    $country = $labelparts[0];
-    $name = explode(",", $name);
-    $nameparts = explode("(", $name[0]); //cut off brackets that are used by wilhelm.tel and unitymedia
-    $name = trim($nameparts[0]);
+    public function convertChannelNameToCPID( $name, $label){
+        $labelparts = explode( '.', $label);
+        $country = $labelparts[0];
+        $name = explode(",", $name);
+        $nameparts = explode("(", $name[0]); //cut off brackets that are used by wilhelm.tel and unitymedia
+        $name = trim($nameparts[0]);
 
-    //care for unimportant prefixes or suffixes that are seperated by a blank or any other special char that
-    //will be deleted later on - now we still have it to work with it
-    if ($country === "at" || $country === "de" || $country === "ch"){
-        if (substr(strtolower($name), -4) === " neu")
-            $name = substr($name, 0, strlen($name) -4 );
-    }
-
-    $name = str_replace(
-        array(
-            '.',
-            '/',
-            ' ',
-            '&',
-            '!',
-            "'",
-            '(',
-            ')',
-            '|',
-            '`',
-            '?',
-            '-',
-            '_',
-            '*',
-            ':'
-        ), "", trim($name));
-
-    if ($country === "at" || $country === "de" || $country === "ch"){
-
-        $fullname_replacements_de = array(
-            "br"              => "brfs",
-            "skychristmas"    => "skycinemahits",
-            "skysporthd1"     => "skysport1hd",
-            "skysporthd2"     => "skysport2hd",
-            'zdfinfokanal'    => 'zdfinfo',
-            'zdftheaterkanal' => 'zdfkultur',
-            'deutschlandradiokultur' => 'dkultur',
-            'deutschlandfunk' => 'dlf',
-            'wdrfunkhauseuropa' => 'funkhauseuropa',
-        );
-
-        $partial_name_replacements_de = array(
-            "brnord" => "brfsnord",
-            "brsüd" => "brfssüd",
-            'pro7' => 'prosieben',
-            'rtlii' => 'rtl2',
-            'srtl' => 'superrtl',
-            'rtltelevision' => 'rtl',
-            "bayerischesfs" => "brfs",
-            "brfernsehen" => "brfs",
-            "wdrfernsehen"    => "wdr",
-            "ndrfernsehen"    => "ndrfs",
-            "swrfernsehen"    => "swrfs",
-            "mdrfernsehen"    => "mdr",
-            'mdr1radio' => 'mdr1',
-            "rbbfernsehen"    => "rbb",
-            "nationalgeographicchannel" => "natgeo",
-            'badenwürttemberg' => 'bw',
-            'rheinlandpfalz' => 'rp',
-            'swrbw' => 'swrfsbw',
-            'swrrp' => 'swrfsrp',
-        );
-
-
-        //full name replacements
-        if ( array_key_exists($name, $fullname_replacements_de)){
-            $name = $fullname_replacements_de[$name];
+        //care for unimportant prefixes or suffixes that are seperated by a blank or any other special char that
+        //will be deleted later on - now we still have it to work with it
+        if ($country === "at" || $country === "de" || $country === "ch"){
+            if (substr(strtolower($name), -4) === " neu")
+                $name = substr($name, 0, strlen($name) -4 );
         }
-        else{
-            //partial name replacements (all apply at the same time)
-            $name = str_ireplace( array_keys( $partial_name_replacements_de  ), array_values( $partial_name_replacements_de ), $name);
-        }
-    }
 
-    if ($country === "at"){
-        if (substr(strtolower($name), -7) === "austria")
-            $name = substr($name, 0, strlen($name) -7 );
-    }
-    elseif ($country === "ch"){
-        if (substr(strtolower($name), -7) === "schweiz")
-            $name = substr($name, 0, strlen($name) -7 );
-        elseif (substr(strtolower($name), -2) === "ch")
-            $name = substr($name, 0, strlen($name) -2 );
-        elseif (substr(strtolower($name), -5) === "chneu")
-            $name = substr($name, 0, strlen($name) -5 );
-    }
-
-    //care for channel type and cut off variant labels like "hd" and "+1" at the end of the name
-    $ext = "";
-    $type = "data";
-    if (stristr($labelparts[2], "sdtv") !== false){
-        $type = "tv";
-    }
-    elseif (stristr($labelparts[2], "hdtv") !== false){
-        $type = "tv";
-        if ( substr($name,-2, 2) == "hd")
-            $name = trim(substr($name,0, -2));
-        $ext .= "[hd]";
-    }
-    elseif (stristr($labelparts[2], "radio") !== false){
-        $type = "radio";
-    }
-
-    if ( substr($name,-2, 2) == "+1"){
-        $name = trim(substr($name,0, -2));
-        $ext .= "[+1]";
-    }
-    else if ( substr($name,-3, 3) == "+24"){
-        $name = trim(substr($name,0, -3));
-        $ext .= "[+24]";
-    }
-
-    //care for regional channel variants
-    if ($country === "at" || $country === "de" || $country === "ch"){
-        $regional_exceptions = array(
-          //TODO
-        );
-
-        $regional_prefixes = array(
-            "brfs",
-            "wdr",
-            "ndrfs",
-            "mdr1", //needs to be in front of mdr in this list
-            "mdr",
-            "rbb",
-            "swrfs",
-            "sat1",
-            "rtl",
-            "swr1",
-            "swr4",
-            "ndr1",
-            "ndrinfo",
-        );
-        foreach ( $regional_prefixes as $prefix){
-            $prefix_length = strlen($prefix);
-            if ( strlen($name) >  $prefix_length && substr( $name, 0, $prefix_length) == $prefix){
-               $name = trim( substr( $name, $prefix_length)) . '.' . trim(substr( $name, 0, $prefix_length));
-               break;
-            }
-        }
-    }
-
-
-    return "cpid_v1." . $type . ":" . $name . $ext . "."  . $labelparts[0];
-}
-
-
-private function global_convertChannelNameForCPID_alt( $name, $label){
-    $labelparts = explode( '.', $label);
-    $country = $labelparts[0];
-    $name = explode(",", $name);
-    $nameparts = explode("(", $name[0]); //cut off brackets that are used by wilhelm.tel and unitymedia
-    $name = trim($nameparts[0]);
-    $name = str_replace(
-        array(
-            '.',
-            '/',
-            ' ',
-            '&',
-            '!',
-            "'",
-            '(',
-            ')',
-            '|',
-            '`',
-            '?',
-            '-',
-            '_'
-        ), "", trim($name));
+        $name = str_replace(
+            array(
+                '.',
+                '/',
+                ' ',
+                '&',
+                '!',
+                "'",
+                '(',
+                ')',
+                '|',
+                '`',
+                '?',
+                '-',
+                '_',
+                '*',
+                ':'
+            ), "", trim($name));
 
         if ($country === "at" || $country === "de" || $country === "ch"){
-            $name = str_replace(array( 'pro7', 'rtlii', 'srtl', 'rtltelevision'), array( 'prosieben', 'rtl2', 'superrtl', 'rtl' ), $name);
-            if ($name == "skychristmas") $name = "skycinemahits";
+
+            $fullname_replacements_de = array(
+                "br"              => "brfs",
+                "skychristmas"    => "skycinemahits",
+                "skysporthd1"     => "skysport1hd",
+                "skysporthd2"     => "skysport2hd",
+                'zdfinfokanal'    => 'zdfinfo',
+                'zdftheaterkanal' => 'zdfkultur',
+                'deutschlandradiokultur' => 'dkultur',
+                'deutschlandfunk' => 'dlf',
+                'wdrfunkhauseuropa' => 'funkhauseuropa',
+            );
+
+            $partial_name_replacements_de = array(
+                "brnord" => "brfsnord",
+                "brsüd" => "brfssüd",
+                'pro7' => 'prosieben',
+                'rtlii' => 'rtl2',
+                'srtl' => 'superrtl',
+                'rtltelevision' => 'rtl',
+                "bayerischesfs" => "brfs",
+                "brfernsehen" => "brfs",
+                "wdrfernsehen"    => "wdr",
+                "ndrfernsehen"    => "ndrfs",
+                "swrfernsehen"    => "swrfs",
+                "mdrfernsehen"    => "mdr",
+                'mdr1radio' => 'mdr1',
+                "rbbfernsehen"    => "rbb",
+                "nationalgeographicchannel" => "natgeo",
+                'badenwürttemberg' => 'bw',
+                'rheinlandpfalz' => 'rp',
+                'swrbw' => 'swrfsbw',
+                'swrrp' => 'swrfsrp',
+            );
+
+
+            //full name replacements
+            if ( array_key_exists($name, $fullname_replacements_de)){
+                $name = $fullname_replacements_de[$name];
+            }
+            else{
+                //partial name replacements (all apply at the same time)
+                $name = str_ireplace( array_keys( $partial_name_replacements_de  ), array_values( $partial_name_replacements_de ), $name);
+            }
         }
+
         if ($country === "at"){
             if (substr(strtolower($name), -7) === "austria")
                 $name = substr($name, 0, strlen($name) -7 );
@@ -256,7 +156,8 @@ private function global_convertChannelNameForCPID_alt( $name, $label){
             elseif (substr(strtolower($name), -5) === "chneu")
                 $name = substr($name, 0, strlen($name) -5 );
         }
-/*
+
+        //care for channel type and cut off variant labels like "hd" and "+1" at the end of the name
         $ext = "";
         $type = "data";
         if (stristr($labelparts[2], "sdtv") !== false){
@@ -280,85 +181,43 @@ private function global_convertChannelNameForCPID_alt( $name, $label){
             $name = trim(substr($name,0, -3));
             $ext .= "[+24]";
         }
-        return "cp[v0.1]." . $type . "." . $labelparts[0] . "." . $name . $ext;
-*/
-    return $name;
-}
-//global function to be called from pdo
 
-function convertChannelNameToCPID_v3alt( $name, $label){
-    $labelparts = explode( '.', $label);
-    $country = $labelparts[0];
-    $name = explode(",", $name);
-    $nameparts = explode("(", $name[0]); //cut off brackets that are used by wilhelm.tel and unitymedia
-    $name = trim($nameparts[0]);
-    if ($country === "at" || $country === "de" || $country === "ch"){
-        if (substr(strtolower($name), -4) === " neu")
-            $name = substr($name, 0, strlen($name) -4 );
-        $name = str_replace(array( 'pro7', 'rtlii', 'srtl', 'rtltelevision'), array( 'prosieben', 'rtl2', 'superrtl', 'rtl' ), $name);
-        if ($name == "skychristmas") $name = "skycinemahits";
+        //care for regional channel variants
+        if ($country === "at" || $country === "de" || $country === "ch"){
+            $regional_exceptions = array(
+              //TODO
+            );
+
+            $regional_prefixes = array(
+                "brfs",
+                "wdr",
+                "ndrfs",
+                "mdr1", //needs to be in front of mdr in this list
+                "mdr",
+                "rbb",
+                "swrfs",
+                "sat1",
+                "rtl",
+                "swr1",
+                "swr4",
+                "ndr1",
+                "ndrinfo",
+            );
+            foreach ( $regional_prefixes as $prefix){
+                $prefix_length = strlen($prefix);
+                if ( strlen($name) >  $prefix_length && substr( $name, 0, $prefix_length) == $prefix){
+                   $name = trim( substr( $name, $prefix_length)) . '.' . trim(substr( $name, 0, $prefix_length));
+                   break;
+                }
+            }
+        }
+
+
+        return "cpid_v1." . $type . ":" . $name . $ext . "."  . $labelparts[0];
     }
-    if ($country === "at"){
-        if (substr(strtolower($name), -7) === "austria")
-            $name = substr($name, 0, strlen($name) -7 );
-    }
-    elseif ($country === "ch"){
-        if (substr(strtolower($name), -7) === "schweiz")
-            $name = substr($name, 0, strlen($name) -7 );
-        elseif (substr(strtolower($name), -2) === "ch")
-            $name = substr($name, 0, strlen($name) -2 );
-        elseif (substr(strtolower($name), -5) === "chneu")
-            $name = substr($name, 0, strlen($name) -5 );
-    }
-
-    $name = str_replace(
-        array(
-            '.',
-            '/',
-            ' ',
-            '&',
-            '!',
-            "'",
-            '(',
-            ')',
-            '|',
-            '`',
-            '?',
-            '-',
-            '_'
-        ), "", trim($name));
-
-
-        $ext = "";
-        $type = "data";
-        if (stristr($labelparts[2], "sdtv") !== false){
-            $type = "tv";
-        }
-        elseif (stristr($labelparts[2], "hdtv") !== false){
-            $type = "tv";
-            if ( substr($name,-2, 2) == "hd")
-                $name = trim(substr($name,0, -2));
-            $ext .= "[hd]";
-        }
-        elseif (stristr($labelparts[2], "radio") !== false){
-            $type = "radio";
-        }
-
-        if ( substr($name,-2, 2) == "+1"){
-            $name = trim(substr($name,0, -2));
-            $ext .= "[+1]";
-        }
-        else if ( substr($name,-3, 3) == "+24"){
-            $name = trim(substr($name,0, -3));
-            $ext .= "[+24]";
-        }
-        return "cpid_v1." . $type . ":" . $name . $ext . '.' . $labelparts[0];
-
-    return $name;
 }
 
-}
-
+//this needs to be a global scope function to be accessed from PDO
 function global_convertChannelNameToCPID( $name, $label ){
     return uniqueIDTools::getInstance()->convertChannelNameToCPID( $name , $label );
 }
