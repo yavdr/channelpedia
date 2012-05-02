@@ -50,7 +50,7 @@ CREATE TABLE channel_meta_data(
     cpid TEXT,
     common_channel_name TEXT,
     wikipedia_page_url TEXT,
-    website_url TEXT
+    website_url TEXT,
     PRIMARY KEY ( cpid )
 );
 

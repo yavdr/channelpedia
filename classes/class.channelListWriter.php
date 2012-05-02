@@ -30,7 +30,8 @@ class channelListWriter extends channelIterator{
         $delimiters = false,
         $config;
 
-    function __construct($label = "_complete", $type, $puresource, $orderby = "UPPER(name) ASC"){
+    function __construct( $label = "_complete", $type, $puresource, $orderby = "UPPER(name) ASC"){
+        $vdrversion = 1722;
         $this->config = config::getInstance();
         $xlabel = $label;
         if ($label === "_complete"){
@@ -44,7 +45,12 @@ class channelListWriter extends channelIterator{
             $this->delimiters = "groups";
             $orderby = "x_label ASC, UPPER(name) ASC";
         }
-        parent::__construct();
+        elseif ($label === "_complete_sorted_by_groups.compatibility"){
+            $vdrversion = 1714;
+            $this->delimiters = "groups";
+            $orderby = "x_label ASC, UPPER(name) ASC";
+        }
+        parent::__construct(true, $vdrversion );
         $visibletype = ($type == "A") ? "ATSC" : "DVB-". $type;
         if ($type !== "S")
             $source = $type . "[" . $puresource . "]";

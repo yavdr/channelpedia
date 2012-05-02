@@ -47,7 +47,15 @@ class rawOutputRenderer {
             $channelListWriter->writeFile();
             $channelListWriter = new channelListWriter("_complete_sorted_by_groups", $type, $longsource);
             $channelListWriter->writeFile();
-
+            //$vdrversion = 1722
+            $channelListWriter = new channelListWriter(
+                "_complete_sorted_by_groups.compatibility",
+                $type,
+                $longsource,
+                "UPPER(name) ASC",
+                1715
+            );
+            $channelListWriter->writeFile();
             //$this->writeAllChannelSelections2Disk( $longsource );
             $this->writeAllUncategorizedChannels2Disk( $type, $longsource);
             //epgmappings only for German providers

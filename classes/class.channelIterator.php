@@ -35,13 +35,17 @@ class channelIterator{
         $groupChanged = true,
         $lastGroup = "",
         $shortenSource,
-        $tolerateInvalidChannels = false;
+        $tolerateInvalidChannels = false,
+        $vdr_compatibility_version,
+        $latest_vdr_compatibility_version;
 
-    function __construct($shortenSource = true){
+    function __construct($shortenSource = true, $vdrversion = 1722){
         $this->db = dbConnection::getInstance();
         $this->config = config::getInstance();
         $this->shortenSource = $shortenSource;
         $this->tolerateInvalidChannels = false;
+        $this->vdr_compatibility_version =  $vdrversion;
+        $this->latest_vdr_compatibility_version = 1722;
     }
 
     public function init1( $label, $source, $orderby = "frequency, parameter, provider, name ASC"){
@@ -69,6 +73,9 @@ class channelIterator{
             $temp = $this->result->fetch(PDO::FETCH_ASSOC);
             if (!$temp === false){
                 $channelobj = new channel( $temp );
+                if ( $this->vdr_compatibility_version < $this->latest_vdr_compatibility_version){
+                    $channelobj->enforceCompatibilityToVDRVersion( $this->vdr_compatibility_version );
+                }
                 //print "channelobject instanciated.\n";
                 if ($this->tolerateInvalidChannels || $channelobj->isValid()) {
                     //print "channelobject is valid.\n";
@@ -86,7 +93,7 @@ class channelIterator{
                     $this->lastFrequency = $this->channel->getSource() ."-" . $this->channel->getFrequency();
                 }
                 else{
-                    print "channelIterator: channel is invalid.\n";
+                    throw new Exception( "channelIterator: channel is invalid.\n" );
                 }
             }
         }

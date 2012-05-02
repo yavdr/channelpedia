@@ -30,6 +30,7 @@ class channel{
         $params,
 
         $channelstring = "",
+        $vdr_compatibility_version,
 
         $cpid = "",
         $uniqueID = "",
@@ -52,11 +53,12 @@ class channel{
         $tid,
         $rid;
 
-    public function __construct( $channelparams){
+    public function __construct( $channelparams ){
         $this->db = dbConnection::getInstance();
         $this->config = config::getInstance();
         $this->params = array();
         $this->isCheckedSatelliteSource = false;
+        $this->vdr_compatibility_version = 1722;
 
         if (is_array( $channelparams )){
             //turn some integer params back into integer values
@@ -127,6 +129,18 @@ class channel{
 //                $this->markChannelAsInvalid("Channel parameters misleadingly indicate a satellite channel: '". $this->params["parameter"]."'");
         }
         $this->isCheckedSatelliteSource = $check1;
+    }
+
+    public function enforceCompatibilityToVDRVersion( $version ){
+        $this->vdr_compatibility_version = $version;
+        if ($version < 1721){
+            $this->params["apid"] = preg_replace( '/\@\d+/', '', $this->params["apid"]);
+            $this->params["tpid"] = preg_replace( '/\;.*$/', '', $this->params["tpid"]);
+            if( $this->isSatelliteSource()){
+                $this->params["parameter"] = preg_replace( array('/H/i','/V/i'), array('h','v'), $this->getParameter() );
+            }
+            $this->channelstring = $this->convertArray2String();
+        }
     }
 
     public function getSingleTransponderParameter( $key ){
