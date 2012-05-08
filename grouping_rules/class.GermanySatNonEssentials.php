@@ -49,16 +49,9 @@ class GermanySatNonEssentials  extends ruleBase{
                 "mediaType" => self::mediaTypeSDTV,
                 //"languageOverrule" => "", //MEDIA BROADCAST doesn't have German audio language
                 "customwhere" =>
-                    " AND NOT ". FILTER_ASTRA1_FTA . " AND NOT (". DE_PUBLIC_PROVIDER. " OR ".DE_PRIVATE_PRO7_RTL." OR ".AUSTRIA." OR ".SWITZERLAND.") "
+                    " AND NOT ". FILTER_ASTRA1_FTA . " AND NOT (". DE_PUBLIC_PROVIDER. " OR ".DE_PRIVATE_PRO7_RTL." OR ".AUSTRIA." OR ".SWITZERLAND.") AND NOT name LIKE '% alt'"
             ),
 
-            array(
-                "title" => "Private",
-                "outputSortPriority" => 11,
-                "caidMode" => self::caidModeScrambled,
-                "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => "AND ".DE_PRIVATE_PRO7_RTL . "AND NOT (" . AUSTRIA." OR ".SWITZERLAND.")"
-            ),
 
             //CAUTION: details here (Private 31) are deliberately the same as in GermanyEssentials. Content of this selection should
             //be merged with group from GermanyEssentials.

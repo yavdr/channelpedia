@@ -45,6 +45,7 @@ class languageSection extends singleSourceHTMLReportBase{
             $x = new channelIterator( $shortenSource = true);
             $x->init1($cols["x_label"], $this->parent->getSource(), $orderby = "UPPER(name) ASC");
             $channelNameList = array();
+            $channelMetaInfoList = array();
             $channelStringList = "";
             while ($x->moveToNextChannel() !== false){
                 $curChan = $x->getCurrentChannelObject();
@@ -55,15 +56,25 @@ class languageSection extends singleSourceHTMLReportBase{
                         $channelNameSegments = explode(',', $curChan->getName());
                         $chname = htmlspecialchars( count($channelNameSegments) > 0 ? $channelNameSegments[0] : $curChan->getName() );
                         //$chname = "";
-                        if ( $this->language === "de" || $this->language === "at" || $this->language === "ch"){
+                        if ( $this->language === "de" || $this->language === "sky_de" || $this->language === "at" || $this->language === "ch"){
                             if ($curChan->getXCPID() !== ""){
-                                $query = $this->db->query( "SELECT wikipedia_page_url FROM channel_meta_data WHERE cpid = ". $this->db->quote( $curChan->getXCPID() ) );
+                                $ids = uniqueIDTools::getInstance()->deregionalizeID( $curChan->getXCPID() );
+                                $idlist = $this->db->quote( $curChan->getXCPID() );
+                                if ($ids !== false){
+                                  $ids2 = array();
+                                  foreach ($ids as $id){
+                                    $ids2[] = "cpid = " . $this->db->quote( $id );
+                                  }
+                                  $idlist = implode( ' OR ', $ids2);
+                                }
+                                $query = $this->db->query( "SELECT wikipedia_page_url FROM channel_meta_data WHERE ". $idlist );
+
                                 $result = $query->fetch(PDO::FETCH_ASSOC);
                                 if ($result !== false)
                                     $wurl = '<br/><a href="'. $result["wikipedia_page_url"] . '" target="_blank">Look it up on Wikipedia</a>' . "\n";
                                 else
                                     $wurl = "";
-                                $chname =
+                                $chmetainfo =
                                     '<div class="channel_illustration '.
                                     uniqueIDTools::getInstance()->getMatchingCSSClasses( $curChan->getXCPID(), '_small').
                                     '" title="'.$curChan->getXCPID().'">'.
@@ -72,13 +83,14 @@ class languageSection extends singleSourceHTMLReportBase{
                                     "</p></div>\n";
                             }
                             else{
-                                $chname =
+                                $chmetainfo =
                                     '<div class="channel_illustration" '.
                                     'title="No ID.">'.
                                     "</div>\n".
                                     '<div class="channel_details"><p><b>'. $chname . '</b><br/>NO ID'.
                                     "</p></div>\n";
                             }
+                            $channelMetaInfoList[] = $chmetainfo;
                         }
                         $channelNameList[] = $chname;
                     }
@@ -104,10 +116,10 @@ class languageSection extends singleSourceHTMLReportBase{
                 $escaped_anchor. " " . $icons . " (" . $cols["channelcount"] . ' channel'.($cols["channelcount"] !== 1 ? 's':'').')'.
                 "</h2>\n";
 
-            if ( $this->language === "de" || $this->language === "at" || $this->language === "ch"){
+            if ( $this->language === "de" || $this->language === "sky_de" ||  $this->language === "at" || $this->language === "ch"){
                 $nice_html_body .=
                     '<div class="wikipedia_data '.$prestyle.'">'."\n" .
-                    (count($channelNameList) > 0 ? '<div class="single_channel">'."\n".implode("</div>\n".'<div class="single_channel">',$channelNameList)."</div>\n":'').
+                    (count($channelMetaInfoList) > 0 ? '<div class="single_channel">'."\n".implode("</div>\n".'<div class="single_channel">',$channelMetaInfoList)."</div>\n":'').
                     '<br clear="all">'."\n".
                     "</div>\n";
             }
@@ -117,24 +129,16 @@ class languageSection extends singleSourceHTMLReportBase{
                 $channelStringList.
                 "</pre>\n</a>\n";
 
-            if ( $this->language === "de" || $this->language === "at" || $this->language === "ch"){
-            }
-            else{
                 $separator = "/ ";
                 $nice_html_linklist .=
                     '<li><a href="#'.$escaped_anchor.'"><span class="anchorlist_groupname '.$prestyle.'">'.$escaped_anchor. " " . $icons . "</span><br/>".
                     (count($channelNameList) > 0 ? '<span class="anchorlist_channelnames"> <span class="single">'.implode('</span> '.$separator.'<span class="single">',$channelNameList).'</span></span></span>':'').
                     '</a></li><br clear="all">'."\n";
-            }
         }
-        if ( $this->language === "de" || $this->language === "at" || $this->language === "ch"){
-        }
-        else{
             $this->appendToBody(
                 "<h2>Groups Overview</h2>\n<div class=\"group_anchors\"><ul class=\"group_anchors\">\n" .
                 $nice_html_linklist . "</ul></div>\n"
             );
-        }
         $this->appendToBody(
             $nice_html_body
         );

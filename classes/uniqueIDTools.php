@@ -45,6 +45,7 @@ class uniqueIDTools {
         return str_replace( array( ".",":","+","[","]"), array("_","_","plus","_",""), $id);
     }
 
+//FIXME: use method deregionalizeID within this method! redundancy!
     public function getMatchingCSSClasses( $id, $suffix){
         $alternative = "";
         if ($id !== ""){
@@ -62,11 +63,30 @@ class uniqueIDTools {
         return $this->sanitizeID4cssClass( $id ) . $suffix . $alternative;
     }
 
+    //find the matching id for an id of a regional channel
+    public function deregionalizeID( $id ){
+        $ids = false;
+        if ($id !== ""){
+            $alternative = "";
+            $idchunks = explode(":", $id);
+            if (count($idchunks) !== 2)
+                throw new Exception("getMatchingCSSClasses: Strange id: $id");
+            $ids = array();
+            $ids[] = $id;
+            $idparts = explode(".", $idchunks[1]);
+            if ( count($idparts) === 3){
+                $ids[] = $idchunks[0] . ':' . $idparts[1]. '.' . $idparts[2];
+            }
+        }
+        return $ids;
+    }
+
     //global function to be called from pdo
 
     public function convertChannelNameToCPID( $name, $label){
         $labelparts = explode( '.', $label);
         $country = $labelparts[0];
+        if ($country === "sky_de") $country = "de";
         $name = explode(",", $name);
         $nameparts = explode("(", $name[0]); //cut off brackets that are used by wilhelm.tel and unitymedia
         $name = trim($nameparts[0]);
@@ -99,6 +119,34 @@ class uniqueIDTools {
 
         if ($country === "at" || $country === "de" || $country === "ch"){
 
+        //care for regional varieties that can't be dealt with automatically
+
+        if ( substr($name, 0, 3) === "rtl" || substr($name, 0, 4) === "sat1"){
+            $regionalIrregular = array(
+                'hbnds',
+                'fs',
+                'hhsh',
+                'bayern',
+                'hhsh',
+                'nrw',
+                'nsbremen',
+                'rhlpfhessen',
+            );
+
+            foreach ( $regionalIrregular as $suffix){
+                $suffix_length = strlen($suffix);
+                if ( strlen($name) >  $suffix_length && substr( $name, -$suffix_length) == $suffix){
+                   $name = trim( substr( $name, -$suffix_length)) . '.' . trim(substr( $name, 0, strlen($name) - $suffix_length ));
+                   break;
+                }
+            }
+        }
+
+
+            //force at for orf
+            if (stripos(strtolower($name), 'orf') === 0)
+                $country = "at";
+
             $fullname_replacements_de = array(
                 "br"              => "brfs",
                 "skychristmas"    => "skycinemahits",
@@ -109,6 +157,10 @@ class uniqueIDTools {
                 'deutschlandradiokultur' => 'dkultur',
                 'deutschlandfunk' => 'dlf',
                 'wdrfunkhauseuropa' => 'funkhauseuropa',
+                'juwelohd' =>      'juwelotvhd',
+                'rtlpassion' =>      'passion',
+                'nick' => 'nickelodeon',
+                'ndr1nieders' => 'ndr1niedersachsen' //todo: implement regex to be able to match nieders at end of string
             );
 
             $partial_name_replacements_de = array(
@@ -127,10 +179,24 @@ class uniqueIDTools {
                 'mdr1radio' => 'mdr1',
                 "rbbfernsehen"    => "rbb",
                 "nationalgeographicchannel" => "natgeo",
+                "nationalgeographic" => "natgeo",
                 'badenwürttemberg' => 'bw',
+                'sachsenanhalt' => 'sa',
+                'saanhalt' => 'sa',
                 'rheinlandpfalz' => 'rp',
                 'swrbw' => 'swrfsbw',
                 'swrrp' => 'swrfsrp',
+                'orfeins' => 'orf1',
+                'nickcc' => 'nickelodeon',
+                'nickcomedy' => 'nickelodeon',
+                '13thstreetuniversal' => '13thstreet',
+                'mgmchannel' => 'mgm',
+                'sportdigitaltv' => 'sportdigital',
+                'vivagermany' => 'viva',
+                'axnaction' => 'axn',
+                'thebiographychannel' => 'biographychannel',
+                'foxserie' => 'fox',
+                'foxchannel' => 'fox',
             );
 
 
@@ -147,6 +213,10 @@ class uniqueIDTools {
         if ($country === "at"){
             if (substr(strtolower($name), -7) === "austria")
                 $name = substr($name, 0, strlen($name) -7 );
+        }
+        if ($country === "de"){
+            if (substr(strtolower($name), -11) === "deutschland")
+                $name = substr($name, 0, strlen($name) -11 );
         }
         elseif ($country === "ch"){
             if (substr(strtolower($name), -7) === "schweiz")
@@ -196,12 +266,12 @@ class uniqueIDTools {
                 "mdr",
                 "rbb",
                 "swrfs",
-                "sat1",
-                "rtl",
                 "swr1",
                 "swr4",
                 "ndr1",
                 "ndrinfo",
+                "servustv",
+                "orf2",
             );
             foreach ( $regional_prefixes as $prefix){
                 $prefix_length = strlen($prefix);
@@ -213,7 +283,7 @@ class uniqueIDTools {
         }
 
 
-        return "cpid_v1." . $type . ":" . $name . $ext . "."  . $labelparts[0];
+        return "cpid_v1." . $type . ":" . $name . $ext . "."  . $country;
     }
 }
 

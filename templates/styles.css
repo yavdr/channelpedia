@@ -390,8 +390,8 @@ div.wikipedia_data {
 div.wikipedia_data div.single_channel{
     float: left;
     margin: 4px;
-    width: 214px;
-    height:64px;
+    width: 140px;
+    height: 44px;
     -moz-border-radius: 10px;
     border-radius: 10px;
 }
@@ -400,6 +400,10 @@ div.wikipedia_data div.single_channel div.channel_illustration,
 div.wikipedia_data div.single_channel div.channel_details{
     margin: 4px;
     float: right;
+}
+
+div.wikipedia_data div.single_channel div.channel_details{
+    margin-top: 0px;
 }
 
 div.wikipedia_data div.single_channel div.channel_details{

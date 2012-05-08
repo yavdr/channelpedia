@@ -55,7 +55,7 @@ class NetherlandsSatEssentials  extends ruleBase {
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
                 "languageOverrule" => "",
-                "customwhere" => " AND " . NL_PROVIDERS
+                "customwhere" => " AND " . NL_PROVIDERS . " AND name NOT LIKE 'animax%'" 
             ),
 
             array(
@@ -73,7 +73,7 @@ class NetherlandsSatEssentials  extends ruleBase {
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
                 "languageOverrule" => "",
-                "customwhere" => " AND " . NL_PROVIDERS
+                "customwhere" => " AND " . NL_PROVIDERS . " AND name NOT LIKE 'animax%'"
             ),
 
             array(

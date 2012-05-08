@@ -26,6 +26,7 @@
 require_once PATH_TO_CLASSES . '../grouping_rules/base/class.ruleBase.php';
 require_once PATH_TO_CLASSES . '../grouping_rules/class.GermanyEssentials.php';
 require_once PATH_TO_CLASSES . '../grouping_rules/class.GermanySatNonEssentials.php';
+require_once PATH_TO_CLASSES . '../grouping_rules/class.GermanySky.php';
 require_once PATH_TO_CLASSES . '../grouping_rules/class.GermanyKabelBW.php';
 require_once PATH_TO_CLASSES . '../grouping_rules/class.GermanyKabelBWSwiss.php';
 require_once PATH_TO_CLASSES . '../grouping_rules/class.GermanyKabelBWFrench.php';
@@ -130,10 +131,14 @@ define("FILTER_ASTRA1_FTA", " ((tid != '1092' AND tid != '1113' AND provider != 
                     " UPPER(name) LIKE '%ERO%' OR ".
                     " UPPER(name) LIKE '%FLIRT%' OR ".
                     " UPPER(name) LIKE '%LUST%' OR ".
-                    " UPPER(name) LIKE '%LIEBE%' OR ".
+                    " UPPER(name) LIKE '%LIEB%' OR ".
                     " UPPER(name) LIKE '%LOVE%' OR ".
+                    " UPPER(name) LIKE '%GL_CK%' OR ".
+                    " UPPER(name) LIKE '%FRIEND%' OR ".
+                    " UPPER(name) LIKE '%GEF_HL%' OR ".
                     " UPPER(name) LIKE '%PARTNER%' OR ".
                     " UPPER(name) LIKE '%SINGLE%' OR ".
+                    " UPPER(name) LIKE '%HANDY%' OR ".
                     " UPPER(name) LIKE '%AMORE%'".
                     " )"
 );
@@ -164,6 +169,7 @@ class channelGroupingManager{
 
             "AustriaSatEssentials"     => new AustriaSatEssentials(),
             "SwitzerlandSatEssentials" => new SwitzerlandSatEssentials(),
+            "GermanySky"               => new GermanySky(),
             "GermanyEssentials"        => new GermanyEssentials(),
             "GermanySatNonEssential"   => new GermanySatNonEssentials(),
 
@@ -209,15 +215,16 @@ class channelGroupingManager{
         $result = $this->db->query("UPDATE channels SET x_xmltv_id = ''" );
         $sqlquery = "UPDATE channels SET x_xmltv_id = getcpid( lower(name), x_label )
             WHERE
-                ( x_label LIKE 'de.%' OR x_label LIKE 'at.%' OR x_label LIKE 'ch.%' )
+                ( x_label LIKE 'de.%' OR x_label LIKE 'sky_de.%'OR x_label LIKE 'at.%' OR x_label LIKE 'ch.%' )
                 AND x_label NOT LIKE '%uncategorized%'
                 AND NOT x_label LIKE 'de.024.sky_de%'
                 AND name NOT LIKE '.%'
                 AND name NOT LIKE '%*'
-                AND name NOT LIKE '%.'
                 AND name NOT LIKE '%test%'
-                AND name NOT LIKE '%_alt'
+                AND name NOT LIKE '%\_alt'
         ";
+        //                AND name NOT LIKE '%.'
+
         $this->config->addToDebugLog( "Now updating cpids\n" );
         $result = $this->db->query($sqlquery);
         $this->config->addToDebugLog( "Now finished updating cpids\n" );
