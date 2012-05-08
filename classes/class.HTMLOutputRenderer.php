@@ -28,6 +28,7 @@ require_once PATH_TO_GLOBAL_REPORT_CLASSES . '/globalHTMLReportBase.php';
 require_once PATH_TO_GLOBAL_REPORT_CLASSES . '/GlobalHTMLReports/globalChangelog.php';
 require_once PATH_TO_GLOBAL_REPORT_CLASSES . '/GlobalHTMLReports/deComparison.php';
 require_once PATH_TO_GLOBAL_REPORT_CLASSES . '/GlobalHTMLReports/uniqueIDs.php';
+require_once PATH_TO_GLOBAL_REPORT_CLASSES . '/GlobalHTMLReports/uniqueID2.php';
 require_once PATH_TO_GLOBAL_REPORT_CLASSES . '/GlobalHTMLReports/uploadLog.php';
 require_once PATH_TO_GLOBAL_REPORT_CLASSES . '/GlobalHTMLReports/globalIndexPage.php';
 
@@ -91,6 +92,9 @@ class HTMLOutputRenderer{
         $x->popuplatePageBody();
         $this->homepageLinkList[] = $x->getParentPageLink();
         $x = new deComparison( $this);
+        $x->popuplatePageBody();
+        $this->homepageLinkList[] = $x->getParentPageLink();
+        $x = new uniqueID2( $this);
         $x->popuplatePageBody();
         $this->homepageLinkList[] = $x->getParentPageLink();
         $x = new uniqueIDs( $this);

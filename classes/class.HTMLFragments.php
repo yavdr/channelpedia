@@ -116,6 +116,9 @@ class HTMLFragments{
             if ($label == "uk"){
                 $filename = "gb";
             }
+            else if ($label == "sky_de"){
+                $filename = "de";
+            }
             else
                 $filename = $label;
             $checkpath = config::getInstance()->getValue("data_path")."/res/icons/flags/".$filename.".png";

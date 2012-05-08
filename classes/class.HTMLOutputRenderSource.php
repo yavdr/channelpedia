@@ -165,6 +165,11 @@ class HTMLOutputRenderSource {
             $this->source."_complete.channels.conf",
             "A complete and ready-to-use channel file with group delimiters, grouped by transponders and ordered by the frequency and band of the transponder"
         );
+        $this->source_linklist[] = array(
+            "Download channels.conf (compatibility)",
+            $this->source."_complete_sorted_by_groups.compatibility.channels.conf",
+            "A complete and ready-to-use channel file with group delimiters, grouped by the regional sections and channel groups configured for this DVB source. The regional sections are sorted in alphabetical order. This compatibility version should also work with older VDR versions (VDR 1.6, VDR 1.7.21 and older)."
+        );
     }
 
     private function addEPGChannelmapLink(){
