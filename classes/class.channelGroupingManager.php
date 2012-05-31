@@ -104,7 +104,7 @@ define("AUSTRIA", " (".
 define("SWITZERLAND",       " (UPPER(name) LIKE '% CH' OR UPPER(name) LIKE '% CH %' OR LOWER(name) LIKE '% Schweiz' OR UPPER(name) LIKE 'SF%') ");
 define("FRANCE_CSAT",       " (upper(provider)='CSAT') ");
 define("SPAIN_DIGITALPLUS", " (UPPER(provider) = 'DIGITAL +' OR UPPER(provider) = 'DIGITAL+') ");
-define("NL_PROVIDERS",      " UPPER(provider) = 'CANALDIGITAAL' OR UPPER(provider) = 'CANAALDIGITAAL' ");
+define("NL_PROVIDERS",      " (UPPER(provider) = 'CANALDIGITAAL' OR UPPER(provider) = 'CANAALDIGITAAL') ");
 
 
 define("FILTER_ASTRA1_FTA", " ((tid != '1092' AND tid != '1113' AND provider != '-') OR (name = 'DMAX')) AND provider != 'SKY' ".
@@ -146,9 +146,10 @@ define("FILTER_ASTRA1_FTA", " ((tid != '1092' AND tid != '1113' AND provider != 
 class channelGroupingManager{
 
     private
-        $db,
-        $config,
-        $rulesets;
+        $groupinglog,
+         $db,
+         $config,
+         $rulesets;
 
     private static $instance = null;
 
@@ -164,6 +165,9 @@ class channelGroupingManager{
     protected function __construct(){
         $this->config = config::getInstance();
         $this->db = dbConnection::getInstance();
+        $debuglogfile = $this->config->getValue("userdata")."groupinglog.txt";
+        $this->groupinglog = fopen( $debuglogfile, "w");
+        $this->addToGroupingLog("Grouping-session started.");
         $this->db->getDBHandle()->sqliteCreateFunction('getcpid', 'global_convertChannelNameToCPID', 2);
         $this->rulesets = array(
 
@@ -201,7 +205,12 @@ class channelGroupingManager{
         );
     }
 
+    private function addToGroupingLog( $line ){
+        fputs( $this->groupinglog, date(DATE_ATOM, time()) . " " . $line ."\n");
+    }
+
     public function updateAllLabels(){
+        $this->addToGroupingLog("Update of all labels starting...");
         foreach ($this->config->getValue("sat_positions") as $sat => $languages){
             $this->updateAllLabelsOfSource($sat, $languages);
         }
@@ -212,6 +221,7 @@ class channelGroupingManager{
             $this->updateAllLabelsOfSource("T[$terrp]", $languages);
         }
 
+        //cpid stuff
         $result = $this->db->query("UPDATE channels SET x_xmltv_id = ''" );
         $sqlquery = "UPDATE channels SET x_xmltv_id = getcpid( lower(name), x_label )
             WHERE
@@ -225,13 +235,13 @@ class channelGroupingManager{
         ";
         //                AND name NOT LIKE '%.'
 
-        $this->config->addToDebugLog( "Now updating cpids\n" );
+        $this->addToGroupingLog( "Now updating cpids" );
         $result = $this->db->query($sqlquery);
-        $this->config->addToDebugLog( "Now finished updating cpids\n" );
+        $this->addToGroupingLog( "Now finished updating cpids" );
     }
 
     public function updateAllLabelsOfSource( $source, $languages ){
-        $this->config->addToDebugLog( "Updating labels for channels belonging to $source.\n" );
+        $this->addToGroupingLog( "Updating labels for channels belonging to $source." );
         //reset all labels in DB to empty strings before updating them
         $temp = $this->db->query("UPDATE channels SET x_label='' WHERE source = ".$this->db->quote($source));
         $query = $this->db->beginTransaction();
@@ -367,28 +377,30 @@ class channelGroupingManager{
 
         //update label tag in the selected channels
         if (count($where) > 0){
-            $where = "WHERE " . implode( $where, " AND " ) . $customwhere;
+            $where  = "WHERE " . implode( $where, " AND " ) . $customwhere;
             $where2 = $where . " AND ";
             $where .= " AND x_label = ''";
         }
         else {
-            $where2 = "WHERE ";
             $where .= "WHERE x_label = ''";
+            $where2 = "WHERE ";
         }
 
-        //this should be written into a separate log for grouping improvements
-        /*if (substr($label,0, 13) !== "uncategorized"){
+        //this should only be written to grouping logfile in verbose mode
+        /*
+        if (substr($label,0, 13) !== "uncategorized"){
             $sqlquery = "SELECT * FROM channels $where2 x_label != '' AND x_label != ". $this->db->quote($label);
             $result = $this->db->query($sqlquery);
             foreach ($result as $row){
-                $this->config->addToDebugLog( "Notice: Channel '".$row["name"]."' is already tagged with '".$row["x_label"]."'. We just tried to tag it with '$label'\n" );
+                $this->addToGroupingLog( "Notice: Channel '".$row["name"]."' is already tagged with '".$row["x_label"]."'. We just tried to tag it with '$label'" );
             }
         }*/
 
         //now only update channels with EMPTY x_label field!
         $sqlquery = "UPDATE channels SET x_label=". $this->db->quote($label) ." $where";
         $result = $this->db->query($sqlquery);
-        //$this->config->addToDebugLog( "Updating labels for channels belonging to $title / $source / $label.\n" );
+        $this->addToGroupingLog( "Updating labels for channels belonging to $title / $source / $label." );
+        $this->addToGroupingLog( "Query: $sqlquery" );
     }
 }
 
