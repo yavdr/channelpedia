@@ -25,7 +25,7 @@
 class HTMLReportBase extends HTMLPage{
 
     protected
-        $parent = null,
+       $parent = null,
         $config,
         $parentPageLink = null,
         $db;

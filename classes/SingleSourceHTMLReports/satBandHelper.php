@@ -42,25 +42,25 @@ class satBandHelper extends singleSourceHTMLReportBase{
                <li>Vertical Low Band (10700 Mhz to 11700 MHz)</li>
                 </ul>
                 <pre>".
-            $this->addChannelSection( "H", "High", "TV", false ).
-            $this->addChannelSection( "H", "High", "TV", true ).
-            $this->addChannelSection( "H", "High", "Radio", false ).
-            $this->addChannelSection( "V", "High", "TV", false ).
-            $this->addChannelSection( "V", "High", "TV", true ).
-            $this->addChannelSection( "V", "High", "Radio", false ).
-            $this->addChannelSection( "H", "Low", "TV", false ).
-            $this->addChannelSection( "H", "Low", "TV", true ).
-            $this->addChannelSection( "H", "Low", "Radio", false ).
-            $this->addChannelSection( "V", "Low", "TV", false ).
-            $this->addChannelSection( "V", "Low", "TV", true ).
-            $this->addChannelSection( "V", "Low", "Radio", false ).
+            $this->addChannelSectionPerBand( "H", "High", "TV",    false ).
+            $this->addChannelSectionPerBand( "H", "High", "TV",    true ).
+            $this->addChannelSectionPerBand( "H", "High", "Radio", false ).
+            $this->addChannelSectionPerBand( "V", "High", "TV",    false ).
+            $this->addChannelSectionPerBand( "V", "High", "TV",    true ).
+            $this->addChannelSectionPerBand( "V", "High", "Radio", false ).
+            $this->addChannelSectionPerBand( "H", "Low",  "TV",    false ).
+            $this->addChannelSectionPerBand( "H", "Low",  "TV",    true ).
+            $this->addChannelSectionPerBand( "H", "Low",  "Radio", false ).
+            $this->addChannelSectionPerBand( "V", "Low",  "TV",    false ).
+            $this->addChannelSectionPerBand( "V", "Low",  "TV",    true ).
+            $this->addChannelSectionPerBand( "V", "Low",  "Radio", false ).
             "\n<b>:End of list. The following channels were added by VDR automatically</b>\n".
             "</pre>\n"
         );
         $this->addToOverviewAndSave( "LNB setup help", "LNBSetupHelperTable.html");
     }
 
-    private function addChannelSection( $direction, $band, $type, $encrypted = false ){
+    private function addChannelSectionPerBand( $direction, $band, $type, $encrypted = false ){
         if ($direction == "H")
             $direction_long = "Horizontal";
         else if ($direction == "V")
@@ -77,29 +77,20 @@ class satBandHelper extends singleSourceHTMLReportBase{
         }
         else
             throw new Exception("band should either be High or Low");
-        if ($type == "TV")
-            $type_where = "AND vpid != '0'";
-        else if ($type == "Radio")
-            $type_where = "AND vpid = '0' AND apid != '0'";
-        else
-            $type = "";
 
-        if ($encrypted)
-            $caidflag = "!=";
-        else
-            $caidflag = "=";
-
-        return
-            "\n<b>:".($encrypted?"Scrambled":"FTA"). " " .$type." channels on " . $direction_long . " ".$band." Band ".htmlspecialchars($this->parent->getSource())."</b>\n\n".
-            $this->addCustomChannelList( "
-                SELECT * FROM channels WHERE source = ".$this->db->quote($this->parent->getSource())."
-                AND caid $caidflag '0'
+        $customwhere = "
                 AND frequency >= ".$lowfreq."
                 AND frequency <= ".$hifreq."
                 AND substr(parameter,1,1) = '".$direction."'
-                ".$type_where."
-                ORDER BY frequency, parameter, symbolrate, sid
-            " );
+        ";
+        $description = "\n<b>:".($encrypted?"Scrambled":"FTA"). " " .$type." channels on " . $direction_long . " ".$band." Band ".htmlspecialchars($this->parent->getSource())."</b>\n\n";
+        return $this->getChannelSection( $type, $encrypted = false, $customwhere, $description );
+    }
+
+    private function getChannelSection( $type, $encrypted = false, $customwhere, $description ){
+        return
+            $description.
+            $this->addCustomChannelList( $this->getCustomChannelListSQL( $type, $encrypted = false, $customwhere, "*" ) );
     }
 
     private function addCustomChannelList( $statement ){

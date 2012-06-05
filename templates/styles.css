@@ -316,10 +316,33 @@ ul.group_anchors li:hover{
 
 
 ul.singleSourceMainMenu{
+	margin: 0px;
+	padding: 0px;
 }
 
 ul.singleSourceMainMenu li{
+    background-color: #dfe8f6;
+    width: 250px;
+    height: 150px;
+    float: left;
+    overflow: hidden;
+    border: 1px solid #dddddd;
+    margin: 8px;
+    padding: 16px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    text-align: justify;
+    
 }
+
+ul.singleSourceMainMenu li a{
+    text-align: left;
+}
+
+ul.singleSourceMainMenu li:hover{
+    background-color: orange;
+}
+
 
 ul.singleSourceMainMenu li a {
     font-weight: bold;
@@ -442,4 +465,17 @@ pre.scrambled,
 pre.fta,
 div.wikipedia_data {
   border-width: 0px;
+}
+
+table.sourcestats td{
+  text-align: right;
+}
+
+table.sourcestats th{
+  text-align: left;
+}
+
+table.sourcestats{
+  width: auto;
+  font-size: 0.7em;
 }

@@ -64,5 +64,31 @@ class singleSourceHTMLReportBase extends HTMLReportBase{
         }
         return $menu->getMarkup();
     }
+
+    protected function getCustomChannelListSQL( $type, $encrypted = false, $customwhere, $columns ){
+        if ($type == "TV")
+            $type_where = "AND vpid != '0'";
+        else if ($type == "Radio")
+            $type_where = "AND vpid = '0' AND apid != '0'";
+        else if ($type == "Data")
+            $type_where = "AND vpid == '0' AND apid == '0'";
+        else{
+            $type = "";
+            $type_where = "";
+        }
+
+        if ($encrypted)
+            $caidflag = "!=";
+        else
+            $caidflag = "=";
+
+        return "
+                SELECT ".$columns." FROM channels WHERE source = ".$this->db->quote($this->parent->getSource())."
+                AND caid $caidflag '0'
+                ".$customwhere."
+                ".$type_where."
+                ORDER BY frequency, parameter, symbolrate, sid
+        ";
+    }
 }
 ?>
