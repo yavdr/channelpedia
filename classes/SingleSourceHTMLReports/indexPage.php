@@ -40,12 +40,17 @@ class indexPage extends singleSourceHTMLReportBase{
         //$userconfig = $this->config->getUploadUserConfigBySource( $this->parent->getType(), $this->parent->getPureSource());
         //$this->appendToBody('<p> This source is being provided by: ' . $userconfig["visibleName"] . '</p>'."\n");
         $this->appendToBody('<ul class="singleSourceMainMenu">');
-        $this->appendToBody('<li><a>Statistics</a>');
+        $this->appendToBody('<li><p class="caption">Statistics</p>');
         $this->collectStatisticsOfSource();
         $this->appendToBody('</li>');
         foreach ($this->linklist as $linkarray){
             $description = ( $linkarray[2] !== "" ? '<span>'.$linkarray[2] .'</span>' : '');
-            $this->appendToBody('<li><a href="'.$linkarray[1].'">Show '.$linkarray[0].'</a><br />' . $description . '</li>'."\n");
+            $caption = (substr( $linkarray[0], 0, 8) === "Download") ? $linkarray[0] : "Show " . $linkarray[0];
+            $this->appendToBody(
+                '<li><p class="caption">'.$caption.'</p><p class="description">' .
+                $description . '</p>'.
+                '<p class="button"><a href="'.$linkarray[1].'">Show</a></p></li>'
+            );
         }
         $this->appendToBody('<br clear="all" /></ul>');
         $this->addToOverviewAndSave( $this->parent->getPureSource(), "index.html");

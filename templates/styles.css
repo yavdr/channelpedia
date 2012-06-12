@@ -323,7 +323,7 @@ ul.singleSourceMainMenu{
 ul.singleSourceMainMenu li{
     background-color: #dfe8f6;
     width: 250px;
-    height: 150px;
+    height: 180px;
     float: left;
     overflow: hidden;
     border: 1px solid #dddddd;
@@ -335,20 +335,46 @@ ul.singleSourceMainMenu li{
     
 }
 
-ul.singleSourceMainMenu li a{
+ul.singleSourceMainMenu li p.caption{
     text-align: left;
-}
-
-ul.singleSourceMainMenu li:hover{
-    background-color: orange;
-}
-
-
-ul.singleSourceMainMenu li a {
     font-weight: bold;
     color: #4E78B1;
     font-size: 1.0em;
     text-decoration: none;
+    padding: 0px;
+    margin: 0px;
+    height: 40px;
+    overflow: hidden;
+}
+
+ul.singleSourceMainMenu li p.description{
+    height: 120px;
+    overflow: hidden;
+    background-color: transparent;
+    padding: 0px;
+    margin: 0px;
+}
+
+ul.singleSourceMainMenu li p.button {
+    text-align: right;
+    padding: 0px;
+    margin: 0px;
+    margin-top: 4px;
+}
+
+ul.singleSourceMainMenu li a {
+    padding: 2px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    font-weight: bold;
+    background-color: #4E78B1;
+    color: white;
+    font-size: 1.0em;
+    text-decoration: none;
+}
+
+ul.singleSourceMainMenu li a:hover{
+    background-color: orange;
 }
 
 ul.singleSourceMainMenu li span{
