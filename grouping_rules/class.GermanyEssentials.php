@@ -64,7 +64,7 @@ class GermanyEssentials  extends ruleBase{
                 "languageOverrule" => "",
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeHDTV,
-                "customwhere" => "AND ".DE_PUBLIC_PROVIDER . " AND name LIKE '% alt'"
+                "customwhere" => "AND ".DE_PUBLIC_PROVIDER . " AND (name LIKE '% alt' OR name LIKE '%_alt')"
             ),
 
             array(
@@ -73,7 +73,7 @@ class GermanyEssentials  extends ruleBase{
                 "languageOverrule" => "",
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeData,
-                "customwhere" => "AND ".DE_PUBLIC_PROVIDER . " AND name LIKE '% alt'"
+                "customwhere" => "AND ".DE_PUBLIC_PROVIDER . " AND (name LIKE '% alt' OR name LIKE '%_alt')"
             ),
 
             //group test channels before the other channel are grouped
@@ -131,7 +131,7 @@ class GermanyEssentials  extends ruleBase{
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
                 "languageOverrule" => "", //needed for channel 21
-                "customwhere" => "AND ".DE_PRIVATE_PRO7_RTL . "AND NOT (" . AUSTRIA." OR ".SWITZERLAND.") AND NOT name LIKE '% alt'"
+                "customwhere" => "AND ".DE_PRIVATE_PRO7_RTL . "AND NOT (" . AUSTRIA." OR ".SWITZERLAND.") AND NOT ( name LIKE '% alt' OR name LIKE '%_alt')"
             ),
 
             //provider undefined only wilhelm.tel --> sky
@@ -142,7 +142,7 @@ class GermanyEssentials  extends ruleBase{
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
                 "customwhere" =>
-                    " AND ". FILTER_ASTRA1_FTA . " AND NOT (". DE_PUBLIC_PROVIDER. " OR ".DE_PRIVATE_PRO7_RTL." OR ".AUSTRIA." OR ".SWITZERLAND." OR UPPER(provider) = 'UNDEFINED') AND NOT name = '.' AND NOT UPPER(provider) = 'CSAT' AND NOT name LIKE '% alt'"
+                    " AND ". FILTER_ASTRA1_FTA . " AND NOT (". DE_PUBLIC_PROVIDER. " OR ".DE_PRIVATE_PRO7_RTL." OR ".AUSTRIA." OR ".SWITZERLAND." OR UPPER(provider) = 'UNDEFINED') AND NOT name = '.' AND NOT UPPER(provider) = 'CSAT' AND NOT name LIKE '% alt' AND NOT name LIKE '%_alt'"
             ),
 
             //provider undefined only wilhelm.tel --> sky

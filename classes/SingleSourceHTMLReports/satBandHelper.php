@@ -84,13 +84,13 @@ class satBandHelper extends singleSourceHTMLReportBase{
                 AND substr(parameter,1,1) = '".$direction."'
         ";
         $description = "\n<b>:".($encrypted?"Scrambled":"FTA"). " " .$type." channels on " . $direction_long . " ".$band." Band ".htmlspecialchars($this->parent->getSource())."</b>\n\n";
-        return $this->getChannelSection( $type, $encrypted = false, $customwhere, $description );
+        return $this->getChannelSection( $type, $encrypted, $customwhere, $description );
     }
 
     private function getChannelSection( $type, $encrypted = false, $customwhere, $description ){
         return
             $description.
-            $this->addCustomChannelList( $this->getCustomChannelListSQL( $type, $encrypted = false, $customwhere, "*" ) );
+            $this->addCustomChannelList( $this->getCustomChannelListSQL( $type, $encrypted, $customwhere, "*" ) );
     }
 
     private function addCustomChannelList( $statement ){

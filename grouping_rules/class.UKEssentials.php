@@ -67,7 +67,7 @@ class UKEssentials  extends ruleBase {
         return array (
             array(
                 "title" => "freesat",
-                "outputSortPriority" => 1,
+                "outputSortPriority" => 10,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeHDTV,
                 "customwhere" => " AND (upper(name) LIKE '%BBC%' OR ".UK_ITV." OR ".UK_C4.")"
@@ -75,7 +75,7 @@ class UKEssentials  extends ruleBase {
 
 /*            array(
                 "title" => "freesat BBC",
-                "outputSortPriority" => 1,
+                "outputSortPriority" => 10,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeHDTV,
                 "customwhere" => " AND upper(name) LIKE '%BBC%'"
@@ -83,7 +83,7 @@ class UKEssentials  extends ruleBase {
 */
             array(
                 "title" => "freesat BBC",
-                "outputSortPriority" => 2,
+                "outputSortPriority" => 20,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
                 "customwhere" => " AND (upper(name) LIKE '%BBC%' OR upper(name) = 'CBEEBIES')"
@@ -91,15 +91,26 @@ class UKEssentials  extends ruleBase {
 
             array(
                 "title" => "freesat BBC Red Button / Interactive / Sports",
-                "outputSortPriority" => 3,
+                "outputSortPriority" => 30,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
                 "customwhere" => " AND nid=2 AND tid=2013"
             ),
 
+            array(
+                "title" => "freesat BBC Olympic Streams (London Olympics 2012)",
+                "outputSortPriority" => 40,
+                "languageOverrule" => "",
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeSDTV,
+                "customwhere" => " AND nid=2 AND (tid=2401 OR tid=9988)"
+            ),
+
+
+
 /*            array(
                 "title" => "freesat ITV",
-                "outputSortPriority" => 3,
+                "outputSortPriority" => 50,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeHDTV,
                 "customwhere" => " AND ".UK_ITV
@@ -107,7 +118,7 @@ class UKEssentials  extends ruleBase {
 */
             array(
                 "title" => "freesat ITV",
-                "outputSortPriority" => 4,
+                "outputSortPriority" => 60,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
                 "customwhere" => " AND ".UK_ITV
@@ -115,7 +126,7 @@ class UKEssentials  extends ruleBase {
 
 /*            array(
                 "title" => "freesat Channel4 Family",
-                "outputSortPriority" => 5,
+                "outputSortPriority" => 70,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeHDTV,
                 "customwhere" => " AND ".UK_C4
@@ -123,7 +134,7 @@ class UKEssentials  extends ruleBase {
 */
             array(
                 "title" => "freesat Channel4Family",
-                "outputSortPriority" => 6,
+                "outputSortPriority" => 80,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
                 "customwhere" => " AND ".UK_C4
@@ -131,7 +142,7 @@ class UKEssentials  extends ruleBase {
 
             array(
                 "title" => "freesat Channel5 Family",
-                "outputSortPriority" => 6,
+                "outputSortPriority" => 90,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeHDTV,
                 "customwhere" => " AND ".UK_C5
@@ -139,7 +150,7 @@ class UKEssentials  extends ruleBase {
 
             array(
                 "title" => "freesat Channel5Family",
-                "outputSortPriority" => 6,
+                "outputSortPriority" => 100,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
                 "customwhere" => " AND ".UK_C5
@@ -147,7 +158,7 @@ class UKEssentials  extends ruleBase {
 
             array(
                 "title" => "freesat Diverse",
-                "outputSortPriority" => 7,
+                "outputSortPriority" => 110,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
                 "customwhere" => " AND (
@@ -165,7 +176,7 @@ class UKEssentials  extends ruleBase {
 
             array(
                 "title" => "Diverse",
-                "outputSortPriority" => 8,
+                "outputSortPriority" => 120,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeHDTV,
                 "customwhere" => ""
@@ -173,7 +184,7 @@ class UKEssentials  extends ruleBase {
 
             array(
                 "title" => "sky_uk ITV",
-                "outputSortPriority" => 10,
+                "outputSortPriority" => 200,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeHDTV,
                 "customwhere" => " AND ".UK_ITV
@@ -181,7 +192,7 @@ class UKEssentials  extends ruleBase {
 
             array(
                 "title" => "sky_uk ITV",
-                "outputSortPriority" => 11,
+                "outputSortPriority" => 210,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
                 "customwhere" => " AND ".UK_ITV
@@ -189,7 +200,7 @@ class UKEssentials  extends ruleBase {
 
             array(
                 "title" => "sky_uk Channel4Family",
-                "outputSortPriority" => 12,
+                "outputSortPriority" => 220,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeHDTV,
                 "customwhere" => " AND ".UK_C4
@@ -197,7 +208,7 @@ class UKEssentials  extends ruleBase {
 
             array(
                 "title" => "sky_uk Channel4Family",
-                "outputSortPriority" => 13,
+                "outputSortPriority" => 230,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
                 "customwhere" => " AND  ".UK_C4
@@ -205,7 +216,7 @@ class UKEssentials  extends ruleBase {
 
             array(
                 "title" => "sky_uk Channel5Family",
-                "outputSortPriority" => 14,
+                "outputSortPriority" => 240,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeHDTV,
                 "customwhere" => " AND ".UK_C5
@@ -213,7 +224,7 @@ class UKEssentials  extends ruleBase {
 
             array(
                 "title" => "sky_uk Channel5Family",
-                "outputSortPriority" => 15,
+                "outputSortPriority" => 250,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
                 "customwhere" => " AND  ".UK_C5
@@ -221,7 +232,7 @@ class UKEssentials  extends ruleBase {
 
             array(
                 "title" => "sky_uk Sports",
-                "outputSortPriority" => 40,
+                "outputSortPriority" => 340,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeHDTV,
                 "customwhere" => " AND (UPPER(name) LIKE '%SP NEWS%' OR UPPER(name) LIKE '%SPORT%' OR UPPER(name) LIKE 'ESPN%' OR UPPER(name) LIKE '%SPTS%')"
@@ -229,7 +240,7 @@ class UKEssentials  extends ruleBase {
 
             array(
                 "title" => "sky_uk NVOD",
-                "outputSortPriority" => 50,
+                "outputSortPriority" => 350,
                 "languageOverrule" => "",
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeHDTV,
@@ -238,7 +249,7 @@ class UKEssentials  extends ruleBase {
 
             array(
                 "title" => "sky_uk",
-                "outputSortPriority" => 30,
+                "outputSortPriority" => 330,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeHDTV,
                 "customwhere" => " AND NOT ".IRISH
@@ -246,7 +257,7 @@ class UKEssentials  extends ruleBase {
 
             array(
                 "title" => "sky_uk Sports",
-                "outputSortPriority" => 41,
+                "outputSortPriority" => 341,
                 "languageOverrule" => "",
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
@@ -255,7 +266,7 @@ class UKEssentials  extends ruleBase {
 
             array(
                 "title" => "sky_uk NVOD",
-                "outputSortPriority" => 51,
+                "outputSortPriority" => 351,
                 "languageOverrule" => "",
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
@@ -264,7 +275,7 @@ class UKEssentials  extends ruleBase {
 
             array(
                 "title" => "sky_uk",
-                "outputSortPriority" => 31,
+                "outputSortPriority" => 331,
                 "languageOverrule" => "",
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
@@ -273,7 +284,7 @@ class UKEssentials  extends ruleBase {
 
             array(
                 "title" => "sky_uk",
-                "outputSortPriority" => 30,
+                "outputSortPriority" => 330,
                 "languageOverrule" => "",
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
@@ -282,7 +293,7 @@ class UKEssentials  extends ruleBase {
 
             array(
                 "title" => "Diverse",
-                "outputSortPriority" => 9,
+                "outputSortPriority" => 130,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
                 "customwhere" => ""
@@ -290,7 +301,7 @@ class UKEssentials  extends ruleBase {
 
             array(
                 "title" => "freesat BBC",
-                "outputSortPriority" => 90,
+                "outputSortPriority" => 900,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeRadio,
                 "customwhere" => " AND upper(name) LIKE '%BBC%' "
@@ -298,7 +309,8 @@ class UKEssentials  extends ruleBase {
 
             array(
                 "title" => "Rest",
-                "outputSortPriority" => 91,
+                "outputSortPriority" => 910,
+                "languageOverrule" => "",
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeRadio,
                 "customwhere" => " AND NOT ".IRISH
@@ -306,7 +318,7 @@ class UKEssentials  extends ruleBase {
 
             array(
                 "title" => "Rest",
-                "outputSortPriority" => 92,
+                "outputSortPriority" => 920,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeRadio,
                 "customwhere" => " AND NOT ".IRISH

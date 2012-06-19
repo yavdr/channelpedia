@@ -41,6 +41,32 @@ class GermanySky  extends ruleBase{
     function getGroups(){
         return array (
 
+/*
+ *    10 FTA HDTV (we don't expect to find much here)
+ *    15 FTA SDTV  (we don't expect to find much here)
+ *
+ *    30 Welt scrambled HDTV
+ *    40 Welt scrambled SDTV
+ *    41 Welt Extra scrambled SDTV
+ *
+ *    50 Film scrambled HDTV
+ *    51 Film scrambled SDTV
+ *
+ *   100 Sport scrambled HDTV
+ *   110 Sport scrambled SDTV
+ *   120 Sport scrambled SDTV (channels dynamicly assigned to live matches)
+ *
+ *   200 Select Portal FTA SDTV
+ *   201 Select scrambled SDTV
+ *
+ *   400 Blue Movie HDTV
+ *   401 Blue Movie SDTV
+ *
+ *   450 Diverse scrambled SDTV (what still didn't match...)
+ *
+ *   500 Diverse scrambled Radio
+ */
+
 
             array(
                 "title" => "",
@@ -73,7 +99,7 @@ class GermanySky  extends ruleBase{
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeHDTV,
                 "languageOverrule" => "", //ESPN America HD is in English!
-                "customwhere" => " AND (UPPER(provider) = 'SKY') AND name != '.' AND NOT name LIKE '%news%' AND (name LIKE '%sport%' OR name LIKE 'sky bundesliga%' )"
+                "customwhere" => " AND (UPPER(provider) = 'SKY') AND name != '.' AND NOT name LIKE '%news%' AND NOT name LIKE '%eurosport hd%'  AND (name LIKE '%sport%' OR name LIKE 'sky bundesliga%' )"
                 //OR provider = '' OR UPPER(provider) = 'UNDEFINED'
             ),
 
@@ -101,7 +127,18 @@ class GermanySky  extends ruleBase{
                 "outputSortPriority" => 50,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeHDTV,
-                "customwhere" => " AND name NOT LIKE '% - %' AND name != 'Spieldaten' AND name NOT LIKE  '%pitlane%'  AND name NOT LIKE  '%racer%' AND name NOT LIKE  '%konf%' AND name NOT LIKE  '%liga%' AND name NOT LIKE '%sky 3d%' AND name NOT LIKE '%krimi%'  AND (UPPER(provider) = 'SKY' OR provider = '' OR provider = 'undefined') AND name != '.' AND (name LIKE 'sky%' OR name LIKE '%mgm%' OR name LIKE 'disney cinemagic%')"
+                "customwhere" => " AND name NOT LIKE '% - %' ".
+                                 "AND name != 'Spieldaten' ".
+                                 "AND name NOT LIKE  '%pitlane%' ".
+                                 "AND name NOT LIKE  '%racer%' ".
+                                 "AND name NOT LIKE  '%konf%' ".
+                                 "AND name NOT LIKE  '%liga%' ".
+                                 "AND name NOT LIKE '%sky 3d%' ".
+                                 "AND name NOT LIKE '%krimi%' ".
+                                 "AND name NOT LIKE '%sport news%' ".
+                                 "AND (UPPER(provider) = 'SKY' OR provider = '' OR provider = 'undefined') ".
+                                 "AND name != '.' ".
+                                 "AND (name LIKE 'sky%' OR name LIKE '%mgm%' OR name LIKE 'disney cinemagic%')"
             ),
 
             array(
@@ -163,7 +200,7 @@ class GermanySky  extends ruleBase{
 
             //provider undefined only wilhelm.tel --> sky
             array(
-                "title" => "Welt / Welt Extra",
+                "title" => "Welt",
                 "outputSortPriority" => 40,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
