@@ -351,6 +351,10 @@ class channelGroupingManager{
                 $where[] = "vpid == '0' AND apid == '0'";
                 $label_suffixes[] ="Data";
                 break;
+            case 6:
+                $where[] = "vpid != '0' AND parameter LIKE '%S1' AND source LIKE 'S%'";
+                $label_suffixes[] ="TV@DVBS2";
+                break;
         }
 
         if ($caidMode != 0){

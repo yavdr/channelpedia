@@ -25,12 +25,13 @@
 class ruleBase{
 
     const
-        mediaTypeAll = 0,
-        mediaTypeTV = 1,
+       mediaTypeAll   = 0,
+        mediaTypeTV    = 1,
         mediaTypeRadio = 2,
-        mediaTypeSDTV = 3,
-        mediaTypeHDTV = 4,
-        mediaTypeData = 5,
+        mediaTypeSDTV  = 3,
+        mediaTypeHDTV  = 4,
+        mediaTypeData  = 5,
+        mediaTypeTVS2  = 6,
 
         caidModeAll = 0,
         caidModeFTA = 1,

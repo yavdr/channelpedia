@@ -47,6 +47,8 @@ define("IRISH","(".
   "UPPER(name) LIKE 'SETANTA%'".
   ") ");
 
+define( "BBC_OLYMPIC_STREAMS", " nid=2 AND (tid=2037 OR tid=2055 OR tid=2401 OR tid=9988 OR tid=9991)");
+
 class UKEssentials  extends ruleBase {
 
     function __construct(){
@@ -97,16 +99,33 @@ class UKEssentials  extends ruleBase {
                 "customwhere" => " AND nid=2 AND tid=2013"
             ),
 
+            //streams don't indicate to be HDTV (no S2 transponder, no HD in name), therefore we need OR in customwhere
             array(
-                "title" => "freesat BBC Olympic Streams (London Olympics 2012)",
+                "title" => "freesat BBC Olympic Streams (London Olympics 2012) HD",
                 "outputSortPriority" => 40,
                 "languageOverrule" => "",
                 "caidMode" => self::caidModeFTA,
-                "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => " AND nid=2 AND (tid=2401 OR tid=9988)"
+                "mediaType" => self::mediaTypeTVS2,
+                "customwhere" => " AND" . BBC_OLYMPIC_STREAMS
             ),
 
+            array(
+                "title" => "freesat BBC Olympic Streams (London Olympics 2012)",
+                "outputSortPriority" => 45,
+                "languageOverrule" => "",
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeSDTV,
+                "customwhere" => " AND ". BBC_OLYMPIC_STREAMS
+            ),
 
+            array(
+                "title" => "freesat BBC Olympic Streams (London Olympics 2012)",
+                "outputSortPriority" => 46,
+                "languageOverrule" => "",
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeData,
+                "customwhere" => " AND ".BBC_OLYMPIC_STREAMS
+            ),
 
 /*            array(
                 "title" => "freesat ITV",
