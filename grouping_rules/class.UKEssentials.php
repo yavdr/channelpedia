@@ -23,7 +23,8 @@
 */
 
 define("UK_ITV","(".
- "upper(name) LIKE '%ITV%' OR ".
+ "upper(name) LIKE 'CITV%' OR ".
+ "upper(name) LIKE 'ITV%' OR ".
  "upper(name) LIKE 'UTV%' )");
 
 define("UK_C4","(".
@@ -31,6 +32,7 @@ define("UK_C4","(".
   "upper(name) LIKE 'MORE4%' OR ".
   "upper(name) LIKE 'FILM4%' OR ".
   "upper(name) LIKE 'E4%' OR ".
+  "upper(name) LIKE '4SEVEN%' OR ".
   "upper(name) LIKE 'S4C%'".
   ") AND provider = 'BSkyB' ");
 
@@ -47,7 +49,20 @@ define("IRISH","(".
   "UPPER(name) LIKE 'SETANTA%'".
   ") ");
 
-define( "BBC_OLYMPIC_STREAMS", " nid=2 AND (tid=2037 OR tid=2055 OR tid=2401 OR tid=9988 OR tid=9991 OR tid=2136)");
+define( "BBC_OLYMPIC_STREAMS", " nid=2 AND sid >= 7800 AND sid <= 7900 AND (".
+  "tid=2004 OR ".
+  "tid=2011 OR ".
+  "tid=2022 OR ".
+  "tid=2031 OR ".
+  "tid=2037 OR ".
+  "tid=2038 OR ".
+  "tid=2052 OR ".
+  "tid=2055 OR ".
+  "tid=2136 OR ".
+  "tid=2401 OR ".
+  "tid=9988 OR ".
+  "tid=9991 ".
+  ")");
 
 class UKEssentials  extends ruleBase {
 
