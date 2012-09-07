@@ -82,6 +82,35 @@ class UKEssentials  extends ruleBase {
 
     function getGroups(){
         return array (
+
+            //streams don't indicate to be HDTV in name, therefore we need to use S2 transponder as a workaround
+            array(
+                "title" => "freesat BBC Olympic Streams (London Olympics 2012) HD",
+                "outputSortPriority" => 40,
+                "languageOverrule" => "",
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeHDTV,
+                "customwhere" => " AND" . BBC_OLYMPIC_STREAMS
+            ),
+
+            array(
+                "title" => "freesat BBC Olympic Streams (London Olympics 2012)",
+                "outputSortPriority" => 45,
+                "languageOverrule" => "",
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeSDTV,
+                "customwhere" => " AND ". BBC_OLYMPIC_STREAMS
+            ),
+
+            array(
+                "title" => "freesat BBC Olympic Streams (London Olympics 2012)",
+                "outputSortPriority" => 46,
+                "languageOverrule" => "",
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeData,
+                "customwhere" => " AND ".BBC_OLYMPIC_STREAMS
+            ),
+
             array(
                 "title" => "freesat",
                 "outputSortPriority" => 10,
@@ -112,34 +141,6 @@ class UKEssentials  extends ruleBase {
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
                 "customwhere" => " AND nid=2 AND tid=2013"
-            ),
-
-            //streams don't indicate to be HDTV in name, therefore we need to use S2 transponder as a workaround
-            array(
-                "title" => "freesat BBC Olympic Streams (London Olympics 2012) HD",
-                "outputSortPriority" => 40,
-                "languageOverrule" => "",
-                "caidMode" => self::caidModeFTA,
-                "mediaType" => self::mediaTypeTVS2,
-                "customwhere" => " AND" . BBC_OLYMPIC_STREAMS
-            ),
-
-            array(
-                "title" => "freesat BBC Olympic Streams (London Olympics 2012)",
-                "outputSortPriority" => 45,
-                "languageOverrule" => "",
-                "caidMode" => self::caidModeFTA,
-                "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => " AND ". BBC_OLYMPIC_STREAMS
-            ),
-
-            array(
-                "title" => "freesat BBC Olympic Streams (London Olympics 2012)",
-                "outputSortPriority" => 46,
-                "languageOverrule" => "",
-                "caidMode" => self::caidModeFTA,
-                "mediaType" => self::mediaTypeData,
-                "customwhere" => " AND ".BBC_OLYMPIC_STREAMS
             ),
 
 /*            array(
