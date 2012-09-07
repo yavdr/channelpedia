@@ -160,7 +160,8 @@ class uniqueIDTools {
                 'juwelohd' =>      'juwelotvhd',
                 'rtlpassion' =>      'passion',
                 'nick' => 'nickelodeon',
-                'ndr1nieders' => 'ndr1niedersachsen' //todo: implement regex to be able to match nieders at end of string
+                'ndr1nieders' => 'ndr1niedersachsen', //todo: implement regex to be able to match nieders at end of string
+                'teddy' => 'radioteddy',
             );
 
             $partial_name_replacements_de = array(

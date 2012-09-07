@@ -191,7 +191,7 @@ class channelImport extends channelFileIterator{
         $this->config->addToDebugLog( "updateAffectedDataAndFilesPerProvider: Processing $visibletype: " . $rawprovider . ".\n");
         $languages = $this->config->getLanguageGroupsOfSource( $visibletype, $rawprovider);
         $this->labeller->updateAllLabelsOfSource( $provider, $languages );
-        $this->rawOutput->writeRawOutputForSingleSource( $type, $provider, $languages);
+        $this->rawOutput->writeRawOutputForSingleSource( $type, $rawprovider, $languages);
         $this->htmlOutput->renderPagesOfSingleSource( $type, $rawprovider, $languages);
     }
 
