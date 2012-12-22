@@ -128,6 +128,15 @@ class UKEssentials  extends ruleBase {
             ),
 */
             array(
+                "title" => "freesat BBC One HD Nations",
+                "outputSortPriority" => 15,
+                "languageOverrule" => "",
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeTVS2,
+                "customwhere" => " AND tid=2061"
+            ),
+
+            array(
                 "title" => "freesat BBC",
                 "outputSortPriority" => 20,
                 "caidMode" => self::caidModeFTA,

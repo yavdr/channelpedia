@@ -103,12 +103,13 @@ class GermanyEssentials  extends ruleBase{
                     "AND ( ". DE_PROVIDER_ARD." OR provider LIKE 'ZDF%') "
             ),
 
+            //Digital Free was included here because KabelDeutschland uses this provider string for Arte HD
             array(
                 "title" => "Private",
                 "outputSortPriority" => 10,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeHDTV,
-                "customwhere" => "AND NOT (" . DE_PUBLIC_PROVIDER . " OR ".AUSTRIA." " . " OR ".SWITZERLAND." OR UPPER(provider) = 'SKY')"
+                "customwhere" => "AND NOT (" . DE_PUBLIC_PROVIDER . " OR ".AUSTRIA." " . " OR ".SWITZERLAND." OR UPPER(provider) = 'SKY' OR UPPER(provider) = 'DIGITAL FREE')"
             ),
 
             array(

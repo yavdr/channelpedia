@@ -45,6 +45,16 @@ class GermanyKabelDeutschland  extends ruleBase{
 
     function getGroups(){
         return array (
+            //this rule was only added for arte hd with provider string digital free
+            //we assume that FTA HDTV on Kabel Deutschland is always public TV
+            array(
+                "title" => "Public",
+                "outputSortPriority" => 1,
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeHDTV,
+                "customwhere" => ""
+            ),
+
             array(
                 "title" => "DigitalFree Private",
                 "outputSortPriority" => 5,
