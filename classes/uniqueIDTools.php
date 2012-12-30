@@ -45,20 +45,31 @@ class uniqueIDTools {
         return str_replace( array( ".",":","+","[","]"), array("_","_","plus","_",""), $id);
     }
 
-//FIXME: use method deregionalizeID within this method! redundancy!
-    public function getMatchingCSSClasses( $id, $suffix){
+/*    public function getMatchingCSSClasses( $id, $suffix){
         $alternative = "";
         if ($id !== ""){
             $idchunks = explode(":", $id);
             if (count($idchunks) !== 2)
-                throw new Exception("getMatchingCSSClasses: Strange id: $id");
+                throw new Exception("getMatchingCSSClasses: Strange id (1): '$id'");
             $idparts = explode(".", $idchunks[1]);
             if ( count($idparts) === 3){
                 $alternative = ' ' . $this->sanitizeID4cssClass( $idchunks[0] . ':' . $idparts[1]. '.' . $idparts[2] ) . $suffix;
             }
             elseif ( count($idparts) !== 2 ){
-                throw new Exception("getMatchingCSSClasses: Strange id: $id");
+                throw new Exception("getMatchingCSSClasses: Strange id (2): '$id'");
             }
+        }
+        return $this->sanitizeID4cssClass( $id ) . $suffix . $alternative;
+    }
+*/
+    public function getMatchingCSSClasses( $id, $suffix){
+        $alternative = "";
+        if ($id !== ""){
+            $ids = $this->deregionalizeID( $id );
+            if (count($ids) === 2)
+                $alternative = ' ' . $this->sanitizeID4cssClass( $ids[1] ) . $suffix;
+            else
+              throw new Exception("getMatchingCSSClasses: Strange id: '$id'");
         }
         return $this->sanitizeID4cssClass( $id ) . $suffix . $alternative;
     }
@@ -67,10 +78,9 @@ class uniqueIDTools {
     public function deregionalizeID( $id ){
         $ids = false;
         if ($id !== ""){
-            $alternative = "";
             $idchunks = explode(":", $id);
             if (count($idchunks) !== 2)
-                throw new Exception("getMatchingCSSClasses: Strange id: $id");
+                throw new Exception("deregionalizeID: Strange id: '$id'");
             $ids = array();
             $ids[] = $id;
             $idparts = explode(".", $idchunks[1]);
@@ -119,29 +129,28 @@ class uniqueIDTools {
 
         if ($country === "at" || $country === "de" || $country === "ch"){
 
-        //care for regional varieties that can't be dealt with automatically
+            //care for regional varieties that can't be dealt with automatically
 
-        if ( substr($name, 0, 3) === "rtl" || substr($name, 0, 4) === "sat1"){
-            $regionalIrregular = array(
-                'hbnds',
-                'fs',
-                'hhsh',
-                'bayern',
-                'hhsh',
-                'nrw',
-                'nsbremen',
-                'rhlpfhessen',
-            );
+            if ( substr($name, 0, 3) === "rtl" || substr($name, 0, 4) === "sat1"){
+                $regionalIrregular = array(
+                    'hbnds',
+                    'fs',
+                    'hhsh',
+                    'bayern',
+                    'hhsh',
+                    'nrw',
+                    'nsbremen',
+                    'rhlpfhessen',
+                );
 
-            foreach ( $regionalIrregular as $suffix){
-                $suffix_length = strlen($suffix);
-                if ( strlen($name) >  $suffix_length && substr( $name, -$suffix_length) == $suffix){
-                   $name = trim( substr( $name, -$suffix_length)) . '.' . trim(substr( $name, 0, strlen($name) - $suffix_length ));
-                   break;
+                foreach ( $regionalIrregular as $suffix){
+                    $suffix_length = strlen($suffix);
+                    if ( strlen($name) >  $suffix_length && substr( $name, -$suffix_length) == $suffix){
+                       $name = trim( substr( $name, -$suffix_length)) . '.' . trim(substr( $name, 0, strlen($name) - $suffix_length ));
+                       break;
+                    }
                 }
             }
-        }
-
 
             //force at for orf
             if (stripos(strtolower($name), 'orf') === 0)
@@ -199,7 +208,6 @@ class uniqueIDTools {
                 'foxserie' => 'fox',
                 'foxchannel' => 'fox',
             );
-
 
             //full name replacements
             if ( array_key_exists($name, $fullname_replacements_de)){
