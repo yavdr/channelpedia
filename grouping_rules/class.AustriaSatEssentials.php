@@ -82,11 +82,16 @@ class AustriaSatEssentials extends ruleBase{
             ),
 
             array(
-                "title" => "Private",
+                "title" => "HD Austria",
                 "outputSortPriority" => 6,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeHDTV,
-                "customwhere" => "AND ". AUSTRIA. "AND ". DE_PRIVATE_PRO7_RTL
+                "customwhere" => "AND ". AUSTRIA .
+                    "AND (UPPER(provider) = 'BETADIGITAL' ".
+                    "OR UPPER(provider) = 'CBC' ".
+                    "OR UPPER(provider) = 'PROSIEBENSAT.1' ".
+                    "OR UPPER(provider) = 'MTV NETWORKS'".
+                    ")"
             ),
 
             //the contents of this select will be merged with the following select
