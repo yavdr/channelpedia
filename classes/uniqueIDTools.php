@@ -68,8 +68,8 @@ class uniqueIDTools {
             $ids = $this->deregionalizeID( $id );
             if (count($ids) === 2)
                 $alternative = ' ' . $this->sanitizeID4cssClass( $ids[1] ) . $suffix;
-            else
-              throw new Exception("getMatchingCSSClasses: Strange id: '$id'");
+            //else
+            //  throw new Exception("getMatchingCSSClasses: Strange id: '$id'\n" . Print_r($ids,true));
         }
         return $this->sanitizeID4cssClass( $id ) . $suffix . $alternative;
     }
@@ -86,6 +86,8 @@ class uniqueIDTools {
             $idparts = explode(".", $idchunks[1]);
             if ( count($idparts) === 3){
                 $ids[] = $idchunks[0] . ':' . $idparts[1]. '.' . $idparts[2];
+                print_r($ids, true);
+                die("found");
             }
         }
         return $ids;
