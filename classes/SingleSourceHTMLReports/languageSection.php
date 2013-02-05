@@ -43,7 +43,10 @@ class languageSection extends singleSourceHTMLReportBase{
         while ($groupIterator->moveToNextChannelGroup() !== false){
             $cols = $groupIterator->getCurrentChannelGroupArray();
             $x = new channelIterator( $shortenSource = true);
-            $x->init1($cols["x_label"], $this->parent->getSource(), $orderby = "UPPER(name) ASC");
+            $orderby = "UPPER(name) ASC";
+            //FIXME: ordering by SID should be possible in grouping rule definitions
+            //if (stripos($cols["x_label"], "olympic") !== false ) $orderby = "sid ASC";
+            $x->init1($cols["x_label"], $this->parent->getSource(), $orderby);
             $channelNameList = array();
             $channelMetaInfoList = array();
             $channelStringList = "";
@@ -159,7 +162,8 @@ class languageSection extends singleSourceHTMLReportBase{
             "Date added: "        . date("D, d M Y H:i:s", $curChan->getXTimestampAdded() ) . " | ".
             "Date last changed: " . date("D, d M Y H:i:s", $curChan->getXLastChanged()    ) . " | ".
             "Date last seen: "    . date("D, d M Y H:i:s", $curChan->getXLastConfirmed()  ) . " | ".
-            "CPID draft: "    . htmlspecialchars( $curChan->getXCPID() ) . " ".
+            "CPID draft: "    . htmlspecialchars( $curChan->getXCPID() ) . " | ".
+            "VDR internal ID: "    . htmlspecialchars( $curChan->getUniqueID() ) . " ".
             "";
     }
 
