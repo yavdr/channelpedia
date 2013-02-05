@@ -25,6 +25,7 @@
 class channelImport extends channelFileIterator{
 
     private
+       $db,
         $metaData,
         $textualSummary,
         $htmlOutput,
@@ -33,6 +34,7 @@ class channelImport extends channelFileIterator{
 
     public function __construct( & $metaData ){
         parent::__construct();
+        $this->db = dbConnection::getInstance();
         $this->metaData  = $metaData;
         $this->textualSummary = "undefined";
         //$this->addToUpdateLog( "-", "Processing users channels.conf.");

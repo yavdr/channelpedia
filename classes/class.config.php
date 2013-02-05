@@ -29,6 +29,7 @@ require_once PATH_TO_CLASSES.'class.channel.php';
 require_once PATH_TO_CLASSES.'class.storableChannel.php';
 require_once PATH_TO_CLASSES.'class.channelImportMetaData.php';
 require_once PATH_TO_CLASSES.'class.dbConnection.php';
+require_once PATH_TO_CLASSES.'class.textFileIterator.php';
 require_once PATH_TO_CLASSES.'class.channelGroupingManager.php';
 require_once PATH_TO_CLASSES.'class.channelGroupIterator.php';
 require_once PATH_TO_CLASSES.'class.channelIterator.php';
@@ -44,6 +45,7 @@ require_once PATH_TO_CLASSES.'class.HTMLChangelog.php';
 require_once PATH_TO_CLASSES.'class.epg2vdrMapper.php';
 require_once PATH_TO_CLASSES.'class.dbVariousTools.php';
 require_once PATH_TO_CLASSES.'uniqueIDTools.php';
+require_once PATH_TO_CLASSES.'semanticDataManager.php';
 
 class config {
 
@@ -116,6 +118,15 @@ class config {
 
     public function getSourceList(){
         return $this->sourcelist;
+    }
+
+    public function getSourceListWithLongSatNames(){
+        $llsourcelist = $this->sourcelist;
+        foreach($llsourcelist["DVB-S"] as $sat => $settings){
+            $llsourcelist["DVB-S"][ $sat . ' - ' . $this->getLongNameOfSatSource( $sat )] = $settings;
+            unset( $llsourcelist["DVB-S"][ $sat ]);
+        }
+        return $llsourcelist;
     }
 
     public function getLongNameOfSatSource( $source){

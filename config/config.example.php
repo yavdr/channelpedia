@@ -54,6 +54,8 @@ define("PIWIK_TRACKING_ENABLED", false);
 //define("PIWIK_TRACKING_IDSITE", 0);
 //define("PIWIK_TRACKING_AUTH_TOKEN", "");
 
+define("ADMIN_EMAIL", "example@example.org");
+define("SEND_ADMIN_EMAIL", false);
 
 /* on calling cli/update.php, all channels.conf.old files that were already parsed
  * will be reparsed if FORCE_REPARSING is set to true

@@ -25,11 +25,13 @@
 class updateFromScan extends channelFileIterator{
 
     private
+       $db,
         $newfile,
         $stats;
 
     public function __construct($cableSourceType, $terrSourceType){
         parent::__construct($cableSourceType, $terrSourceType);
+        $this->db = dbConnection::getInstance();
         //look for a special folder called scancompare
         $checkpath = $this->config->getValue("userdata"). "scancompare/";
         $infofile = $checkpath."info.txt";

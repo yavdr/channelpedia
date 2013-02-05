@@ -30,14 +30,17 @@ require_once( dirname(__FILE__) . '/../classes/class.config.php');
 ini_set("max_execution_time", 240); //safety buffer
 $config = config::getInstance();
 
-//if ( array_key_exists('SERVER_SOFTWARE',$_SERVER)) print "<pre>";
-
 try {
     importFromAllChannelSources($config);
 } catch (Exception $e) {
     $config->addToDebugLog( 'Caught exception: '. $e->getMessage() );
     $config->addToDebugLog( 'Backtrace: '. print_r( $e->getTrace(), true) );
     print "An exception occured.\n";
+    if ( !array_key_exists('SERVER_SOFTWARE',$_SERVER)){
+        print $e->getMessage()."\n";
+        print_r( $e->getTrace(), false);
+    }
+
 }
 
 //if ( array_key_exists('SERVER_SOFTWARE',$_SERVER)) print "</pre>";
@@ -56,6 +59,11 @@ function importFromAllChannelSources($config){
     $query = $db->exec( "DELETE FROM channel_update_log WHERE timestamp <= " . $twomonthsago );
     $query = $db->exec( "DELETE FROM upload_log WHERE timestamp <= " . $twomonthsago );
     $query = $db->commit();
+    //update wikipedia metadata in sql database from file system
+    $wikipedia_metadata = dirname(__FILE__) . '/../userdata/wikipedia_metadata.sql';
+    if (file_exists( $wikipedia_metadata ))
+        $query = $db->exec( file_get_contents( $wikipedia_metadata ) );
+
     $query = $db->exec( "VACUUM" );
 
     $dir = new DirectoryIterator( $config->getValue("userdata")."sources/" );
@@ -74,7 +82,9 @@ function importFromAllChannelSources($config){
         }
     }
     $labeller = channelGroupingManager::getInstance();
-    $labeller->updateAllLabels();
+    $labeller->updateAllLabels(); //for the time being includes unique id update
+
+    $x = new semanticDataManager();
 
     $x = new rawOutputRenderer();
     $x->writeRawOutputForAllSources();

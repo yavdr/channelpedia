@@ -22,6 +22,8 @@ class sourcesResource extends Resource {
         $response->code = Response::OK;
         $response->addHeader('Content-type', 'application/json');
         $response->body = json_encode( array("result" => $config->getSourceList()) )."\n";
+        //attempt to add list of satellite names to sources - but this breaks yavdr web frontend
+        //$response->body = json_encode( array("result" => $config->getSourceListWithLongSatNames()) )."\n";
         return $response;
     }
 }

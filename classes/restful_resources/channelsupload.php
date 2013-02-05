@@ -70,6 +70,13 @@ class channelsupload extends Resource {
                 catch (Exception $e) {
                     $config->addToDebugLog( 'Caught exception: '. $e->getMessage() );
                     $response->body .= "An exception occured during import.\n";
+                    if (SEND_ADMIN_EMAIL){
+                        mail(
+                            ADMIN_EMAIL,
+                            "Channelpedia: Exception on channel upload for ". $user ,
+                            $e->getMessage() . "\n\n". $e->getTrace()
+                        );
+                    }
                 }
             }
             else

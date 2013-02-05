@@ -22,26 +22,44 @@
 *
 */
 
-class channelFileIterator extends textFileIterator{
+class textFileIterator{
+
+    protected
+       $file = "",
+        $filehandle,
+        $currentline,
+        $config;
 
     function __construct(){
-        parent::__construct();
+        $this->config = config::getInstance();
     }
 
-    public function openChannelFile($file){
-        $this->openFile($file);
+    protected function openFile($file){
+        $this->file = $file;
+        $this->filehandle = fopen ($this->file, "r");
+        $this->currentline = "";
     }
 
-    public function getCurrentLineAsChannelObject(){
-        return new channel($this->currentline);
+    public function moveToNextLine(){
+        $result = false;
+        if (!feof($this->filehandle)) {
+            $buffer = fgets($this->filehandle, 4096);
+            $buffer = rtrim( $buffer, "\n");
+            $this->currentline = trim( $buffer);
+            $result = true;
+        }
+        else
+            fclose ($this->filehandle);
+
+        return $result;
     }
 
-    public function isCurrentLineAGroupDelimiter(){
-        return (substr($this->currentline,0,1) == ":");
+    public function getCurrentLine(){
+        return $this->currentline;
     }
 
-    public function getGroupDelimiterFromCurrentLine(){
-        return ltrim($this->currentline,":");
+    public function isCurrentLineEmpty(){
+        return $this->currentline == "";
     }
 }
 
