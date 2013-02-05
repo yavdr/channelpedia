@@ -38,7 +38,7 @@ class uniqueID2 extends globalHTMLReportBase{
                 count(nid) AS x_sum,
                 group_concat( name, '".$divider."') AS original_names,
                 group_concat( lower(provider), '".$divider."') AS matching_providers,
-                (sid  || '-' || nid  || '-' || tid) AS sidnidtid,
+                (nid  || '-' || tid  || '-' || sid) AS nidtidsid,
                 group_concat( source, '".$divider."') AS matching_sources,
                 x_label
             FROM channels
@@ -48,7 +48,7 @@ class uniqueID2 extends globalHTMLReportBase{
                 AND x_label NOT LIKE '%uncategorized%'
                 AND x_label NOT LIKE 'de.024.sky_de%'
             GROUP BY
-                x_label, sidnidtid, x_xmltv_id
+                x_label, nidtidsid, x_xmltv_id
             ORDER BY
                 x_xmltv_id ASC,
                 x_sum DESC
@@ -66,7 +66,7 @@ class uniqueID2 extends globalHTMLReportBase{
                 );
             }
             $this->appendToBody(
-                '<p>' . $row["sidnidtid"]. '</p><ul class="uidhelper">'."\n".
+                '<p>' . $row["nidtidsid"]. '</p><ul class="uidhelper">'."\n".
                 '<li>found '.$row["x_sum"]. " time(s) in channelpedias database</li>\n".
                 '<li>Original names:<ul><li>'. implode('</li><li>', $original_name_array ) ."</li></ul></li>\n".
                 '<li>Matching sources:<ul><li>'. implode('</li><li>', $sources_array ) ."</li></ul></li></ul>\n"
