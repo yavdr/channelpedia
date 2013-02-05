@@ -45,31 +45,14 @@ class uniqueIDTools {
         return str_replace( array( ".",":","+","[","]"), array("_","_","plus","_",""), $id);
     }
 
-/*    public function getMatchingCSSClasses( $id, $suffix){
-        $alternative = "";
-        if ($id !== ""){
-            $idchunks = explode(":", $id);
-            if (count($idchunks) !== 2)
-                throw new Exception("getMatchingCSSClasses: Strange id (1): '$id'");
-            $idparts = explode(".", $idchunks[1]);
-            if ( count($idparts) === 3){
-                $alternative = ' ' . $this->sanitizeID4cssClass( $idchunks[0] . ':' . $idparts[1]. '.' . $idparts[2] ) . $suffix;
-            }
-            elseif ( count($idparts) !== 2 ){
-                throw new Exception("getMatchingCSSClasses: Strange id (2): '$id'");
-            }
-        }
-        return $this->sanitizeID4cssClass( $id ) . $suffix . $alternative;
-    }
-*/
     public function getMatchingCSSClasses( $id, $suffix){
         $alternative = "";
         if ($id !== ""){
             $ids = $this->deregionalizeID( $id );
             if (count($ids) === 2)
                 $alternative = ' ' . $this->sanitizeID4cssClass( $ids[1] ) . $suffix;
-            //else
-            //  throw new Exception("getMatchingCSSClasses: Strange id: '$id'\n" . Print_r($ids,true));
+            else if (count($ids) > 2)
+                throw new Exception("getMatchingCSSClasses: Strange id: '$id'\n" . print_r($ids,true));
         }
         return $this->sanitizeID4cssClass( $id ) . $suffix . $alternative;
     }
@@ -86,8 +69,8 @@ class uniqueIDTools {
             $idparts = explode(".", $idchunks[1]);
             if ( count($idparts) === 3){
                 $ids[] = $idchunks[0] . ':' . $idparts[1]. '.' . $idparts[2];
-                print_r($ids, true);
-                die("found");
+                //print_r($ids, true);
+                //die("found"); //temp debug!!!!
             }
         }
         return $ids;
