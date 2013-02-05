@@ -81,7 +81,16 @@ class SpainSatEssentials  extends ruleBase {
                 "outputSortPriority" => 5,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeHDTV,
-                "customwhere" =>  "AND NOT " . SPAIN_DIGITALPLUS
+                "customwhere" =>  "AND NOT " . SPAIN_DIGITALPLUS 
+            ),
+
+            array(
+                "title" => "Diverse",
+                "outputSortPriority" => 5,
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeHDTV,
+                "languageOverrule" => "",
+                "customwhere" =>  "AND ( UPPER(provider) = 'PRISATV' OR UPPER(provider) = 'PRISA TV')"
             ),
 
             array(
@@ -90,6 +99,15 @@ class SpainSatEssentials  extends ruleBase {
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
                 "customwhere" =>  "AND NOT " . SPAIN_DIGITALPLUS
+            ),
+
+            array(
+                "title" => "Diverse",
+                "outputSortPriority" => 6,
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeSDTV,
+                "languageOverrule" => "",
+                "customwhere" =>  "AND ( UPPER(provider) = 'PRISATV' OR UPPER(provider) = 'PRISA TV')"
             ),
 
             array(
@@ -111,10 +129,28 @@ class SpainSatEssentials  extends ruleBase {
 
             array(
                 "title" => "Diverse",
+                "outputSortPriority" => 7,
+                "caidMode" => self::caidModeScrambled,
+                "mediaType" => self::mediaTypeHDTV,
+                "languageOverrule" => "",
+                "customwhere" =>  "AND ( UPPER(provider) = 'PRISATV' OR UPPER(provider) = 'PRISA TV')"
+            ),
+
+            array(
+                "title" => "Diverse",
                 "outputSortPriority" => 8,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
                 "customwhere" =>  "AND NOT " . SPAIN_DIGITALPLUS
+            ),
+
+            array(
+                "title" => "Diverse",
+                "outputSortPriority" => 8,
+                "caidMode" => self::caidModeScrambled,
+                "mediaType" => self::mediaTypeSDTV,
+                "languageOverrule" => "",
+                "customwhere" =>  "AND ( UPPER(provider) = 'PRISATV' OR UPPER(provider) = 'PRISA TV')"
             ),
 
             array(

@@ -98,7 +98,7 @@ define("AUSTRIA", " (".
     " UPPER(provider) = '-' OR".
     " UPPER(provider)='ORF' OR".
     " UPPER(provider) = 'ORS' OR".
-    " UPPER(provider) LIKE '%ATV%'".
+    " UPPER(provider) LIKE 'ATV%'".
 ") ");
 
 define("SWITZERLAND",       " (UPPER(name) LIKE '% CH' OR UPPER(name) LIKE '% CH %' OR LOWER(name) LIKE '% Schweiz' OR UPPER(name) LIKE 'SF%') ");
