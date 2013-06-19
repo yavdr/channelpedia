@@ -37,19 +37,22 @@ class semanticDataCollector_de_wikipedia{
         $pagesAndChunks = array(
             array( 'de', 'Liste_deutschsprachiger_Fernsehsender',
                 array(
-                    array( "Deutschland", "de", "tv", 10 ),
-                    array( "Österreich", "at", "tv", 3),
-                    array( "Schweiz", "ch", "tv", 3),
-                    array( "Privat-rechtlich (Free-TV)", "auto", "tv", 30),
-                    array( "HD Plus/ HD Austria", "at", "hdtv", 6),
+                    array( "Deutschland", "de", "tv", 23 ),
+                    array( "Österreich", "at", "tv", 6),
+                    array( "Schweiz", "ch", "tv", 4),
+                    array( "Privatrechtlich (Free-TV)", "auto", "tv", 39),
+                    array( "HD Plus/ HD Austria", "at", "hdtv", 18),
+                    array( "Deutschsprachige 3D Sender (Privatrechtliche,Pay-TV)", "de", "hdtv", 2),
+                    array( "HD Sender Freiempfangbar / ORF und SRF", "auto", "hdtv", 20), //fixme: care for srf and orf
                     //array( "Privat-rechtlich/deutschsprachiger HD Sender (Pay-TV)", "de", "hdtv", 61), //temporary incomplete
-                    array( "Deutschsprachige HD Sender (Öffentlich-rechtliche, privat-rechtliche und Pay-TV)", "de", "hdtv", 61),
-                    array( "Privat-rechtliche deutschsprachige Sender in Standardauflösung (Pay-TV)", "de", "tv", 68),
+                    //array( "Deutschsprachige HD Sender (Öffentlich-rechtliche, privat-rechtliche und Pay-TV)", "de", "hdtv", 61),
+                    array( "Privatrechtliche deutschsprachige Sender in Standardauflösung und die HD-Sender in HD (Pay-TV)", "auto", "tv", 60),
+
                 )
             ),
             array( 'de','Liste_deutscher_H%C3%B6rfunksender',
                 array(
-                    array( "page", "de", "radio", 76 )
+                    array( "page", "de", "radio", 93 )
                 )
             )
         );
@@ -97,23 +100,25 @@ class semanticDataCollector_de_wikipedia{
 
     private function getChannelsFromSection( $content, $regioncode_static, $type, $expectedNumber){
         $trace = "Parsing $regioncode_static $type\n";
+        $type = ($type == "tv") ? "sdtv" : $type;
+        $counter = 0;
         $pattern =
           "<tr.*?>\n".
           "<td.*?><a href=\"(.*?)\".*?>(.*?)<\/a>.*?<\/td>\n".
-          "<td.*?><a href=\"\/\/de\.wikipedia\.org\/w\/index\.php\?title\=Datei\:(.*?)\&amp\;.*?>(<img.*? src=\"(.*?\/wikipedia\/(.*?)\/thumb\/(.\/..)\/.*?)\" width=\"(.*?)\" height=\"(.*?)\".*?>)<\/a><\/td>\n".
+          "<td.*?><a href=\"\/\/de\.wikipedia\.org\/w.*?Datei\:(.*?)\".*?>(<img.*? src=\"(.*?\/wikipedia\/(.*?)\/thumb\/(.\/..)\/.*?)\" width=\"(.*?)\" height=\"(.*?)\".*?>)<\/a><\/td>\n".
           "<td(.*?|.*?\n.*?)\/td>\n";
         if ($regioncode_static !== "ch" )
             $pattern .= "<td.*?>(.*?|.*?\n.*?)<\/td>\n";
         preg_match_all( "/".$pattern."/mi", $content, $matches, PREG_SET_ORDER);
         //<img alt=\"1-2-3-tv Logo.svg\" src=\"http:\/\/upload.wikimedia.org\/wikipedia\/de\/thumb\/9\/9b\/1-2-3-tv_Logo.svg\/60px-1-2-3-tv_Logo.svg.png\" width=\"60\" height=\"15\" \/>
-        $type = ($type == "tv") ? "sdtv" : $type;
-        $counter = 0;
         foreach ($matches as $match){
-            $regioncode = ($regioncode_static == "auto") ? $this->getRegioncode($match[11]): $regioncode_static;
+            $regioncode = ($regioncode_static == "auto") ? $this->getRegioncode($match[11], $match[2]): $regioncode_static;
+            //$this->config->addToDebugLog( "checking raw id: " . $match[3] . " " . $match[2]. "\n" );
             $id = uniqueIDTools::getInstance()->convertChannelNameToCPID( strtolower( $match[2]) , $regioncode.".10.".$type);
             if (!array_key_exists( $id, $this->list)){
                 //convert special characters in file names
-                $filename = $match[3];
+                $amp = strpos($match[3],"&");
+                $filename = ($amp === false) ? $match[3] : substr($match[3],0, $amp);
                 $filename  = str_replace("%C3%9F", "ß", $filename);
                 $filename  = urldecode($filename);
                 /*if (!mb_check_encoding($filename, 'UTF-8')) {
@@ -173,38 +178,55 @@ class semanticDataCollector_de_wikipedia{
                  );
 
                  $counter++;
-                 if ($counter > 100000) break;
-                 //$trace.= " $id, ";
+                 if ($counter > 100000){
+                     $this->config->addToDebugLog( "Leaving infinite loop before we get mad...\n" );
+                     break;
+                 }
+                 $this->config->addToDebugLog( "adding " . $id . "\n" );
             }
            else{
-              //$trace.= " Warning: ID $id (name $match[2]) already exists.\n";
+               $this->config->addToDebugLog( " Warning: ID $id (name $match[2]) already exists.\n" );
            }
         }
-        $trace.= "  Hits: $counter\n";
+        $trace.= "  Hits: $counter (expected: $expectedNumber) \n";
         if ( $counter < $expectedNumber )
             $this->config->addToDebugLog( "WARNING: Expected number of hits ($expectedNumber) not reached (only $counter).\n" );
         return $trace;
     }
 
-    private function getRegioncode( $remark ){
-        preg_match("/.*?\((.*?)\).*?/", trim($remark), $regions);
+    private function getRegioncode( $remark, $name ){
+        $remark = trim(strip_tags($remark));
+        preg_match("/.*?\((.*?)\).*?/", $remark, $regions);
         if ( count($regions) < 2 ){
           $regions = "";
           if (stristr($remark,'salzburg' ) !== false)
               $regions ="a";
+          else
+             $regions ="";
         }
         else{
           $regions = $regions[1];
         }
         //$regions = explode(",")
-        if (stristr("d", $regions ) !== false)
-            $regioncode = "de";
-        elseif (stristr("a", $regions ) !== false)
-            $regioncode = "at";
-        elseif (stristr("ch", $regions ) !== false)
-            $regioncode = "ch";
-        else
-            $regioncode = "de";
+        if ( $regions !== ""){
+            if (stristr($regions,"d" ) !== false)
+                $regioncode = "de";
+            elseif (stristr($regions,"a" ) !== false)
+                $regioncode = "at";
+            elseif (stristr($regions,"ch" ) !== false)
+                $regioncode = "ch";
+            else
+                $regioncode = "de";
+        }
+        else{
+            if (stristr($name, "orf") !== false)
+                $regioncode = "at";
+            elseif (stristr($name, "srf") !== false)
+                $regioncode = "ch";
+            else
+                $regioncode = "de";
+        }
+        //$this->config->addToDebugLog( "getRegioncode: '".count($regions)."' '$remark' '$name' '$regioncode' \n" );
         return $regioncode;
     }
 
