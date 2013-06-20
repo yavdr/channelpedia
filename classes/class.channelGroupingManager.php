@@ -227,14 +227,11 @@ class channelGroupingManager{
             WHERE
                 ( x_label LIKE 'de.%' OR x_label LIKE 'sky_de.%'OR x_label LIKE 'at.%' OR x_label LIKE 'ch.%' )
                 AND x_label NOT LIKE '%uncategorized%'
-                AND NOT x_label LIKE 'de.024.sky_de%'
                 AND name NOT LIKE '.%'
                 AND name NOT LIKE '%*'
                 AND name NOT LIKE '%test%'
                 AND name NOT LIKE '%\_alt'
         ";
-        //                AND name NOT LIKE '%.'
-
         $this->addToGroupingLog( "Now updating cpids" );
         $result = $this->db->query($sqlquery);
         $this->addToGroupingLog( "Now finished updating cpids" );
