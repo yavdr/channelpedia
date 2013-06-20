@@ -47,10 +47,11 @@ class dbVariousTools{
         $sqlquery = "SELECT x_last_confirmed FROM channels WHERE source = ".$this->db->quote($source)." ORDER BY x_last_confirmed DESC LIMIT 1";
         $result = $this->db->query($sqlquery);
         $timestamp_raw = $result->fetchAll();
-        if (isset($timestamp_raw[0][0]))
-            $timestamp = intval($timestamp_raw[0][0]);
-        else{
-            throw new Exception("getLastConfirmedTimestamp: query didn't return expected result: " . print_r( $timestamp_raw, true) . $sqlquery);
+        if (count($timestamp_raw) > 0){
+            if (count($timestamp_raw) === 1 && isset($timestamp_raw[0]) && isset($timestamp_raw[0][0]))
+                $timestamp = intval($timestamp_raw[0][0]);
+            else
+              throw new Exception("getLastConfirmedTimestamp: query didn't return expected result: " . print_r( $timestamp_raw, true) . $sqlquery);
         }
         return $timestamp;
     }
