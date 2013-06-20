@@ -44,9 +44,8 @@ class uniqueID2 extends globalHTMLReportBase{
             FROM channels
             WHERE
                 x_xmltv_id != '' AND
-                ( x_label LIKE 'de.%' OR x_label LIKE 'at.%' OR x_label LIKE 'ch.%' )
+                ( x_label LIKE 'de.%' OR x_label LIKE 'sky_de.%' OR x_label LIKE 'at.%' OR x_label LIKE 'ch.%' )
                 AND x_label NOT LIKE '%uncategorized%'
-                AND x_label NOT LIKE 'de.024.sky_de%'
             GROUP BY
                 x_label, nidtidsid, x_xmltv_id
             ORDER BY
