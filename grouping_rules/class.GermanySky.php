@@ -54,10 +54,13 @@ class GermanySky  extends ruleBase{
  *
  *   100 Sport scrambled HDTV
  *   110 Sport scrambled SDTV
- *   120 Sport scrambled SDTV (channels dynamicly assigned to live matches)
+ *   120 Sport Feeds scrambled SDTV
+ *
+ *   121 Bundesliga Feeds scrambled SDTV
  *
  *   200 Select Portal FTA SDTV
- *   201 Select scrambled SDTV
+ *   201 Select Feeds scrambled SDTV
+ *   202 Select Event Feeds scrambled SDTV
  *
  *   400 Blue Movie HDTV
  *   401 Blue Movie SDTV
@@ -73,25 +76,25 @@ class GermanySky  extends ruleBase{
                 "outputSortPriority" => 10,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeHDTV,
-                "customwhere" => " AND (UPPER(provider) = 'SKY' OR provider = '' OR provider = 'undefined')"
+                "customwhere" => " AND nid=133"
             ),
 
+            //we expect only one channel (18)
             array(
                 "title" => "Select Portal",
                 "outputSortPriority" => 200,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => " AND (UPPER(provider) = 'SKY' OR provider = '' OR provider = 'undefined') AND name LIKE 'sky select%'"
+                "customwhere" => " AND nid=133 AND sid=18"
             ),
-
 
             array(
                 "title" => "",
                 "outputSortPriority" => 15,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => " AND (UPPER(provider) = 'SKY' OR provider = '' OR provider = 'undefined')"
-            ),
+                "customwhere" => " AND nid=133 AND (UPPER(provider) = 'SKY' OR provider = '' OR provider = 'undefined')"
+                ),
 
             array(
                 "title" => "Sport",
@@ -99,8 +102,7 @@ class GermanySky  extends ruleBase{
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeHDTV,
                 "languageOverrule" => "", //ESPN America HD is in English!
-                "customwhere" => " AND (UPPER(provider) = 'SKY') AND name != '.' AND NOT name LIKE '%news%' AND NOT name LIKE '%eurosport hd%'  AND (name LIKE '%sport%' OR name LIKE 'sky bundesliga%' OR name LIKE 'espn%')"
-                //OR provider = '' OR UPPER(provider) = 'UNDEFINED'
+                "customwhere" => " AND nid=133 AND name != '.' AND NOT name LIKE '%news%' AND NOT name LIKE '%eurosport hd%'  AND (name LIKE '%sport%' OR name LIKE 'sky bundesliga%' OR name LIKE 'espn%')"
             ),
 
             array(
@@ -109,7 +111,7 @@ class GermanySky  extends ruleBase{
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeHDTV,
                 "languageOverrule" => "",
-                "customwhere" => " AND (UPPER(provider) = 'SKY' OR provider = '') AND name LIKE '%blue movie%'"
+                "customwhere" => " AND nid=133 AND name LIKE '%blue movie%'"
             ),
 
             array(
@@ -118,10 +120,9 @@ class GermanySky  extends ruleBase{
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
                 "languageOverrule" => "",
-                "customwhere" => " AND (UPPER(provider) = 'SKY' OR provider = '') AND name LIKE '%blue movie%'"
+                "customwhere" => " AND nid=133 AND name LIKE '%blue movie%'"
             ),
 
-            //provider undefined only wilhelm.tel --> sky
             array(
                 "title" => "Film",
                 "outputSortPriority" => 50,
@@ -136,17 +137,18 @@ class GermanySky  extends ruleBase{
                                  "AND name NOT LIKE '%sky 3d%' ".
                                  "AND name NOT LIKE '%krimi%' ".
                                  "AND name NOT LIKE '%sport news%' ".
-                                 "AND (UPPER(provider) = 'SKY' OR provider = '' OR provider = 'undefined') ".
+                                 "AND nid=133 ".
                                  "AND name != '.' ".
                                  "AND (name LIKE 'sky%' OR name LIKE '%mgm%' OR name LIKE 'disney cinemagic%')"
             ),
 
+            //kabel eins classics, sat.1 emotions, rtl Living
             array(
                 "title" => "Welt Extra",
                 "outputSortPriority" => 41,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => " AND ".DE_PRIVATE_PRO7_RTL . "AND NOT (" . AUSTRIA." OR ".SWITZERLAND.")"
+                "customwhere" => " AND nid=1 AND NOT (" . AUSTRIA." OR ".SWITZERLAND.") AND ".DE_PRIVATE_PRO7_RTL
             ),
 
             array(
@@ -189,58 +191,71 @@ class GermanySky  extends ruleBase{
                 //OR provider = '' OR UPPER(provider) = 'UNDEFINED'
             ),
 
-            //provider undefined only wilhelm.tel --> sky
+            array(
+                "title" => "Select Feeds",
+                "outputSortPriority" => 201,
+                "caidMode" => self::caidModeScrambled,
+                "mediaType" => self::mediaTypeSDTV,
+                "customwhere" => " AND nid=133 AND sid BETWEEN 250 AND 380 AND SID % 10 = 1"
+            ),
+
+            array(
+                "title" => "Select Event Feeds",
+                "outputSortPriority" => 202,
+                "caidMode" => self::caidModeScrambled,
+                "mediaType" => self::mediaTypeSDTV,
+                "customwhere" => " AND nid=133 AND (sid=254 OR sid=264 OR sid=334)"
+            ),
+
+            array(
+                "title" => "Bundesliga Feeds",
+                "outputSortPriority" => 121,
+                "caidMode" => self::caidModeScrambled,
+                "mediaType" => self::mediaTypeSDTV,
+                "customwhere" => " AND nid=133 AND sid BETWEEN 250 AND 380 AND SID % 10 = 2"
+            ),
+
+            array(
+                "title" => "Sport Feeds",
+                "outputSortPriority" => 120,
+                "caidMode" => self::caidModeScrambled,
+                "mediaType" => self::mediaTypeSDTV,
+                "customwhere" => " AND nid=133 AND sid BETWEEN 250 AND 380 AND SID % 10 = 3"
+            ),
+
             array(
                 "title" => "Film",
                 "outputSortPriority" => 51,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => " AND name NOT LIKE '% - %' AND name != 'Spieldaten' AND name NOT LIKE  '%pitlane%'  AND name NOT LIKE  '%racer%' AND name NOT LIKE  '%konf%' AND name NOT LIKE  '%liga%' AND name NOT LIKE '%sky 3d%' AND name NOT LIKE '%krimi%'  AND (UPPER(provider) = 'SKY' OR provider = '' OR provider = 'undefined') AND name != '.' AND (name LIKE 'sky%' OR name LIKE '%mgm%' OR name LIKE 'disney cinemagic%')"
+                "customwhere" => " AND nid=133 AND name NOT LIKE '%sky 3d%' AND name NOT LIKE '%krimi%'  AND (UPPER(provider) = 'SKY' OR provider = '' OR provider = 'undefined') AND name != '.' AND (name LIKE 'sky%' OR name LIKE '%mgm%' OR name LIKE 'disney cinemagic%')"
             ),
 
-            //provider undefined only wilhelm.tel --> sky
             array(
                 "title" => "Welt",
                 "outputSortPriority" => 40,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => " AND name NOT LIKE '% - %' AND name != 'Spieldaten'  AND name NOT LIKE  '%pitlane%'  AND name NOT LIKE  '%racer%' AND name NOT LIKE  '%konf%' AND name NOT LIKE  '%liga%' AND (UPPER(provider) = 'SKY' OR provider = '' OR provider = 'undefined') AND name != '.'"
+                "customwhere" => " AND nid=133 AND (UPPER(provider) = 'SKY' OR provider = '' OR provider = 'undefined') AND name != '.'"
+                //"customwhere" => " AND name NOT LIKE '% - %' AND name != 'Spieldaten'  AND name NOT LIKE  '%pitlane%'  AND name NOT LIKE  '%racer%' AND name NOT LIKE  '%konf%' AND name NOT LIKE  '%liga%' AND (UPPER(provider) = 'SKY' OR provider = '' OR provider = 'undefined') AND name != '.'"
             ),
 
-            //provider undefined only wilhelm.tel --> sky
-            array(
-                "title" => "Select",
-                "outputSortPriority" => 201,
-                "caidMode" => self::caidModeScrambled,
-                "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => " AND name LIKE '%|%' AND name LIKE '% - %' AND (UPPER(provider) = 'SKY' OR provider = '' OR provider = 'undefined')"
-            ),
-
-            //provider undefined only wilhelm.tel --> sky
-            array(
-                "title" => "Sport",
-                "outputSortPriority" => 120,
-                "caidMode" => self::caidModeScrambled,
-                "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => " AND (name LIKE '% - %' OR name = 'Spieldaten' OR name LIKE '%konf%' OR name LIKE '%liga%' OR name LIKE  '%pitlane%'  OR name LIKE  '%racer%' ) AND (UPPER(provider) = 'SKY' OR provider = '' OR provider = 'undefined')"
-            ),
-
-            //provider undefined only wilhelm.tel --> sky
+            //this is to catch any other channels that were not caught by other rules above, normally there is not much found by this rule
             array(
                 "title" => "Diverse",
                 "outputSortPriority" => 450,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => " AND (UPPER(provider) = 'SKY' OR provider = '' OR provider = 'undefined')"
+                "customwhere" => " AND nid=133 AND (UPPER(provider) = 'SKY' OR provider = '' OR provider = 'undefined')"
             ),
 
-            //provider undefined only wilhelm.tel --> sky
+            //this is to catch any other channels that were not caught by other rules above, normally there is not much found by this rule
             array(
                 "title" => "Diverse",
                 "outputSortPriority" => 500,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeRadio,
-                "customwhere" => " AND (UPPER(provider) LIKE 'SKY' OR provider = '' OR provider = 'undefined')"
+                "customwhere" => " AND nid=133 AND (UPPER(provider) LIKE 'SKY' OR provider = '' OR provider = 'undefined')"
             ),
         );
     }
