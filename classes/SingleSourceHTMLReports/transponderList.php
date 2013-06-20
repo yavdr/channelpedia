@@ -28,21 +28,26 @@ class transponderList extends singleSourceHTMLReportBase{
         $this->setDescription("A list of all transponder frequencies found for  DVB source ". $this->parent->getPureSource());
         $this->addBodyHeader();
 
+        $frequency = ($this->parent->getVisibleType() === "DVB-S") ? " frequency || ' ' || substr(parameter,1,1) AS frequency2 " : "frequency AS frequency2";
+
         $result = $this->db->query(
-            "SELECT parameter, frequency, symbolrate, nid
+            "SELECT parameter, ".$frequency.", symbolrate, nid, tid
             FROM channels
             WHERE source = ".$this->db->quote($this->parent->getSource())."
-            GROUP BY parameter, frequency, nid
-            ORDER BY frequency, parameter, nid"
+            GROUP BY parameter, frequency2, nid, tid
+            ORDER BY frequency2, parameter, nid, tid"
             );
-        $this->appendToBody( "<table><tr><th>Frequency</th><th>Parameter</th><th>Symbolrate</th><th>NID</th></tr>\n" );
+        $this->appendToBody( "<table><tr><th>Frequency</th><th>Parameter</th><th>Symbolrate</th><th>NID</th><th>TID</th></tr>\n" );
         foreach ($result as $row) {
+            if ( $this->parent->getVisibleType() === "DVB-S")
+                $row["frequency2"] .= " DVB-S". (substr($row["parameter"], -1, 1) === "1" ? "2":"");
             $this->appendToBody( "<tr>".
-                "<td>".htmlspecialchars($row["frequency"])."</td>".
+                "<td>".htmlspecialchars($row["frequency2"])."</td>".
                 "<td>".htmlspecialchars($row["parameter"])."</td>".
                 "<td>".htmlspecialchars($row["symbolrate"])."</td>".
                 "<td>".htmlspecialchars($row["nid"])."</td>".
-                "</tr>\n");
+                "<td>".htmlspecialchars($row["tid"])."</td>".
+            "</tr>\n");
         }
         $this->appendToBody("</table>\n");
         $this->addToOverviewAndSave( "Transponders", "transponder_list.html");
