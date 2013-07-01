@@ -136,6 +136,7 @@ class channel{
         if ($version < 1721){
             $this->params["apid"] = preg_replace( '/\@\d+/', '', $this->params["apid"]);
             $this->params["tpid"] = preg_replace( '/\;.*$/', '', $this->params["tpid"]);
+            $this->params["parameter"] = preg_replace( '/P0/', '', $this->params["parameter"]);
             if( $this->isSatelliteSource()){
                 $this->params["parameter"] = preg_replace( array('/H/i','/V/i'), array('h','v'), $this->getParameter() );
             }
