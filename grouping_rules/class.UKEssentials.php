@@ -84,6 +84,7 @@ class UKEssentials  extends ruleBase {
         return array (
 
             //streams don't indicate to be HDTV in name, therefore we need to use S2 transponder as a workaround
+/*
             array(
                 "title" => "freesat BBC Olympic Streams (London Olympics 2012) HD",
                 "outputSortPriority" => 40,
@@ -110,6 +111,7 @@ class UKEssentials  extends ruleBase {
                 "mediaType" => self::mediaTypeData,
                 "customwhere" => " AND ".BBC_OLYMPIC_STREAMS
             ),
+*/
 
             array(
                 "title" => "freesat",
@@ -128,14 +130,21 @@ class UKEssentials  extends ruleBase {
             ),
 */
             array(
-                "title" => "freesat BBC One HD Nations",
-                "outputSortPriority" => 15,
+                "title" => "freesat BBC Red Button HD",
+                "outputSortPriority" => 25,
                 "languageOverrule" => "",
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeTVS2,
-                "customwhere" => " AND tid=2061"
+                "customwhere" => " AND sid=8900"
             ),
-
+            array(
+                "title" => "freesat BBC Red Button",
+                "outputSortPriority" => 25,
+                "languageOverrule" => "",
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeSDTV,
+                "customwhere" => " AND (sid=6390 OR sid=54380 OR sid=54381)"
+            ),
             array(
                 "title" => "freesat BBC",
                 "outputSortPriority" => 20,
@@ -143,7 +152,7 @@ class UKEssentials  extends ruleBase {
                 "mediaType" => self::mediaTypeSDTV,
                 "customwhere" => " AND (upper(name) LIKE '%BBC%' OR upper(name) = 'CBEEBIES')"
             ),
-
+/*
             array(
                 "title" => "freesat BBC Red Button / Interactive / Sports",
                 "outputSortPriority" => 30,
@@ -152,7 +161,7 @@ class UKEssentials  extends ruleBase {
                 "customwhere" => " AND nid=2 AND tid=2013"
             ),
 
-/*            array(
+            array(
                 "title" => "freesat ITV",
                 "outputSortPriority" => 50,
                 "caidMode" => self::caidModeFTA,

@@ -45,9 +45,9 @@ class GermanySky  extends ruleBase{
  *    10 FTA HDTV (we don't expect to find much here)
  *    15 FTA SDTV  (we don't expect to find much here)
  *
- *    30 Welt scrambled HDTV
+ *    30 Starter scrambled SDTV
  *    40 Welt scrambled SDTV
- *    41 Welt Extra scrambled SDTV
+ *    41 Welt scrambled SDTV
  *
  *    50 Film scrambled HDTV
  *    51 Film scrambled SDTV
@@ -56,11 +56,12 @@ class GermanySky  extends ruleBase{
  *   110 Sport scrambled SDTV
  *   120 Sport Feeds scrambled SDTV
  *
- *   121 Bundesliga Feeds scrambled SDTV
+ *   150 Bundesliga Feeds scrambled SDTV
  *
  *   200 Select Portal FTA SDTV
- *   201 Select Feeds scrambled SDTV
- *   202 Select Event Feeds scrambled SDTV
+ *   201 Select scrambled HDTV
+ *   202 Select Feeds scrambled SDTV
+ *   203 Select Event Feeds scrambled SDTV
  *
  *   400 Blue Movie HDTV
  *   401 Blue Movie SDTV
@@ -70,6 +71,22 @@ class GermanySky  extends ruleBase{
  *   500 Diverse scrambled Radio
  */
 
+
+            array(
+                "title" => "3D",
+                "outputSortPriority" => 80,
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeSDTV,
+                "customwhere" => " AND nid=133 AND sid=117"
+            ),
+
+            array(
+                "title" => "3D",
+                "outputSortPriority" => 80,
+                "caidMode" => self::caidModeScrambled,
+                "mediaType" => self::mediaTypeSDTV,
+                "customwhere" => " AND nid=133 AND sid=117"
+            ),
 
             array(
                 "title" => "",
@@ -89,6 +106,15 @@ class GermanySky  extends ruleBase{
             ),
 
             array(
+                "title" => "Select",
+                "outputSortPriority" => 201,
+                "caidMode" => self::caidModeScrambled,
+                "mediaType" => self::mediaTypeHDTV,
+                "customwhere" => " AND nid=133 AND sid=120"
+            ),
+
+
+            array(
                 "title" => "",
                 "outputSortPriority" => 15,
                 "caidMode" => self::caidModeFTA,
@@ -97,12 +123,38 @@ class GermanySky  extends ruleBase{
                 ),
 
             array(
+                "title" => "Bundesliga Feeds HD",
+                "outputSortPriority" => 151,
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeData,
+                "languageOverrule" => "",
+                "customwhere" => " AND nid=133 AND sid BETWEEN 250 AND 380 AND SID % 10 = 7"
+            ),
+            array(
+                "title" => "Sport Feeds HD",
+                "outputSortPriority" => 120,
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeData,
+                "languageOverrule" => "",
+                "customwhere" => " AND nid=133 AND sid BETWEEN 250 AND 380 AND SID % 10 = 8"
+            ),
+
+            array(
                 "title" => "Sport",
                 "outputSortPriority" => 100,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeHDTV,
                 "languageOverrule" => "", //ESPN America HD is in English!
-                "customwhere" => " AND nid=133 AND name != '.' AND NOT name LIKE '%news%' AND NOT name LIKE '%eurosport hd%'  AND (name LIKE '%sport%' OR name LIKE 'sky bundesliga%' OR name LIKE 'espn%')"
+                "customwhere" => " AND nid=133 AND name != '.' AND NOT name LIKE '%news%' AND NOT name LIKE '%eurosport hd%'  AND (name LIKE '%sport%' OR name LIKE 'espn%')"
+            ),
+
+            array(
+                "title" => "Bundesliga",
+                "outputSortPriority" => 150,
+                "caidMode" => self::caidModeScrambled,
+                "mediaType" => self::mediaTypeHDTV,
+                "languageOverrule" => "", //ESPN America HD is in English!
+                "customwhere" => " AND nid=133 AND name != '.' AND NOT name LIKE '%news%' AND NOT name LIKE '%eurosport hd%'  AND (name LIKE 'sky bundesliga%')"
             ),
 
             array(
@@ -144,7 +196,7 @@ class GermanySky  extends ruleBase{
 
             //kabel eins classics, sat.1 emotions, rtl Living
             array(
-                "title" => "Welt Extra",
+                "title" => "Welt",
                 "outputSortPriority" => 41,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
@@ -152,7 +204,7 @@ class GermanySky  extends ruleBase{
             ),
 
             array(
-                "title" => "Welt Extra",
+                "title" => "Welt",
                 "outputSortPriority" => 41,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
@@ -173,7 +225,7 @@ class GermanySky  extends ruleBase{
 
             array(
                 "title" => "Welt",
-                "outputSortPriority" => 30,
+                "outputSortPriority" => 40,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeHDTV,
                 //"languageOverrule" => "",
@@ -187,7 +239,17 @@ class GermanySky  extends ruleBase{
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
                 "languageOverrule" => "", //ESPN America HD is in English!
-                "customwhere" => " AND (UPPER(provider) = 'SKY') AND name != '.' AND NOT name LIKE '%news%' AND (name LIKE '%sport%' OR name LIKE 'sky bundesliga%' OR name LIKE '%espn%')"
+                "customwhere" => " AND (((UPPER(provider) = 'SKY') AND name != '.' AND NOT name LIKE '%news%' AND (name LIKE '%sport%' OR name LIKE '%espn%') OR sid=222))"
+                //OR provider = '' OR UPPER(provider) = 'UNDEFINED'
+            ),
+
+            array(
+                "title" => "Bundesliga",
+                "outputSortPriority" => 150,
+                "caidMode" => self::caidModeScrambled,
+                "mediaType" => self::mediaTypeSDTV,
+                "languageOverrule" => "", //ESPN America HD is in English!
+                "customwhere" => " AND (UPPER(provider) = 'SKY') AND name != '.' AND NOT name LIKE '%news%' AND (name LIKE 'sky bundesliga%')"
                 //OR provider = '' OR UPPER(provider) = 'UNDEFINED'
             ),
 
@@ -209,7 +271,7 @@ class GermanySky  extends ruleBase{
 
             array(
                 "title" => "Bundesliga Feeds",
-                "outputSortPriority" => 121,
+                "outputSortPriority" => 152,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
                 "customwhere" => " AND nid=133 AND sid BETWEEN 250 AND 380 AND SID % 10 = 2"
@@ -232,12 +294,11 @@ class GermanySky  extends ruleBase{
             ),
 
             array(
-                "title" => "Welt",
-                "outputSortPriority" => 40,
+                "title" => "Starter",
+                "outputSortPriority" => 30,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => " AND nid=133 AND (UPPER(provider) = 'SKY' OR provider = '' OR provider = 'undefined') AND name != '.'"
-                //"customwhere" => " AND name NOT LIKE '% - %' AND name != 'Spieldaten'  AND name NOT LIKE  '%pitlane%'  AND name NOT LIKE  '%racer%' AND name NOT LIKE  '%konf%' AND name NOT LIKE  '%liga%' AND (UPPER(provider) = 'SKY' OR provider = '' OR provider = 'undefined') AND name != '.'"
+                "customwhere" => " AND nid=133 AND (UPPER(provider) = 'SKY' OR provider = '' OR provider = 'undefined') AND name != '.' AND sid != 222"
             ),
 
             //this is to catch any other channels that were not caught by other rules above, normally there is not much found by this rule
@@ -246,6 +307,16 @@ class GermanySky  extends ruleBase{
                 "outputSortPriority" => 450,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
+                "customwhere" => " AND nid=133 AND (UPPER(provider) = 'SKY' OR provider = '' OR provider = 'undefined')"
+            ),
+
+            //this is to catch any other channels that were not caught by other rules above, normally there is not much found by this rule
+            array(
+                "title" => "Diverse",
+                "outputSortPriority" => 499,
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeData,
+                "languageOverrule" => "",
                 "customwhere" => " AND nid=133 AND (UPPER(provider) = 'SKY' OR provider = '' OR provider = 'undefined')"
             ),
 
