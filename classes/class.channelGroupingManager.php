@@ -225,7 +225,8 @@ class channelGroupingManager{
         $result = $this->db->query("UPDATE channels SET x_xmltv_id = ''" );
         $sqlquery = "UPDATE channels SET x_xmltv_id = getcpid( lower(name), x_label )
             WHERE
-                ( x_label LIKE 'de.%' OR x_label LIKE 'sky_de.%'OR x_label LIKE 'at.%' OR x_label LIKE 'ch.%' )
+                ( x_label LIKE 'de.%' OR (x_label LIKE 'sky_de.%' AND x_label NOT LIKE '%FEED%') OR x_label LIKE 'at.%' OR x_label LIKE 'ch.%' 
+                 OR (x_label LIKE 'uk.%' AND x_label LIKE '%freesat%' AND x_label LIKE '%FTA%'))
                 AND x_label NOT LIKE '%uncategorized%'
                 AND name NOT LIKE '.%'
                 AND name NOT LIKE '%*'
