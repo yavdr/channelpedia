@@ -67,11 +67,11 @@ class satBandHelper extends singleSourceHTMLReportBase{
             $direction_long = "Vertical";
         else
             throw new Exception("direction should either be H or V");
-        if ($band == "High"){
+        if ($band == "Low"){
             $lowfreq = 10700;
             $hifreq = 11700;
         }
-        else if ($band == "Low"){
+        else if ($band == "High"){
             $lowfreq = 11700;
             $hifreq = 12750;
         }
