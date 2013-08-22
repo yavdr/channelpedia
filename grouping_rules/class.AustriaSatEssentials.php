@@ -118,8 +118,8 @@ class AustriaSatEssentials extends ruleBase{
                 "outputSortPriority" => 9,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
-                "languageOverrule" => "", // needed for RTL2
-                "customwhere" => "AND ". AUSTRIA
+                "languageOverrule" => "",
+                "customwhere" => "AND nid !=133 AND ". AUSTRIA
             ),
 
 
