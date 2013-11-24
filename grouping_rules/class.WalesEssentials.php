@@ -42,11 +42,20 @@ class WalesEssentials  extends ruleBase {
         return array (
             array(
                 "title" => "freesat",
-                "outputSortPriority" => 1,
+                "outputSortPriority" => 10,
+                "languageOverrule" => "eng,wel",
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeHDTV,
+                "customwhere" => " AND (upper(name) LIKE '%WAL%' OR upper(name) LIKE 'S4C%' OR (sid = '7308' AND nid ='2' AND tid='2022'))"
+            ),
+
+            array(
+                "title" => "freesat",
+                "outputSortPriority" => 20,
                 "languageOverrule" => "eng,wel",
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => " AND (upper(name) LIKE '%WALES%' OR upper(name) LIKE 'S4C%' OR (sid = '7308' AND nid ='2' AND tid='2022'))"
+                "customwhere" => " AND (upper(name) LIKE '%WAL%' OR upper(name) LIKE 'S4C%' OR (sid = '7308' AND nid ='2' AND tid='2022'))"
             ),
 
             array(

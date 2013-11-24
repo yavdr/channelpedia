@@ -129,10 +129,10 @@ class GermanySky  extends ruleBase{
                 ),
 
             array(
-                "title" => "Eurosport 360 Feeds",
+                "title" => "Eurosport 360 Feeds HD",
                 "outputSortPriority" => 190,
                 "caidMode" => self::caidModeScrambled,
-                "mediaType" => self::mediaTypeHDTV,
+                "mediaType" => self::mediaTypeTVS2,
                 "languageOverrule" => "",
                 "customwhere" => " AND nid=133 AND sid BETWEEN 250 AND 380 AND SID % 10 = 0"
             ),

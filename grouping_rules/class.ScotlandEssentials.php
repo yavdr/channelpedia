@@ -41,15 +41,24 @@ class ScotlandEssentials  extends ruleBase {
     function getGroups(){
         return array (
 
-            //3855;BSkyB:10935:VC56M2O0S0:S28.2E:22000:512=27:640=NAR@4;660=eng@106:576:0:3855:2:2056:0
-            //channel 3855 aka STV HD doesn't indicate to be HDTV (no S2 transponder, no HD in name), therefore we need OR in customwhere
             array(
-                "title" => "STV",
+                "title" => "freesat",
                 "outputSortPriority" => 1,
                 "languageOverrule" => "eng,gla",
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeHDTV,
-                "customwhere" => " AND sid='3855' OR (sid='3855' AND nid='2' AND tid='2056')"
+                "customwhere" => " AND name LIKE '%SCOT%'"
+            ),
+
+            //3855;BSkyB:10935:VC56M2O0S0:S28.2E:22000:512=27:640=NAR@4;660=eng@106:576:0:3855:2:2056:0
+            //channel 3855 aka STV HD doesn't indicate to be HDTV (no S2 transponder, no HD in name), therefore we need OR in customwhere
+            array(
+                "title" => "freesat STV HD",
+                "outputSortPriority" => 1,
+                "languageOverrule" => "eng,gla",
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeTVS2,
+                "customwhere" => " AND sid='3855' AND nid='2' AND tid='2056'"
             ),
 
             array(

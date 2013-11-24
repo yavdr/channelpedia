@@ -114,6 +114,15 @@ class UKEssentials  extends ruleBase {
 */
 
             array(
+                "title" => "freesat BBC Red Button HD",
+                "outputSortPriority" => 25,
+                "languageOverrule" => "",
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeTVS2,
+                "customwhere" => " AND sid=8900"
+            ),
+
+            array(
                 "title" => "freesat",
                 "outputSortPriority" => 10,
                 "caidMode" => self::caidModeFTA,
@@ -129,14 +138,6 @@ class UKEssentials  extends ruleBase {
                 "customwhere" => " AND upper(name) LIKE '%BBC%'"
             ),
 */
-            array(
-                "title" => "freesat BBC Red Button HD",
-                "outputSortPriority" => 25,
-                "languageOverrule" => "",
-                "caidMode" => self::caidModeFTA,
-                "mediaType" => self::mediaTypeTVS2,
-                "customwhere" => " AND sid=8900"
-            ),
             array(
                 "title" => "freesat BBC Red Button",
                 "outputSortPriority" => 25,

@@ -41,12 +41,21 @@ class NorthernIrelandEssentials extends ruleBase {
     function getGroups(){
         return array (
             array(
-                "title" => "freesat BBC",
-                "outputSortPriority" => 1,
+                "title" => "freesat",
+                "outputSortPriority" => 10,
+                "languageOverrule" => "", //BBC ALBA doesn't always have apid with eng
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeHDTV,
+                "customwhere" => " AND (name LIKE '% NI' OR name LIKE '% NI HD' OR name LIKE '%ULSTER%' OR name LIKE 'UTV%')"
+            ),
+
+            array(
+                "title" => "freesat",
+                "outputSortPriority" => 20,
                 "languageOverrule" => "", //BBC ALBA doesn't always have apid with eng
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => " AND (upper(name) LIKE '% NI%' OR upper(name) LIKE '%ULSTER%' OR upper(name) LIKE 'UTV%')"
+                "customwhere" => " AND (name LIKE '% NI' OR name LIKE '% NI HD' OR name LIKE '%ULSTER%' OR name LIKE 'UTV%')"
             ),
 
             array(
@@ -54,7 +63,7 @@ class NorthernIrelandEssentials extends ruleBase {
                 "outputSortPriority" => 40,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeRadio,
-                "customwhere" => " AND (upper(name) LIKE '%ULSTER%' OR upper(name) LIKE '% NI%')"
+                "customwhere" => " AND (name LIKE '% NI' OR name LIKE '%ULSTER%' OR name LIKE 'UTV%')"
             ),
         );
     }

@@ -122,7 +122,6 @@ class AustriaSatEssentials extends ruleBase{
                 "customwhere" => "AND nid !=133 AND ". AUSTRIA
             ),
 
-
             //radio
 
             array(
