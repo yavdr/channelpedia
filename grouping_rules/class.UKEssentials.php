@@ -144,8 +144,9 @@ class UKEssentials  extends ruleBase {
                 "languageOverrule" => "",
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => " AND (sid=6390 OR sid=54380 OR sid=54381)"
+                "customwhere" => " AND (sid=6390)" // OR sid=54380 OR sid=54381)"
             ),
+
             array(
                 "title" => "freesat BBC",
                 "outputSortPriority" => 20,
@@ -233,6 +234,14 @@ class UKEssentials  extends ruleBase {
                 "outputSortPriority" => 120,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeHDTV,
+                "customwhere" => ""
+            ),
+
+            array(
+                "title" => "Diverse",
+                "outputSortPriority" => 121,
+                "caidMode" => self::caidModeFTA,
+                "mediaType" => self::mediaTypeTVS2,
                 "customwhere" => ""
             ),
 

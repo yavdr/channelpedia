@@ -262,6 +262,7 @@ class GermanySky  extends ruleBase{
                                      name LIKE 'romance tv%' OR
                                      name LIKE 'animax%' OR
                                      name LIKE 'espn%' OR
+                                     name LIKE 'sky sport news%' OR
                                      name LIKE 'eurosport 2%'
                                  ) "
             ),
