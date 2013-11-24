@@ -136,7 +136,7 @@ class GermanySky  extends ruleBase{
                 "languageOverrule" => "",
                 "customwhere" => " AND nid=133 AND sid BETWEEN 250 AND 380 AND SID % 10 = 0"
             ),
-
+/*
             array(
                 "title" => "Eurosport 360 Feeds",
                 "outputSortPriority" => 191,
@@ -145,16 +145,16 @@ class GermanySky  extends ruleBase{
                 "languageOverrule" => "",
                 "customwhere" => " AND nid=133 AND sid BETWEEN 250 AND 380 AND SID % 10 = 0"
             ),
-
+*/
             array(
-                "title" => "Bundesliga Feeds",
-                "outputSortPriority" => 160,
+                "title" => "Bundesliga",
+                "outputSortPriority" => 150,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeHDTV,
                 "languageOverrule" => "",
                 "customwhere" => " AND nid=133 AND sid BETWEEN 250 AND 380 AND SID % 10 = 7"
             ),
-
+/*
             array(
                 "title" => "Bundesliga Feeds HD",
                 "outputSortPriority" => 161,
@@ -163,16 +163,16 @@ class GermanySky  extends ruleBase{
                 "languageOverrule" => "",
                 "customwhere" => " AND nid=133 AND sid BETWEEN 250 AND 380 AND SID % 10 = 7"
             ),
-
+*/
             array(
-                "title" => "Sport Feeds HD",
-                "outputSortPriority" => 110,
+                "title" => "Sport", //Feeds HD
+                "outputSortPriority" => 100,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeHDTV,
                 "languageOverrule" => "",
                 "customwhere" => " AND nid=133 AND sid BETWEEN 250 AND 380 AND SID % 10 = 8"
             ),
-
+/*
             array(
                 "title" => "Sport Feeds HD",
                 "outputSortPriority" => 111,
@@ -181,7 +181,7 @@ class GermanySky  extends ruleBase{
                 "languageOverrule" => "",
                 "customwhere" => " AND nid=133 AND sid BETWEEN 250 AND 380 AND SID % 10 = 8"
             ),
-
+*/
             array(
                 "title" => "Sport", //HDTV
                 "outputSortPriority" => 100,
@@ -197,7 +197,7 @@ class GermanySky  extends ruleBase{
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeHDTV,
                 "languageOverrule" => "", //ESPN America HD is in English!
-                "customwhere" => " AND nid=133 AND name != '.' AND NOT name LIKE '%news%' AND NOT name LIKE '%eurosport hd%'  AND (name LIKE 'sky bundesliga%')"
+                "customwhere" => " AND nid=133 AND (name LIKE 'sky bundesliga%' OR name LIKE '%fanzone')"
             ),
 
             array(
