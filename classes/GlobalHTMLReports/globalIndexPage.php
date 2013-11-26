@@ -57,7 +57,7 @@ class globalIndexPage extends globalHTMLReportBase{
             else{
                 $desc = "";
                 if ($isSat) $desc = " - ". $this->config->getLongNameOfSatSource( $title );
-                $this->appendToBody( '<li><a href="'. urldecode( $url ) .'"><b>'.$title . '</b>' . $desc  . '</a></li>' );
+                $this->appendToBody( '<li><a href="'. urldecode( $url ) .'"><b>'.$title . '</b>' . $desc  . ' (Last updated: ' . $line[2] . ')</a></li>' );
             }
         }
 

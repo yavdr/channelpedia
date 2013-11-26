@@ -25,7 +25,7 @@
 class HTMLPage {
 
     protected
-        $pageTitleWasSet = false,
+       $pageTitleWasSet = false,
         $relPath = "",
         $pageBody = "",
         $keywords = "",

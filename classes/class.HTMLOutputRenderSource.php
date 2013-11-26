@@ -37,7 +37,7 @@ require_once PATH_TO_REPORT_CLASSES . '/SingleSourceHTMLReports/outdatedChannels
 class HTMLOutputRenderSource {
 
     private
-        $db,
+       $db,
         $getLastConfirmedTimestamp = 0,
         $config,
         $source_linklist = array(),
@@ -48,7 +48,8 @@ class HTMLOutputRenderSource {
         $HTMLFragments,
         $source = "",
         $relPath = "",
-        $type = "";
+        $type = "",
+        $varTools;
 
     public function __construct( $type, $puresource, $languages ){
         $this->HTMLFragments = HTMLFragments::getInstance();
@@ -59,7 +60,8 @@ class HTMLOutputRenderSource {
         $this->puresource = $puresource;
         $this->languages = $languages;
         $this->source = ($type !== "S") ? $type . "[" . $puresource . "]" : $puresource;
-        $this->getLastConfirmedTimestamp = dbVariousTools::getInstance()->getLastConfirmedTimestamp( $this->source );
+        $this->varTools = dbVariousTools::getInstance();
+        $this->getLastConfirmedTimestamp = $this->varTools->getLastConfirmedTimestamp( $this->source );
         $this->source_linklist = array();
         $this->type = $type;
     }
@@ -107,7 +109,7 @@ class HTMLOutputRenderSource {
 
         $x = new indexPage($this, $this->source_linklist);
         $x->popuplatePageBody();
-        return array( $this->puresource, "./" . HTMLFragments::getCrispFilename( $this->getCraftedPath() . "index.html"));
+        return array( $this->puresource, "./" . HTMLFragments::getCrispFilename( $this->getCraftedPath() . "index.html"), $this->getUpdateDate());
 
     }
 
@@ -141,6 +143,10 @@ class HTMLOutputRenderSource {
 
     public function getLastConfirmedTimestamp(){
         return $this->getLastConfirmedTimestamp;
+    }
+
+    public function getUpdateDate(){
+        return $this->varTools->getUpdateDate( $this->source );
     }
 
     private function setCraftedPath( $suffix = ""){

@@ -73,19 +73,8 @@ class indexPage extends singleSourceHTMLReportBase{
             $total += $rowtotal;
         }
         $this->appendToBody("<tr><td>Summary</td><td></td><td></td><td>$total</td></tr>");
-        $this->appendToBody("<tr><td>Last updated</td><td colspan='3'> ".$this->getUpdateDate()."</td></tr>");
+        $this->appendToBody("<tr><td>Last updated</td><td colspan='3'> ".$this->parent->getUpdateDate()."</td></tr>");
         $this->appendToBody("</table>");
-    }
-
-    private function getUpdateDate(){
-        $result = $this->db->query(
-            "SELECT DATETIME( x_last_changed, 'unixepoch', 'localtime' ) AS datestamp ".
-            "FROM channels ".
-            "WHERE source LIKE ".$this->db->quote( $this->parent->getSource()."%" )." ".
-            "ORDER BY x_last_changed DESC LIMIT 1"
-        );
-        $updateDate = $result->fetch(PDO::FETCH_ASSOC);
-        return $updateDate["datestamp"];
     }
 
     private function collectNumberOfChannelsOfSourceSection( $type, $encrypted = false){

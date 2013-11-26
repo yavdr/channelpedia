@@ -42,6 +42,17 @@ class dbVariousTools{
         return self::$instance;
     }
 
+    public function getUpdateDate( $source ){
+        $result = $this->db->query(
+            "SELECT DATETIME( x_last_changed, 'unixepoch', 'localtime' ) AS datestamp ".
+            "FROM channels ".
+            "WHERE source LIKE ".$this->db->quote( $source."%" )." ".
+            "ORDER BY x_last_changed DESC LIMIT 1"
+        );
+        $updateDate = $result->fetch(PDO::FETCH_ASSOC);
+        return $updateDate["datestamp"];
+    }
+
     public function getLastConfirmedTimestamp( $source ){
         $timestamp = 0;
         $sqlquery = "SELECT x_last_confirmed FROM channels WHERE source = ".$this->db->quote($source)." ORDER BY x_last_confirmed DESC LIMIT 1";

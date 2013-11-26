@@ -25,7 +25,7 @@
 class HTMLFragments{
 
     const
-        stylesheet = "styles.css",
+        stylesheet = "styles_gen.css",
         htmlHeaderTemplate = "html_header.html",
         htmlFooterTemplate = "html_footer.html",
         htmlCustomFooterTemplate = "html_custom_footer.html";
