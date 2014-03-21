@@ -46,7 +46,7 @@ class HTMLOutputRenderer{
     }
 
     public function renderGlobalIndexPageWithoutSingleSourcePageUpdates(){
-        $this->$omitSingleSourcePageRendering = true;
+        $this->omitSingleSourcePageRendering = true;
         $this->renderAllHTMLPages();
     }
 

@@ -43,10 +43,10 @@ require_once PATH_TO_CLASSES.'class.HTMLOutputRenderer.php';
 require_once PATH_TO_CLASSES.'class.HTMLOutputRenderSource.php';
 require_once PATH_TO_CLASSES.'class.HTMLChangelog.php';
 require_once PATH_TO_CLASSES.'class.epg2vdrMapper.php';
-require_once PATH_TO_CLASSES.'class.epg2vdrMapperWithCPIDs.php';
+//require_once PATH_TO_CLASSES.'class.epg2vdrMapperWithCPIDs.php';
 require_once PATH_TO_CLASSES.'class.dbVariousTools.php';
 require_once PATH_TO_CLASSES.'uniqueIDTools.php';
-require_once PATH_TO_CLASSES.'semanticDataManager.php';
+//require_once PATH_TO_CLASSES.'semanticDataManager.php';
 
 class config {
 
