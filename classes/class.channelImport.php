@@ -197,8 +197,8 @@ class channelImport extends channelFileIterator{
         $this->htmlOutput->renderPagesOfSingleSource( $type, $rawprovider, $languages);
     }
 
-    public function renderGlobalReports(){
-        $this->htmlOutput->renderGlobalReports();
+    public function renderGlobalStuff(){
+        $this->htmlOutput->renderGlobalIndexPageWithoutSingleSourcePageUpdates();
     }
 }
 ?>

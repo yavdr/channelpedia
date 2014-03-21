@@ -109,8 +109,11 @@ class HTMLOutputRenderSource {
 
         $x = new indexPage($this, $this->source_linklist);
         $x->popuplatePageBody();
-        return array( $this->puresource, "./" . HTMLFragments::getCrispFilename( $this->getCraftedPath() . "index.html"), $this->getUpdateDate());
+        return $this->getPageLinkDataArray();
+    }
 
+    public function getPageLinkDataArray(){
+        return array( $this->puresource, "./" . HTMLFragments::getCrispFilename( $this->getCraftedPath() . "index.html"), $this->getUpdateDate());
     }
 
     public function getType(){

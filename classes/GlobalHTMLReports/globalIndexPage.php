@@ -40,7 +40,7 @@ class globalIndexPage extends globalHTMLReportBase{
                     $title .= " " . $part;
                 }
             }
-            $ulClass =  '';
+            $ulClass = '';
             if ($title === "Satellite positions"){
                 $isSat = true;
                 //$ulClass =  ' class="satPos"';
@@ -57,7 +57,8 @@ class globalIndexPage extends globalHTMLReportBase{
             else{
                 $desc = "";
                 if ($isSat) $desc = " - ". $this->config->getLongNameOfSatSource( $title );
-                $this->appendToBody( '<li><a href="'. urldecode( $url ) .'"><b>'.$title . '</b>' . $desc  . ' (Last updated: ' . $line[2] . ')</a></li>' );
+                if ($line[2] !== "") $desc .= ' (Last modified: ' . $line[2] . ')';
+                $this->appendToBody( '<li><a href="'. urldecode( $url ) .'"><b>'.$title . '</b>' . $desc  . '</a></li>' );
             }
         }
 

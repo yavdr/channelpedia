@@ -35,13 +35,19 @@ require_once PATH_TO_GLOBAL_REPORT_CLASSES . '/GlobalHTMLReports/globalIndexPage
 class HTMLOutputRenderer{
 
     private
-        $db,
+       $db,
         $config,
-        $homepageLinkList = array();
+        $homepageLinkList = array(),
+        $omitSingleSourcePageRendering = false;
 
     function __construct(){
         $this->db = dbConnection::getInstance();
         $this->config = config::getInstance();
+    }
+
+    public function renderGlobalIndexPageWithoutSingleSourcePageUpdates(){
+        $this->$omitSingleSourcePageRendering = true;
+        $this->renderAllHTMLPages();
     }
 
     public function getCraftedPath(){
@@ -81,10 +87,12 @@ class HTMLOutputRenderer{
 
     public function renderPagesOfSingleSource( $type, $puresource, $languages ){
         $x = new HTMLOutputRenderSource( $type, $puresource, $languages );
-        $this->homepageLinkList[] = $x->render();
+        if (!$this->omitSingleSourcePageRendering)
+            $x->render();
+        $this->homepageLinkList[] = $x->getPageLinkDataArray();
     }
 
-    public function renderGlobalReports(){
+    private function renderGlobalReports(){
         $x = new globalChangelog( $this);
         $x->popuplatePageBody();
         $this->homepageLinkList[] = $x->getParentPageLink();
