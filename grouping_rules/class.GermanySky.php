@@ -272,7 +272,7 @@ class GermanySky  extends ruleBase{
                 "outputSortPriority" => 40,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeHDTV,
-                //"languageOverrule" => "",
+                "languageOverrule" => "", // for mtv live hd
                 "customwhere" => " AND (UPPER(provider) = 'SKY') AND name != '.'"
                 //OR provider = '' OR UPPER(provider) = 'UNDEFINED'
             ),

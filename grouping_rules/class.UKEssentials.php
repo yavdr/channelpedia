@@ -49,6 +49,7 @@ define("IRISH","(".
   "UPPER(name) LIKE 'SETANTA%'".
   ") ");
 
+/*
 define( "BBC_OLYMPIC_STREAMS", " nid=2 AND sid >= 7800 AND sid <= 7900 AND (".
   "tid=2004 OR ".
   "tid=2011 OR ".
@@ -63,6 +64,7 @@ define( "BBC_OLYMPIC_STREAMS", " nid=2 AND sid >= 7800 AND sid <= 7900 AND (".
   "tid=9988 OR ".
   "tid=9991 ".
   ")");
+*/
 
 class UKEssentials  extends ruleBase {
 
@@ -127,7 +129,7 @@ class UKEssentials  extends ruleBase {
                 "outputSortPriority" => 10,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeHDTV,
-                "customwhere" => " AND (upper(name) LIKE '%BBC%' OR ".UK_ITV." OR ".UK_C4.")"
+                "customwhere" => " AND (name LIKE '%BBC%' OR name LIKE '%CBeebies%' OR ".UK_ITV." OR ".UK_C4.")"
             ),
 
 /*            array(
@@ -144,7 +146,7 @@ class UKEssentials  extends ruleBase {
                 "languageOverrule" => "",
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => " AND (sid=6390)" // OR sid=54380 OR sid=54381)"
+                "customwhere" => " AND (sid=6390 OR sid=54190)" // OR sid=54380 OR sid=54381)" 
             ),
 
             array(
@@ -238,8 +240,8 @@ class UKEssentials  extends ruleBase {
             ),
 
             array(
-                "title" => "Diverse",
-                "outputSortPriority" => 121,
+                "title" => "Unnamed freesat HD services",
+                "outputSortPriority" => 129,
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeTVS2,
                 "customwhere" => ""

@@ -46,7 +46,7 @@ class ItalyEssentials  extends ruleBase {
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeHDTV,
                 "languageOverrule" => "",
-                "customwhere" => " AND UPPER( provider ) = 'RAI'"
+                "customwhere" => " AND name LIKE 'RAI%'"
             ),
 
             array(
@@ -55,7 +55,7 @@ class ItalyEssentials  extends ruleBase {
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeHDTV,
                 "languageOverrule" => "",
-                "customwhere" => " AND UPPER( provider ) = 'RAI'"
+                "customwhere" => " AND name LIKE 'RAI%'"
             ),
 
             array(
