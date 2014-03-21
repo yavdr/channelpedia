@@ -25,7 +25,7 @@
 class channelIterator{
 
     private
-        $db,
+       $db,
         $config,
         $result = false,
         $channel = false,
@@ -53,6 +53,10 @@ class channelIterator{
         $where["source"] = $source;
         if (substr($label,0,9) !== "_complete")
             $where["x_label"] = $label;
+        //workaround: entries in groups containing feeds could be auto-sorted by sid value
+        //but this does not really work well...
+        //if (stripos($label, "feeds") !== false )
+        //    $orderby = "sid ASC";
         $this->result = $this->db->query2("SELECT * FROM channels", $where, true, $orderby);
     }
 
