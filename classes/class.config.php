@@ -43,6 +43,7 @@ require_once PATH_TO_CLASSES.'class.HTMLOutputRenderer.php';
 require_once PATH_TO_CLASSES.'class.HTMLOutputRenderSource.php';
 require_once PATH_TO_CLASSES.'class.HTMLChangelog.php';
 require_once PATH_TO_CLASSES.'class.epg2vdrMapper.php';
+require_once PATH_TO_CLASSES.'class.epg2vdrMapperWithCPIDs.php';
 require_once PATH_TO_CLASSES.'class.dbVariousTools.php';
 require_once PATH_TO_CLASSES.'uniqueIDTools.php';
 require_once PATH_TO_CLASSES.'semanticDataManager.php';
@@ -51,7 +52,7 @@ class config {
 
     private static $instance = null;
     private
-        $pathdynamic = "",
+       $pathdynamic = "",
         $sourcelist;
 
     protected function __construct(){
@@ -63,8 +64,8 @@ class config {
         }
         else
             $this->pathdynamic = CUSTOM_PATH;
-        $debuglogfile = $this->getValue("userdata")."debuglog.txt";
-        //@unlink($debuglogfile);
+        $debuglogfile = $this->getValue("userdata")."logs/debuglog-". date("Y-m-d") . ".txt";
+        @mkdir( $this->getValue("userdata")."logs" );
         $this->debuglog = fopen( $debuglogfile, "a");
         $this->addToDebugLog("---------------------------------- begin of session ".date("D M j G:i:s T Y")." -------------------------------------------\n");
 
