@@ -223,6 +223,18 @@ class channel{
         return $this->params["caid"];
     }
 
+    public function getSID(){
+        return $this->params["sid"];
+    }
+
+    public function getNID(){
+        return $this->params["nid"];
+    }
+
+    public function getTID(){
+        return $this->params["tid"];
+    }
+
     public function getUniqueID(){
         return $this->uniqueID;
     }

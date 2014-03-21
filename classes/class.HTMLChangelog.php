@@ -54,7 +54,7 @@ class HTMLChangelog {
             $class = "changelog_row_style_".$row["importance"];
             $this->page .=
                 '<div class="'.$class.'">'.
-                "<p>On ". htmlspecialchars( $row["datestamp"] ). ", attributes of the channel called '<b>".
+                "<p>At ". htmlspecialchars( $row["datestamp"] ). ", attributes of the channel called '<b>".
                 htmlspecialchars( $row["name"] ). "</b>' (with the unique ID ".htmlspecialchars( $row["combined_id"] ).
                 ') have changed: </p><pre class="changelog">'.
                 $desc.
@@ -63,7 +63,7 @@ class HTMLChangelog {
     }
 
 /* this is a new and better version but too slow on the sqlite side... maybe some sql tuning helps here
- *
+
     function __construct( $where, $limit, $importance) {
         $this->db = dbConnection::getInstance();
         $this->page = "";
@@ -102,7 +102,7 @@ class HTMLChangelog {
             //$class = "changelog_row_style_".$row["importance"];
             $this->page .=
                 '<div>'. // class="'.$class.'">'.
-                "<p>On ". htmlspecialchars( $row["datestamp"] ). ", attributes of the channel called '<b>".
+                "<p>At ". htmlspecialchars( $row["datestamp"] ). ", attributes of the channel called '<b>".
                 htmlspecialchars( $row["name"] ). "</b>' (with the source ".
                 htmlspecialchars( $row["source"] ). " and group " .
                 htmlspecialchars( $row["x_label"] ).
@@ -111,6 +111,7 @@ class HTMLChangelog {
                 "</pre></div>\n";
         }
     }
+
 */
     public function getContents(){
         return $this->page;

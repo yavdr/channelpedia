@@ -43,10 +43,7 @@ class languageSection extends singleSourceHTMLReportBase{
         while ($groupIterator->moveToNextChannelGroup() !== false){
             $cols = $groupIterator->getCurrentChannelGroupArray();
             $x = new channelIterator( $shortenSource = true);
-            $orderby = "UPPER(name) ASC";
-            //FIXME: ordering by SID should be possible in grouping rule definitions
-            //if (stripos($cols["x_label"], "olympic") !== false ) $orderby = "sid ASC";
-            $x->init1($cols["x_label"], $this->parent->getSource(), $orderby);
+            $x->init1($cols["x_label"], $this->parent->getSource(), "UPPER(name) ASC");
             $channelNameList = array();
             $channelMetaInfoList = array();
             $channelStringList = "";
@@ -60,6 +57,8 @@ class languageSection extends singleSourceHTMLReportBase{
                         $chname = htmlspecialchars( count($channelNameSegments) > 0 ? $channelNameSegments[0] : $curChan->getName() );
                         //$chname = "";
                         if ( $this->language === "de" || $this->language === "sky_de" || $this->language === "at" || $this->language === "ch"){
+                            $newlyAdded = (time() - $curChan->getXTimestampAdded()) < (30 * 24 * 60 * 60) ? ' <span style="padding: 1px; color: black; background-color: lightyellow;">NEW</span>' : ""; //30 days
+
                             if ($curChan->getXCPID() !== ""){
                                 $ids = uniqueIDTools::getInstance()->deregionalizeID( $curChan->getXCPID() );
                                 $idlist = $this->db->quote( $curChan->getXCPID() );
@@ -82,7 +81,7 @@ class languageSection extends singleSourceHTMLReportBase{
                                     uniqueIDTools::getInstance()->getMatchingCSSClasses( $curChan->getXCPID(), '_small').
                                     '" title="'.$curChan->getXCPID().'">'.
                                     "</div>\n".
-                                    '<div class="channel_details"><p><b>'. $chname . '</b>' . $wurl.
+                                    '<div class="channel_details"><p><b>'. $chname . '</b>' . $newlyAdded . $wurl.
                                     "</p></div>\n";
                             }
                             else{
@@ -90,7 +89,7 @@ class languageSection extends singleSourceHTMLReportBase{
                                     '<div class="channel_illustration" '.
                                     'title="No ID.">'.
                                     "</div>\n".
-                                    '<div class="channel_details"><p><b>'. $chname . '</b><br/>NO ID'.
+                                    '<div class="channel_details"><p><b>'. $chname . '</b>'. $newlyAdded .'<br/>NO ID'.
                                     "</p></div>\n";
                             }
                             $channelMetaInfoList[] = $chmetainfo;
@@ -138,10 +137,10 @@ class languageSection extends singleSourceHTMLReportBase{
                     (count($channelNameList) > 0 ? '<span class="anchorlist_channelnames"> <span class="single">'.implode('</span> '.$separator.'<span class="single">',$channelNameList).'</span></span></span>':'').
                     '</a></li><br clear="all">'."\n";
         }
-            $this->appendToBody(
-                "<h2>Groups Overview</h2>\n<div class=\"group_anchors\"><ul class=\"group_anchors\">\n" .
-                $nice_html_linklist . "</ul></div>\n"
-            );
+        $this->appendToBody(
+            "<h2>Groups Overview</h2>\n<div class=\"group_anchors\"><ul class=\"group_anchors\">\n" .
+            $nice_html_linklist . "</ul></div>\n"
+        );
         $this->appendToBody(
             $nice_html_body
         );
@@ -149,21 +148,25 @@ class languageSection extends singleSourceHTMLReportBase{
     }
 
     private function getPopupContent($curChan){
-        return $curChan->getName(). " | ".
+        return $curChan->getName(). " \n".
             ($curChan->isSatelliteSource() ?
-                "Type: DVB-S"    . ( $curChan->onS2SatTransponder()   ? "2"        : ""           ) ." | ".
-                "Polarisation: " . ( $curChan->belongsToSatVertical() ? "Vertical" : "Horizontal" ) ." | ".
-                "Band: "         . ( $curChan->belongsToSatHighBand() ? "High"     : "Low"        ) ." | ".
-                "FEC: "          . $curChan->getFECOfSatTransponder()                          ." | "
+                "Type: DVB-S"    . ( $curChan->onS2SatTransponder()   ? "2"        : ""           ) ." \n".
+                "Polarisation: " . ( $curChan->belongsToSatVertical() ? "Vertical" : "Horizontal" ) ." \n".
+                "Band: "         . ( $curChan->belongsToSatHighBand() ? "High"     : "Low"        ) ." \n".
+                "FEC: "          . $curChan->getFECOfSatTransponder()                          ." \n"
             : "" ).
-            "Modulation: "        . $curChan->getModulation() ." | ".
-            "Frequency: "         . $curChan->getReadableFrequency() ." | ".
-            "Symbolrate: "        . $curChan->getSymbolrate() ." | ".
-            "Date added: "        . date("D, d M Y H:i:s", $curChan->getXTimestampAdded() ) . " | ".
-            "Date last changed: " . date("D, d M Y H:i:s", $curChan->getXLastChanged()    ) . " | ".
-            "Date last seen: "    . date("D, d M Y H:i:s", $curChan->getXLastConfirmed()  ) . " | ".
-            "CPID draft: "    . htmlspecialchars( $curChan->getXCPID() ) . " | ".
-            "VDR internal ID: "    . htmlspecialchars( $curChan->getUniqueID() ) . " ".
+            "Modulation: "        . $curChan->getModulation() ." \n".
+            "Frequency: "         . $curChan->getReadableFrequency() ." \n".
+            "Symbolrate: "        . $curChan->getSymbolrate() ." \n".
+            "Encryption state: "  . (($curChan->getCAID() == "0") ? "not encrypted" : "encrypted (" . $curChan->getCAID() . ")" )." \n".
+            "SID: "               . $curChan->getSID() . " (Hex: " . str_pad(strtoupper(dechex($curChan->getSID())), 4, "0", STR_PAD_LEFT) . ") \n".
+            "NID: "               . $curChan->getNID() ." \n".
+            "TID: "               . $curChan->getTID() ." \n".
+            "Date added: "        . date("D, d M Y H:i:s", $curChan->getXTimestampAdded() ) . " \n".
+            "Date last changed: " . date("D, d M Y H:i:s", $curChan->getXLastChanged()    ) . " \n".
+            "Date last seen: "    . date("D, d M Y H:i:s", $curChan->getXLastConfirmed()  ) . " \n".
+            "CPID draft: "    . htmlspecialchars( $curChan->getXCPID() ) . " \n".
+            "VDR internal ID: "    . htmlspecialchars( $curChan->getUniqueID() ) . "".
             "";
     }
 
