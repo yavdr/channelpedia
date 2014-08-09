@@ -47,7 +47,7 @@ class uniqueIDTools {
 
     public function getMatchingCSSClasses( $id, $suffix){
         $alternative = "";
-        if ($id !== ""){
+        if ($id !== "" && strpos( $id, ":" ) !== false ){
             $ids = $this->deregionalizeID( $id );
             if (count($ids) === 2)
                 $alternative = ' ' . $this->sanitizeID4cssClass( $ids[1] ) . $suffix;
@@ -60,7 +60,7 @@ class uniqueIDTools {
     //find the matching id for an id of a regional channel
     public function deregionalizeID( $id ){
         $ids = false;
-        if ($id !== ""){
+        if ($id !== "" && strpos( $id, ":" ) !== false ){
             $idchunks = explode(":", $id);
             if (count($idchunks) !== 2)
                 throw new Exception("deregionalizeID: Strange id: '$id'");
