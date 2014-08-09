@@ -221,21 +221,32 @@ class channelGroupingManager{
             $this->updateAllLabelsOfSource("T[$terrp]", $languages);
         }
 
-        //cpid stuff
-        $result = $this->db->query("UPDATE channels SET x_xmltv_id = ''" );
-        $sqlquery = "UPDATE channels SET x_xmltv_id = getcpid( lower(name), x_label )
-            WHERE
-                ( x_label LIKE 'de.%' OR (x_label LIKE 'sky_de.%' AND x_label NOT LIKE '%FEED%') OR x_label LIKE 'at.%' OR x_label LIKE 'ch.%'
-                 OR (x_label LIKE 'uk.%' AND x_label LIKE '%freesat%' AND x_label LIKE '%FTA%'))
-                AND x_label NOT LIKE '%uncategorized%'
-                AND name NOT LIKE '.%'
-                AND name NOT LIKE '%*'
-                AND name NOT LIKE '%test%'
-                AND name NOT LIKE '%\_alt'
-        ";
-        $this->addToGroupingLog( "Now updating cpids" );
-        $result = $this->db->query($sqlquery);
-        $this->addToGroupingLog( "Now finished updating cpids" );
+        $this->updateCPIDs();
+    }
+
+    //cpid stuff
+    private function updateCPIDs(){
+        try
+        {
+            $result = $this->db->query("UPDATE channels SET x_xmltv_id = ''" );
+            $sqlquery = "UPDATE channels SET x_xmltv_id = getcpid( lower(name), x_label )
+                WHERE
+                    ( x_label LIKE 'de.%' OR (x_label LIKE 'sky_de.%' AND x_label NOT LIKE '%FEED%') OR x_label LIKE 'at.%' OR x_label LIKE 'ch.%'
+                     OR (x_label LIKE 'uk.%' AND x_label LIKE '%freesat%' AND x_label LIKE '%FTA%'))
+                    AND x_label NOT LIKE '%uncategorized%'
+                    AND name NOT LIKE '.%'
+                    AND name NOT LIKE '%*'
+                    AND name NOT LIKE '%test%'
+                    AND name NOT LIKE '%\_alt'
+            ";
+            $this->addToGroupingLog( "Now updating cpids" );
+            $result = $this->db->query($sqlquery);
+            $this->addToGroupingLog( "Now finished updating cpids" );
+        }
+        catch (Exception $e)
+        {
+         throw new Exception( "updateCPIDs: Error on updateCPIDs" );
+        }
     }
 
     public function updateAllLabelsOfSource( $source, $languages ){
