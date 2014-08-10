@@ -92,7 +92,7 @@ $global_sat_long_names = array(
             "descr" => ""
         ),
         "S28.2E" => array(
-            "name" => "Astra 1N, Astra 2A, Astra 2B, Astra 2D, Eutelsat 28A (28.5°)",
+            "name" => "Astra 2A, Astra 2D, Astra 2E, Astra 2F,Eutelsat 28A (28.5°)",
             "descr" => ""
         ),
         "S36E"   => array(

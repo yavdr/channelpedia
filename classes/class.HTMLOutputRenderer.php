@@ -46,7 +46,7 @@ class HTMLOutputRenderer{
     }
 
     public function renderGlobalIndexPageWithoutSingleSourcePageUpdates(){
-        //clearHomepageLinkList(){
+        //clearHomepageLinkList
         $this->homepageLinkList = array();
         $this->omitSingleSourcePageRendering = true;
         $this->renderAllHTMLPages();
@@ -91,7 +91,7 @@ class HTMLOutputRenderer{
         $x = new HTMLOutputRenderSource( $type, $puresource, $languages );
         if (!$this->omitSingleSourcePageRendering)
             $x->render();
-       $this->homepageLinkList[] = $x->getPageLinkDataArray();
+        $this->homepageLinkList[] = $x->getPageLinkDataArray();
     }
 
     private function renderGlobalReports(){

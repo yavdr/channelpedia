@@ -30,6 +30,10 @@ class singleSourceHTMLReportBase extends HTMLReportBase{
     }
 
     protected function addBodyHeader( $language = ""){
+        $descr =  ($this->parent->getType() === "S" ) ?
+            $this->parent->getPureSource() . " - " . $this->config->getLongNameOfSatSource( $this->parent->getSource()) :
+            $this->parent->getPureSource();
+        $this->appendToBody( "<h1>" . $this->parent->getVisibleType() . ": " . $descr . "</h1>");
         $this->appendToBody( $this->getSectionTabmenu( $language ) );
         parent::addBodyHeader();
     }
@@ -44,14 +48,14 @@ class singleSourceHTMLReportBase extends HTMLReportBase{
         switch ($language){
         case "overview":
             $language = "";
-            $menu->addMenuItem( $sourceMenuItem, "index.html", "active", false );
+            $menu->addMenuItem( "Overview", "index.html", "active", false );
             break;
         case "":
             $language = "";
-            $menu->addMenuItem( $sourceMenuItem, "index.html", "", false );
+            $menu->addMenuItem( "Overview", "index.html", "", false );
             break;
         default:
-            $menu->addMenuItem( $sourceMenuItem, "../index.html", "", false );
+            $menu->addMenuItem( "Overview", "../index.html", "", false );
             break;
         }
         foreach ($this->parent->getLanguages() as $language_temp){

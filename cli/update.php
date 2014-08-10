@@ -24,7 +24,6 @@
 
 $startime = time();
 
-//input: reads channel.conf from path and put channels into db
 require_once( dirname(__FILE__) . '/../classes/class.config.php');
 
 ini_set("max_execution_time", 240); //safety buffer

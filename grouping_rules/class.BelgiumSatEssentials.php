@@ -23,7 +23,7 @@
 */
 
 
-DEFINE("BE_PROVIDERS", " AND UPPER(provider) = 'TV VLAANDEREN'");
+DEFINE("BE_PROVIDERS", " AND UPPER(provider) = 'M7 GROUP'");
 
 class BelgiumSatEssentials  extends ruleBase {
 
