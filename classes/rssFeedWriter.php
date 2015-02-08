@@ -58,11 +58,11 @@ class rssFeedWriter {
         $feed = new Feed();
         $channel = new Channel();
         $channel
-            ->title( "Channelpedia: New DVB services on "  . $this->puresource )
+            ->title( "yavdr Channelpedia: DVB service news for "  . $this->puresource )
             ->description( "" )
             ->url( $url_prefix . $this->folder )
             ->language('en-GB')
-            ->copyright('Copyright 2015, hepi')
+            ->copyright('Copyright 2015, yaVDR Channelpedia')
             ->pubDate( time() )
             ->lastBuildDate( time() )
             ->ttl(60)
@@ -73,14 +73,20 @@ class rssFeedWriter {
             while ($x->moveToNextChannel() !== false){
                 $currChan = $x->getCurrentChannelObject();
                 $desc =
-                    "<p><b>". $this->getRegionFlagIcon( $currChan->getXLabelRegion() ) . $currChan->getName() . "</b> ".
+                //$this->getRegionFlagIcon( $currChan->getXLabelRegion() )
+                    "<p><b>"  . $currChan->getName() . "</b> ".
                     "(added on " . date("D, d M Y H:i:s", $currChan->getXTimestampAdded()) . ")</p>".
                     "<pre>". $currChan->getChannelString() ."</pre>\n"
                 ;
                 $url = $url_prefix . $this->folder. $this->html_filename . "#".  $currChan->getLongUniqueID();
+                $prov = trim( $currChan->getProvider() );
+                if ($prov != "" )
+                {
+                    $prov = " (by " . $prov .  ")";
+                }
                 $item = new Item();
                 $item
-                    ->title( "Channelpedia: New DVB service '" . $currChan->getName() . "' on " . $this->puresource )
+                    ->title( "New DVB service '" . $currChan->getName() . "'" . $prov . " on " . $this->puresource )
                     ->description( $desc )
                     ->url( $url )
                     ->pubDate( $currChan->getXTimestampAdded() )

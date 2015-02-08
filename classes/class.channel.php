@@ -183,6 +183,10 @@ class channel{
         return $this->params["name"];
     }
 
+    public function getProvider(){
+        return $this->params["provider"];
+    }
+
     public function getFrequency(){
         return $this->params["frequency"];
     }

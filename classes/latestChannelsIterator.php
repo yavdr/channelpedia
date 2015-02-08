@@ -35,7 +35,7 @@ class latestChannelsIterator extends channelIterator{
                 SELECT * FROM channels
                 WHERE source = ".$this->db->quote( $source ) ." AND x_timestamp_added > " . $this->db->quote($timestamp) . "
                 ORDER BY x_timestamp_added DESC, name DESC
-                LIMIT 100
+                LIMIT 30
             ");
             return true;
         }
