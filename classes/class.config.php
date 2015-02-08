@@ -36,6 +36,8 @@ require_once PATH_TO_CLASSES.'class.channelIterator.php';
 require_once PATH_TO_CLASSES.'class.channelFileIterator.php';
 require_once PATH_TO_CLASSES.'class.channelImport.php';
 require_once PATH_TO_CLASSES.'class.channelListWriter.php';
+require_once PATH_TO_CLASSES.'rssFeedWriter.php';
+require_once PATH_TO_CLASSES.'latestChannelsIterator.php';
 require_once PATH_TO_CLASSES.'class.rawOutputRenderer.php';
 require_once PATH_TO_CLASSES.'class.HTMLFragments.php';
 require_once PATH_TO_CLASSES.'class.HTMLPage.php';

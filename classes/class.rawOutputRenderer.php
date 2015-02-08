@@ -57,13 +57,17 @@ class rawOutputRenderer {
             );
             $channelListWriter->writeFile();
             //$this->writeAllChannelSelections2Disk( $longsource );
-            $this->writeAllUncategorizedChannels2Disk( $type, $longsource);
+            //$this->writeAllUncategorizedChannels2Disk( $type, $longsource);
             //epgmappings only for German providers
             if (in_array("de", $languages)){
                 $epgstuff = epg2vdrMapper::getInstance();
                 $epgstuff->writeEPGChannelmap( $type, $longsource, "tvm");
                 $epgstuff->writeEPGChannelmap( $type, $longsource, "epgdata");
             }
+
+            $rssFeedWriter = new rssFeedWriter( $type, $longsource);
+            $rssFeedWriter->generateRSS();
+
         } catch (Exception $e) {
             $this->config->addToDebugLog( 'Caught exception in writeRawOutputForSingleSource @ $longsource: '. $e->getMessage());
             $this->config->addToDebugLog( 'Backtrace: '. print_r( $e->getTrace(), true) );

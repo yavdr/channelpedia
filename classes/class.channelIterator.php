@@ -25,7 +25,6 @@
 class channelIterator{
 
     private
-       $db,
         $config,
         $result = false,
         $channel = false,
@@ -38,6 +37,9 @@ class channelIterator{
         $tolerateInvalidChannels = false,
         $vdr_compatibility_version,
         $latest_vdr_compatibility_version;
+
+    protected
+        $db;
 
     function __construct($shortenSource = true, $vdrversion = 1722){
         $this->db = dbConnection::getInstance();
