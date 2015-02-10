@@ -129,6 +129,11 @@ class HTMLFragments{
         }
         return $image;
     }
+
+    public function getScrambledIcon( $caid, $relPath ){
+        //lock icon taken from http://www.openwebgraphics.com/resources/data/1629/lock.png
+        return (($caid !== "0")? '<img src="'.$relPath.'../res/icons/lock.png" class="lock_icon" title="'.htmlspecialchars($caid).'" />':'');
+    }
 }
 
 class HTMLControlTabMenu{

@@ -33,12 +33,27 @@ class latestChannels extends singleSourceHTMLReportBase{
         $html_table = "";
         $x = new latestChannelsIterator();
         if ( $x->notEmptyForSource( $this->parent->getSource() )){
-            while ($x->moveToNextChannel() !== false){
-                $currChan = $x->getCurrentChannelObject();
+            while( $chunk = $x->getNextInfoChunk()){
+                $amount = count( $chunk["content"] );
+                if ( $amount > 1 )
+                    $header = $amount . " new DVB services";
+                else
+                    $header = "New DVB service";
+                $header .= " found on " .  date("D, d M Y H:i:s", $chunk["timestamp"] );
+                $names = array();
+                $strings = array();
+                foreach ( $chunk["content"] as $currChan ){
+                    array_push ( $names,
+                        $currChan->getName() . " " .
+                        $this->getRegionFlagIcon( $currChan->getXLabelRegion() ) .
+                        $this->pageFragments->getScrambledIcon( $currChan->getCAID(), $this->parent->getRelPath() )
+                    );
+                    array_push ( $strings, $currChan->getChannelString() );
+                }
                 $this->appendToBody(
-                    "<p><b>". $this->getRegionFlagIcon( $currChan->getXLabelRegion() ) . $currChan->getName() . "</b> ".
-                    "(added on " . date("D, d M Y H:i:s", $currChan->getXTimestampAdded()) . ")</p>".
-                    "<pre>". $currChan->getChannelString() ."</pre>"
+                    '<a name="'.$chunk["timestamp"].'"><h2>' . $header . "</h2></a>\n" .
+                    "<p>" . implode ( "<br/>" , $names ) . "</p>" .
+                    "<pre>" . implode ( "\n" , $strings ) . "</pre>"
                 );
             }
         }

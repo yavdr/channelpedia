@@ -97,13 +97,20 @@ class satBandHelper extends singleSourceHTMLReportBase{
         $list = "";
         $x = new channelIterator( $shortenSource = true );
         $x->init2( $statement );
+        $transp = "";
+        $oldtransp = "";
         while ($x->moveToNextChannel() !== false){
             $ch = $x->getCurrentChannelObject();
+            $transp = $ch->getFrequency();
+            if( $oldtransp != $transp ){
+                $list .= "<p><b>Transponder " . $transp . "</b></p>";
+            }
             $labelparts = explode(".", $ch->getXLabel());
-            $list .= $this->pageFragments->getFlagIcon($labelparts[0], $this->parent->getRelPath()).
-                //lock icon taken from http://www.openwebgraphics.com/resources/data/1629/lock.png
-                (($ch->getCAID() !== "0")? '<img src="'.$this->parent->getRelPath().'../res/icons/lock.png" class="lock_icon" title="'.htmlspecialchars($ch->getCAID()).'" />':'');
-            $list .= htmlspecialchars( $ch->getChannelString() )."\n";
+            $list .=
+                $this->pageFragments->getFlagIcon($labelparts[0], $this->parent->getRelPath()).
+                $this->pageFragments->getScrambledIcon( $ch->getCAID(), $this->parent->getRelPath() ).
+                htmlspecialchars( $ch->getChannelString() )."\n";
+            $oldtransp = $transp;
         }
         return $list;
     }

@@ -24,8 +24,14 @@
 
 class latestChannelsIterator extends channelIterator{
 
+    private
+        $currentChunk,
+        $lastTimestamp;
+
     function __construct(){
         parent::__construct();
+        $this->currentChunk = 0;
+        $this->lastTimestamp = 0;
     }
 
     public function notEmptyForSource( $source ){
@@ -35,12 +41,45 @@ class latestChannelsIterator extends channelIterator{
                 SELECT * FROM channels
                 WHERE source = ".$this->db->quote( $source ) ." AND x_timestamp_added > " . $this->db->quote($timestamp) . "
                 ORDER BY x_timestamp_added DESC, name DESC
-                LIMIT 30
+                LIMIT 100
             ");
             return true;
         }
         else
             return false;
+    }
+
+    public function getNextInfoChunk(){
+        $retval = false;
+        $chunk = array();
+        $timestamp = $this->lastTimestamp;
+        if ($this->currentChunk != 0){
+            array_push( $chunk, $this->currentChunk);
+            $this->currentChunk = 0;
+        }
+        while ($this->moveToNextChannel() !== false ){
+            $currChan = $this->getCurrentChannelObject();
+            if ( $this->lastTimestamp == 0 ){
+                array_push( $chunk, $currChan );
+                $this->lastTimestamp = $currChan->getXTimestampAdded();
+                $timestamp = $this->lastTimestamp;
+            }
+            else if ( $currChan->getXTimestampAdded() == $this->lastTimestamp ){
+                array_push( $chunk, $currChan );
+            }
+            else{
+                $this->currentChunk = $currChan;
+                $this->lastTimestamp = $currChan->getXTimestampAdded();
+                break;
+            }
+        }
+        if (count($chunk) > 0 ){
+            $retval = array(
+                "timestamp" => $timestamp,
+                "content"   => $chunk
+            );
+        }
+        return $retval;
     }
 
     private function getEarliestChannelAddedTimestamp( $source ){

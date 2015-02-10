@@ -35,12 +35,16 @@ class rssFeedWriter {
     private
         $folder = "",
         $html_filename = "",
+        $source = "",
         $puresource = "",
         $config,
         $filehandle = null,
-        $filename = "";
+        $filename = "",
+        $pageFragments,
+        $iconPath = "http://channelpedia.yavdr.com/";
 
     function __construct( $type, $puresource){
+        $this->pageFragments = HTMLFragments::getInstance();
         $this->puresource = $puresource;
         $this->config = config::getInstance();
         $visibletype = ($type == "A") ? "ATSC" : "DVB-". $type;
@@ -48,6 +52,7 @@ class rssFeedWriter {
             $source = $type . "[" . $puresource . "]";
         else
             $source = $puresource;
+        $this->source = $source;
         $this->folder = $visibletype ."/". strtr(strtr( trim($puresource," _"), "/", ""),"_","/"). "/";
         $this->filename = "new_dvb_services.xml";
         $this->html_filename = "latest_channel_additions.html";
@@ -58,38 +63,51 @@ class rssFeedWriter {
         $feed = new Feed();
         $channel = new Channel();
         $channel
-            ->title( "yavdr Channelpedia: DVB service news for "  . $this->puresource )
+            ->title( "yaVDR Channelpedia: DVB service news for "  . $this->puresource )
             ->description( "" )
             ->url( $url_prefix . $this->folder )
             ->language('en-GB')
             ->copyright('Copyright 2015, yaVDR Channelpedia')
             ->pubDate( time() )
             ->lastBuildDate( time() )
-            ->ttl(60)
+            ->ttl(60 * 60 ) //hourly
             ->appendTo($feed);
 
         $x = new latestChannelsIterator();
-        if ( $x->notEmptyForSource( $this->puresource )){
-            while ($x->moveToNextChannel() !== false){
-                $currChan = $x->getCurrentChannelObject();
-                $desc =
-                //$this->getRegionFlagIcon( $currChan->getXLabelRegion() )
-                    "<p><b>"  . $currChan->getName() . "</b> ".
-                    "(added on " . date("D, d M Y H:i:s", $currChan->getXTimestampAdded()) . ")</p>".
-                    "<pre>". $currChan->getChannelString() ."</pre>\n"
-                ;
-                $url = $url_prefix . $this->folder. $this->html_filename . "#".  $currChan->getLongUniqueID();
-                $prov = trim( $currChan->getProvider() );
-                if ($prov != "" )
-                {
-                    $prov = " (by " . $prov .  ")";
+        if ( $x->notEmptyForSource( $this->source )){
+
+            while( $chunk = $x->getNextInfoChunk()){
+                $amount = count( $chunk["content"] );
+                if ( $amount > 1 )
+                    $header = $amount . " new DVB services";
+                else{
+                    $name = trim( $chunk["content"][0]->getName());
+                    $name = (strlen($name) > 1) ? " '" . $name . "'" : "";
+                    $header = "New DVB service" . $name ;
                 }
+                $header .= " found on " . $this->puresource;
+                $names = array();
+                $strings = array();
+                foreach ( $chunk["content"] as $currChan ){
+                    $prov = trim( $currChan->getProvider() );
+                    if ($prov != "" )
+                        $prov = " (by " . $prov .  ")";
+                    array_push ( $names,
+                        $currChan->getName() . $prov . " " .
+                        $this->getRegionFlagIcon( $currChan->getXLabelRegion() ) .
+                        $this->pageFragments->getScrambledIcon( $currChan->getCAID(), $this->iconPath )
+                    );
+                    array_push ( $strings, $currChan->getChannelString() );
+                }
+                $desc = "<p>" . implode ( "<br/>" , $names ) . "</p>\n<pre>" . implode ( "\n" , $strings ) . "</pre><p>". date("D, d M Y H:i:s", $chunk["timestamp"] )."</p>";
+                $url = $url_prefix . $this->folder. $this->html_filename . "#".  $chunk["timestamp"];
+
                 $item = new Item();
                 $item
-                    ->title( "New DVB service '" . $currChan->getName() . "'" . $prov . " on " . $this->puresource )
+                    ->title( $header )
                     ->description( $desc )
                     ->url( $url )
-                    ->pubDate( $currChan->getXTimestampAdded() )
+                    ->pubDate( $chunk["timestamp"] )
                     ->guid( $url , true)
                     ->appendTo($channel);
             }
@@ -99,7 +117,7 @@ class rssFeedWriter {
 
     private function getRegionFlagIcon( $region ) {
         if ($region !== "")
-            //$region = $this->pageFragments->getFlagIcon( $region, $this->parent->getRelPath() );
+            $region = $this->pageFragments->getFlagIcon( $region, $this->iconPath );
         return $region;
     }
 }
