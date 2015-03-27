@@ -53,6 +53,12 @@ class storableChannel extends channel{
                 $this->params["name"] = substr($this->params["name"], 13);
                 //$this->config->addToDebugLog("checkignore: " .$this->params["name"]."\n");
             }
+            //ignore channels that were marked as OBSOLETE by VDR v2.x
+            if ( substr($this->params["provider"], 0, 9) == "OBSOLETE " && strpos( $this->params["name"], " OBSOLETE") !== false ){
+                //$this->params["provider"] = substr($this->params["provider"], 9);
+                //$this->params["name"] = str_replace(" OBSOLETE", "", $this->params["name"] );
+                $this->markChannelAsInvalid("VDR marks channel as obsolete: '". $this->params["name"] . ":" . $this->params["provider"] . "'");
+            }
         }
         catch (Exception $e){
             $this->markChannelAsInvalid("Channel malformed.");
