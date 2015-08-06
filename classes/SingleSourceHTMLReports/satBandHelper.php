@@ -103,7 +103,7 @@ class satBandHelper extends singleSourceHTMLReportBase{
             $ch = $x->getCurrentChannelObject();
             $transp = $ch->getFrequency();
             if( $oldtransp != $transp ){
-                $list .= "<p><b>Transponder " . $transp . "</b></p>";
+                $list .= "<p><b>Transponder @ " . $transp . " MHz</b></p>";
             }
             $labelparts = explode(".", $ch->getXLabel());
             $list .=

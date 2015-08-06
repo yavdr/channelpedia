@@ -22,12 +22,11 @@
 *
 */
 
-class channel{
+class channel extends transponderParameters{
 
     protected
         $db,
         $config,
-        $params,
 
         $channelstring = "",
         $vdr_compatibility_version,
@@ -35,15 +34,15 @@ class channel{
         $cpid = "",
         $uniqueID = "",
         $longUniqueID = "",
-        $isCheckedSatelliteSource = false,
-        $processedParameters = array(),
+//        $isCheckedSatelliteSource = false,
+//        $processedParameters = array(),
 
         $name,
         $provider,
         $frequency,
-        $parameter,
         $source,
         $symbolrate,
+        $parameter,
         $vpid,
         $apid,
         $tpid,
@@ -56,8 +55,7 @@ class channel{
     public function __construct( $channelparams ){
         $this->db = dbConnection::getInstance();
         $this->config = config::getInstance();
-        $this->params = array();
-        $this->isCheckedSatelliteSource = false;
+        parent::__construct();
         $this->vdr_compatibility_version = 1722;
 
         if (is_array( $channelparams )){
@@ -107,6 +105,8 @@ class channel{
     }
 
     public function prepareAndValidateParameters(){
+        parent::prepareAndValidateParameters();
+/*
         //split transponder parameters (as early as possible)
         $tempProcessedParameters = explode(";", preg_replace( "/(\D|\d)(\D)/", "$1;$2", $this->params["parameter"]));
         foreach ($tempProcessedParameters as $item){
@@ -114,14 +114,14 @@ class channel{
             if ($value === false) $value = ""; // in case of H and V
             $this->processedParameters[ strtoupper(substr($item,0,1)) ] = $value;
         }
-
+*/
         //sanity check for satellite source
         $check1 = (substr( $this->params["source"], 0, 1) === "S");
         $check2 = (stristr( $this->params["parameter"], "S") !== false);
         //TODO: Also check for presence of H or V
         if ($check1 !== $check2){
             if ($check1 === true){
-                throw new Exception("A satellite channel should have an S in parameters: '". $this->params["parameter"]."'. Is this obsolete VDR 1.6 syntax?");
+                throw new Exception("A satellite channel should have an S in parameters: '". $this->params["parameter"]."'. Is this obsolete VDR 1.6 syntax? " . $this->params["name"] . " " . $this->channelstring);
                 //$check1 = false;
             }
             //IPTV channels might have an S in the parameter field
@@ -142,18 +142,6 @@ class channel{
             }
             $this->channelstring = $this->convertArray2String();
         }
-    }
-
-    public function getSingleTransponderParameter( $key ){
-        $key = strtoupper($key);
-        if ( array_key_exists( $key, $this->processedParameters ) ){
-            if ($this->processedParameters[$key] !== "")
-                return intval( $this->processedParameters[$key]);
-            else
-                return true; //for H and V that don't have a numeric value
-        }
-        else
-            return false;
     }
 
     protected function markChannelAsInvalid( $msg ){
@@ -185,38 +173,6 @@ class channel{
 
     public function getProvider(){
         return $this->params["provider"];
-    }
-
-    public function getFrequency(){
-        return $this->params["frequency"];
-    }
-
-    //TODO: http://www.mysnip.de/forum-archiv/thema/8773/414227/DVB_+Wie+wird+die+Symbolrate+berechnet.html
-    public function getSymbolrate(){
-        return $this->params["symbolrate"];
-    }
-
-    public function getReadableFrequency(){
-        if ($this->isSatelliteSource())
-            $value = $this->params["frequency"]." MHz";
-        else{
-            //    * MHz, kHz oder Hz angegeben.
-            //Der angegebene Wert wird mit 1000 multipliziert, bis er größer als 1000000 ist.
-             $value2 = intval( $this->params["frequency"] );
-             $step = 0;    //113000
-             while($value2 < 1000000){
-                 $step++;
-                 $value2 = $value2 * 1000;
-             }
-             $value = $value2 / (1000*1000);
-             $value = $value . " Mhz";
-        }
-        return $value;
-    }
-
-
-    public function getParameter(){
-        return $this->params["parameter"];
     }
 
     public function getSource(){
@@ -271,6 +227,27 @@ class channel{
         return $this->params["x_xmltv_id"];
     }
 
+    public function hasVideoPID(){
+        return ($this->params["vpid"] !== '0');
+    }
+
+    public function hasAudioPID(){
+        return ($this->params["apid"] !== '0');
+    }
+
+    public function getReadableServiceType(){
+        if ($this->hasVideoPID()){
+            if ( stristr( $this->getXLabel(), 'hdtv' ) !== false)
+                return "HDTV";
+            else
+                return "TV";
+        }
+        else if ($this->hasAudioPID())
+            return "Radio";
+        else
+            return "Data";
+    }
+
     public function getXLabelRegion(){
         $parts = explode(".",$this->getXLabel());
         if (count($parts) > 0 )
@@ -288,91 +265,6 @@ class channel{
         return $this->params;
     }
 
-    public function isSatelliteSource(){
-        return $this->isCheckedSatelliteSource;
-    }
-
-    public function onS2SatTransponder(){
-        return  $this->getSingleTransponderParameter("S") === 1;
-    }
-
-    public function belongsToSatHighBand(){
-        return ($this->params["frequency"] >= 11700 && $this->params["frequency"] <= 12750);
-    }
-
-    public function belongsToSatLowBand(){
-        return ($this->params["frequency"] >= 10700 && $this->params["frequency"] < 11700);
-    }
-
-    public function belongsToSatVertical(){
-        return $this->getSingleTransponderParameter( "V" );
-    }
-
-    public function belongsToSatHorizontal(){
-        return $this->getSingleTransponderParameter( "H" );
-    }
-
-    public function getFECOfSatTransponder(){
-        $rawCoderate = $this->getSingleTransponderParameter( "C" );
-        if ($rawCoderate !== false && strlen($rawCoderate) >= 2 ){
-            $n1 = intval(substr($rawCoderate,0,1));
-            $n2 = intval(substr($rawCoderate,1));
-            if ($n1 + 1 - $n2 !== 0)
-                 throw new Exception("Satellite channel has wrong FEC parameters");
-            $rawCoderate = $n1."/".$n2;
-        }
-        else
-            $rawCoderate = "";
-        return $rawCoderate;
-    }
-
-    public function getModulation(){
-        $rawModulation = $this->getSingleTransponderParameter( "M" );
-        $retVal = "";
-        switch ($rawModulation){
-            case 16:
-            case 32:
-            case 64:
-            case 128:
-            case 256:
-               $retVal = "QAM".$rawModulation;
-               break;
-            case 998:
-                $retVal = "QAM-Auto";
-               break;
-            case 2:
-               $retVal = "QPSK";
-               break;
-            case 5:
-               $retVal = "8PSK";
-               break;
-           case 6:
-               $retVal = "16APSK";
-               break;
-            case 10:
-                $retVal = "VSB8";
-               break;
-            case 11:
-                $retVal = "VSB16";
-                break;
-        }
-        return $retVal;
-    }
-/*
-C (0, 12, 13, 14, 23, 25, 34, 35, 45, 56, 67, 78, 89, 910) Code rate high priority
-D (0, 12, 13, 14, 23, 25, 34, 35, 45, 56, 67, 78, 89, 910) Code rate low priority
-B (5, 6, 7, 8) Bandbreite in MHz (DVB-T)
-Y (0, 1, 2, 4) Hierarchie (DVB-T/H), 0 = aus, 1, 2, 4 = Alpha (Hierarchy ein)
-G (4, 8, 16, 32) Guard interval (DVB-T/H)
-I (0, 1) Inversion, 0 = aus, 1 = ein (DVB-T/H, DVB-C)
-T (2, 4, 8) Transmission mode (DVB-T/H)
-H Polarisation horizontal (DVB-S/S2)
-V Polarisation vertikal (DVB-S/S2)
-R Polarisation zirkular rechts (DVB-S/S2)
-L Polarisation zirkular links (DVB-S/S2)
-S (0, 1) Modulationssystem, 0 = DVB-S, 1 = DVB-S2
-O (20, 25, 35) RollOff für DVB-S/S2, DVB-S: 35, DVB-S2: alle Werte
-*/
 
     protected function getChannelsWithMatchingUniqueParams(){
         return $this->db->query2( "SELECT * FROM channels", $this->getWhereArray( "source, nid, tid, sid") );
