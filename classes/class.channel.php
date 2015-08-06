@@ -34,8 +34,6 @@ class channel extends transponderParameters{
         $cpid = "",
         $uniqueID = "",
         $longUniqueID = "",
-//        $isCheckedSatelliteSource = false,
-//        $processedParameters = array(),
 
         $name,
         $provider,
@@ -106,15 +104,6 @@ class channel extends transponderParameters{
 
     public function prepareAndValidateParameters(){
         parent::prepareAndValidateParameters();
-/*
-        //split transponder parameters (as early as possible)
-        $tempProcessedParameters = explode(";", preg_replace( "/(\D|\d)(\D)/", "$1;$2", $this->params["parameter"]));
-        foreach ($tempProcessedParameters as $item){
-            $value = substr($item,1);
-            if ($value === false) $value = ""; // in case of H and V
-            $this->processedParameters[ strtoupper(substr($item,0,1)) ] = $value;
-        }
-*/
         //sanity check for satellite source
         $check1 = (substr( $this->params["source"], 0, 1) === "S");
         $check2 = (stristr( $this->params["parameter"], "S") !== false);
@@ -339,6 +328,5 @@ class channel extends transponderParameters{
         }
         return $result;
     }
-
 }
 ?>
