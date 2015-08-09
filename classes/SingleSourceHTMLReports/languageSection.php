@@ -55,44 +55,8 @@ class languageSection extends singleSourceHTMLReportBase{
                     if (count($channelNameList) < $previewChannelLimit){
                         $channelNameSegments = explode(',', $curChan->getName());
                         $chname = htmlspecialchars( count($channelNameSegments) > 0 ? $channelNameSegments[0] : $curChan->getName() );
-                        //$chname = "";
                         if ( $this->language === "de" || $this->language === "sky_de" || $this->language === "at" || $this->language === "ch"){
-                            $newlyAdded = (time() - $curChan->getXTimestampAdded()) < (30 * 24 * 60 * 60) ? ' <span style="padding: 1px; color: black; background-color: lightyellow;">NEW</span>' : ""; //30 days
-
-                            if ($curChan->getXCPID() !== ""){
-                                $ids = uniqueIDTools::getInstance()->deregionalizeID( $curChan->getXCPID() );
-                                $idlist = $this->db->quote( $curChan->getXCPID() );
-                                if ($ids !== false){
-                                  $ids2 = array();
-                                  foreach ($ids as $id){
-                                    $ids2[] = "cpid = " . $this->db->quote( $id );
-                                  }
-                                  $idlist = implode( ' OR ', $ids2);
-                                }
-                                $query = $this->db->query( "SELECT wikipedia_page_url FROM channel_meta_data WHERE ". $idlist );
-
-                                $result = $query->fetch(PDO::FETCH_ASSOC);
-                                if ($result !== false)
-                                    $wurl = '<br/><a href="'. $result["wikipedia_page_url"] . '" target="_blank">Look it up on Wikipedia</a>' . "\n";
-                                else
-                                    $wurl = "";
-                                $chmetainfo =
-                                    '<div class="channel_illustration '.
-                                    uniqueIDTools::getInstance()->getMatchingCSSClasses( $curChan->getXCPID(), '_small').
-                                    '" title="'.$curChan->getXCPID().'">'.
-                                    "</div>\n".
-                                    '<div class="channel_details"><p><b>'. $chname . '</b>' . $newlyAdded . $wurl.
-                                    "</p></div>\n";
-                            }
-                            else{
-                                $chmetainfo =
-                                    '<div class="channel_illustration" '.
-                                    'title="No ID.">'.
-                                    "</div>\n".
-                                    '<div class="channel_details"><p><b>'. $chname . '</b>'. $newlyAdded .'<br/>NO ID'.
-                                    "</p></div>\n";
-                            }
-                            $channelMetaInfoList[] = $chmetainfo;
+                            $channelMetaInfoList[]  = $this->getChannelMetaInfo( $curChan, $chname );
                         }
                         $channelNameList[] = $chname;
                     }
@@ -101,7 +65,8 @@ class languageSection extends singleSourceHTMLReportBase{
                 }
                 $curChanString = $channellogo . $curChanString;
                 //check if channel might be outdated, if so, apply additional css class
-                $class = ( $curChan->getXLastConfirmed() < $this->parent->getLastConfirmedTimestamp()) ? ' class="outdated"' : '';
+                $class = ( $curChan->getXLastConfirmed() < $this->parent->getLastConfirmedTimestamp() ) ? ' class="outdated"' : '';
+                //$class = $curChan->isOutdated() ? ' class="outdated"' : '';
                 $channelStringList .=
                     '<span title="'.$this->getPopupContent($curChan).'"'.$class.'>'. $curChanString ."</span>\n";
             }
@@ -147,28 +112,6 @@ class languageSection extends singleSourceHTMLReportBase{
         $this->addToOverviewAndSave( "", "index.html");
     }
 
-    private function getPopupContent($curChan){
-        return $curChan->getName(). " \n".
-            ($curChan->isSatelliteSource() ?
-                "Type: DVB-S"    . ( $curChan->onS2SatTransponder()   ? "2"        : ""           ) ." \n".
-                "Polarisation: " . ( $curChan->belongsToSatVertical() ? "Vertical" : "Horizontal" ) ." \n".
-                "Band: "         . ( $curChan->belongsToSatHighBand() ? "High"     : "Low"        ) ." \n".
-                "FEC: "          . $curChan->getFECOfSatTransponder()                          ." \n"
-            : "" ).
-            "Modulation: "        . $curChan->getModulation() ." \n".
-            "Frequency: "         . $curChan->getReadableFrequency() ." \n".
-            "Symbolrate: "        . $curChan->getSymbolrate() ." \n".
-            "Encryption state: "  . (($curChan->getCAID() == "0") ? "not encrypted" : "encrypted (" . $curChan->getCAID() . ")" )." \n".
-            "SID: "               . $curChan->getSID() . " (Hex: " . str_pad(strtoupper(dechex($curChan->getSID())), 4, "0", STR_PAD_LEFT) . ") \n".
-            "NID: "               . $curChan->getNID() ." \n".
-            "TID: "               . $curChan->getTID() ." \n".
-            "Date added: "        . date("D, d M Y H:i:s", $curChan->getXTimestampAdded() ) . " \n".
-            "Date last changed: " . date("D, d M Y H:i:s", $curChan->getXLastChanged()    ) . " \n".
-            "Date last seen: "    . date("D, d M Y H:i:s", $curChan->getXLastConfirmed()  ) . " \n".
-            "CPID draft: "    . htmlspecialchars( $curChan->getXCPID() ) . " \n".
-            "VDR internal ID: "    . htmlspecialchars( $curChan->getUniqueID() ) . "".
-            "";
-    }
 
 /*
  *

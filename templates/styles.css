@@ -57,7 +57,8 @@ h2{
 }
 
 h2.fta,
-h2.scrambled{
+h2.scrambled,
+h2.transponder{
     -moz-border-radius-bottomleft: 0px;
     -moz-border-radius-bottomright: 0px;
     border-bottom-right-radius: 0px;
@@ -66,7 +67,8 @@ h2.scrambled{
 }
 
 div.fta,
-h2.fta{
+h2.fta,
+h2.transponder{
     color: white;
     background-color: #4E78B1;
 }
@@ -428,7 +430,6 @@ p.timestamp{
 }
 
 div.wikipedia_data {
-    background-color: black;
     padding: 4px;
     background-color: MintCream;
     border-style: solid;
@@ -463,6 +464,10 @@ div.wikipedia_data div.single_channel div.channel_details{
     font-size: 0.8em;
     overflow: hidden;
     white-space: nowrap;
+}
+
+table div.wikipedia_data div.single_channel div.channel_details{
+    font-size: 1.1em;
 }
 
 div.wikipedia_data div.single_channel div.channel_details a{
@@ -504,4 +509,12 @@ table.sourcestats th{
 table.sourcestats{
   width: auto;
   font-size: 0.7em;
+}
+
+span.newlyAdded{
+  font-size: 0.8em; 
+  vertical-align: super; 
+  padding: 1px; 
+  color: black; 
+  background-color: lightyellow;
 }

@@ -134,6 +134,11 @@ class HTMLFragments{
         //lock icon taken from http://www.openwebgraphics.com/resources/data/1629/lock.png
         return (($caid !== "0")? '<img src="'.$relPath.'../res/icons/lock.png" class="lock_icon" title="'.htmlspecialchars($caid).'" />':'');
     }
+
+    public function getWikipediaIcon($label, $relPath){
+        return '<img class="wikipedia_icon" title="' .$label.'" src="'.$relPath.'../res/icons/wikipedia.ico" />';
+    }
+
 }
 
 class HTMLControlTabMenu{

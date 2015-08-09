@@ -37,11 +37,10 @@ class transponderList extends singleSourceHTMLReportBase{
             GROUP BY parameter, frequency2, nid, tid
             ORDER BY frequency2, parameter, nid, tid"
         );
-        //    AND caid = '0'
-        //    AND substr(x_label,1,2) = 'de'
-        $this->appendToBody( "<table>");
+        //    AND ( substr(x_label,1,6) = 'sky_de' OR substr(x_label,1,2) = 'de')
         $colspan = 6;
-        $tchHeader = "<tr><th>Region</th><th>FTA/Enc</th><th>Type</th><th>Name</th><th>SID</th><th>Added on</th><th>Last changed</th><th>Last confirmed</th></tr>";
+        $tchHeader = "";//<tr><th>Name</th><th>Provider</th><th>SID</th><th>Added on</th><th>Last changed</th></tr>";
+        //<th>Last confirmed</th> <th>VideoPID</th><th>AudioPID</th>
         $theader = "<tr>";
         if ( $this->parent->getVisibleType() === "DVB-S"){
             $colspan += 3;
@@ -53,6 +52,7 @@ class transponderList extends singleSourceHTMLReportBase{
         $lastband = "";
         $band = "";
         $count = 0;
+        $countByBand = array();
         foreach ($result as $row) {
             $count ++;
             //Collect data of individual channels
@@ -71,61 +71,94 @@ class transponderList extends singleSourceHTMLReportBase{
                 $ch = $x->getCurrentChannelObject();
                 if ( !in_array( $ch->getProvider(), $providerlist))
                     $providerlist[] = $ch->getProvider();
-                $labelparts = explode(".", $ch->getXLabel());
-                $flag = $this->pageFragments->getFlagIcon($labelparts[0], $this->parent->getRelPath());
+                $flag = $this->getFlagIcon( $ch );
                 if ( !in_array( $flag, $flaglist))
                     $flaglist[] = $flag;
                 $scramblestate = $this->pageFragments->getScrambledIcon( $ch->getCAID(), $this->parent->getRelPath() );
                 if ( $scramblestate == "") $scramblestate = "FTA";
+                $channelNameSegments = explode(',', $curChan->getName());
+                $chname = htmlspecialchars( count($channelNameSegments) > 0 ? $channelNameSegments[0] : $curChan->getName() );
                 $channels[] =
-                    "<td>".$flag."</td>".
-                    "<td>".$scramblestate ."</td>".
-                    "<td>".$ch->getReadableServiceType()."</td>".
-                    "<td>".$ch->getName(). "</td>".
-                    "<td>". $ch->getSID(). "</td>".
-                    "<td>" . date("D, d M Y H:i:s", $ch->getXTimestampAdded() ) . "</td>".
-                    "<td>" . date("D, d M Y H:i:s", $ch->getXLastChanged() ) . "</td>".
-                    "<td>" . date("D, d M Y H:i:s", $ch->getXLastConfirmed() ) . "</td>";
+                    '<div class="' . ( $scramblestate == "FTA" ? "fta":"scrambled").'"><div title="'.$this->getPopupContent( $ch ).'" class="single_channel">'.
+                    $this->getChannelMetaInfo( $ch, $chname ).
+                    "</div></div>";
             }
             $tp = new transponderParameters();
             $tp->importData( $row["frequency"], $row["parameter"], $row["symbolrate"]);
             if ( $tp->isSatelliteSource()){
                 $band = $tp->belongsToSatHighBand() ? "High-Band" : "Low-Band";
                 $polarisation = $tp->belongsToSatVertical() ? "Vertical" : "Horizontal";
-                if ( $lastband !== $band )
-                    $this->appendToBody( '<tr><td colspan="'.$colspan.'"><h2>'.$band. ' ' . $polarisation . '</h2></td></tr>');
+                if ( $lastband !== $band ){
+                    $this->appendToBody( '<h1>'.$band. ' ' . $polarisation . '</h2>');
+                    $countByBand[ $band. ' ' . $polarisation ] = 0;
+                }
+                $countByBand[ $band. ' ' . $polarisation ] ++;
                 $this->appendToBody(
-                    $theader .
+                    '<a name="wrapper"><h2 class="transponder">' .
+                        //htmlspecialchars(
+                            $tp->getReadableFrequency() . ' ' . $polarisation . ' (' . $band. ')'.
+                            " | DVB-S". ( $tp->onS2SatTransponder() ? "2":"").
+                            ' | RollOff ' . $tp->getRollOff().
+                            '</h2><div class="wikipedia_data"><p>Modulation ' . $tp->getModulation() .
+                            ' | Symbolrate ' . $row["symbolrate"] .
+                            ' | FEC ' . $tp->getFECOfSatTransponder() .
+                            ' | NID ' . $row["nid"] .
+                            ' | TID ' . $row["tid"].
+                        //).
+                    '</p>'.
+                    ''
+                    /*.
+                    '<table>' . $theader .
                     "<td><b>".htmlspecialchars( $tp->getReadableFrequency()) . "</b> (" . $band ." ". $polarisation .")</td>".
                     "<td>".htmlspecialchars( $tp->getModulation() )."</td>".
                     "<td>".htmlspecialchars( $tp->getFECOfSatTransponder() )."</td>".
                     "<td>DVB-S". ( $tp->onS2SatTransponder() ? "2":"")."</td>".
                     "<td>".htmlspecialchars( $tp->getRollOff() )."</td>"
+                    */
                 );
                 $lastband = $band;
             }
             else{
                 $this->appendToBody(
-                    $theader . "<tr>".
+                    '<a name="wrapper"><h2 class="transponder">' .
+                        htmlspecialchars(
+                            $tp->getReadableFrequency() .
+                            ' | Modulation ' . $tp->getModulation() .
+                            ' | Raw Params ' . $row["parameter"] .
+                            ' | Symbolrate ' . $row["symbolrate"] .
+                            ' | NID ' . $row["nid"] .
+                            ' | TID ' . $row["tid"]
+                        ).
+                    '</h2>'.
+                    '<div class="wikipedia_data">'
+                /*$this->appendToBody(
+                    '<div class="wikipedia_data"><table>' . $theader . "<tr>".
                     "<td><b>".htmlspecialchars( $tp->getReadableFrequency() )."</b></td>".
                     "<td>".htmlspecialchars($row["parameter"])."</td>"
+                    */
                 );
             }
             $providerlist = implode (", ", $providerlist);
             $flaglist = implode (" ", $flaglist);
+            /*
             $this->appendToBody(
                 "<td>".htmlspecialchars($row["symbolrate"])."</td>".
                 "<td>".htmlspecialchars($providerlist) . ' ' . $flaglist."</td>".
                 "<td>".htmlspecialchars($row["nid"])."</td>".
                 "<td>".htmlspecialchars($row["tid"])."</td>".
             "</tr>\n");
-
-            $this->appendToBody( '<tr><td style="background-color: #bbbbbb;" colspan="'.$colspan.'"><br/>'.
-                                  '<table style="font-size: 1em;">'.$tchHeader.'<tr>'. implode("</tr><tr>", $channels) . "</tr></table><br/>");
-            $this->appendToBody( '</td></tr>');
+*/
+            $this->appendToBody(
+                //'</table>'.
+                implode("", $channels).
+                '<br clear="all"></div></a><br/>'
+            );
         }
-        $this->appendToBody("</table>\n");
-        $this->appendToBody( "<p>Number of transponders found: " . $count . "<p>");
+        $this->appendToBody( "<p>Total number of transponders found: " . $count . "<p>");
+        foreach ( $countByBand as $label => $number ){
+            $this->appendToBody( "<p>Number of transponders found on $label: " . $number . "<p>");
+        }
+
         $this->addToOverviewAndSave( "Transponders", "transponder_list.html");
     }
 }

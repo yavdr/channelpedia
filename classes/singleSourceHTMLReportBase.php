@@ -24,6 +24,8 @@
 
 class singleSourceHTMLReportBase extends HTMLReportBase{
 
+    const NEWLY_ADDED_CHANNEL_TIMEFRAME = 2592000; //30 * 24 * 60 * 60  <-- 30 days
+
     function __construct( HTMLOutputRenderSource & $obj ){
         $this->parent = $obj;
         parent::__construct( $this->parent->getRelPath() );
@@ -93,6 +95,105 @@ class singleSourceHTMLReportBase extends HTMLReportBase{
                 ".$type_where."
                 ORDER BY frequency, parameter, symbolrate, sid
         ";
+    }
+
+    protected function getWikipediaPageURL( $cpid ){
+        $ids = uniqueIDTools::getInstance()->deregionalizeID( $cpid );
+        $idlist = $this->db->quote( $cpid );
+        if ($ids !== false){
+          $ids2 = array();
+          foreach ($ids as $id){
+            $ids2[] = "cpid = " . $this->db->quote( $id );
+          }
+          $idlist = implode( ' OR ', $ids2);
+        }
+        $query = $this->db->query( "SELECT wikipedia_page_url FROM channel_meta_data WHERE ". $idlist );
+
+        $result = $query->fetch(PDO::FETCH_ASSOC);
+        if ($result !== false)
+            $wurl = $result["wikipedia_page_url"];
+        else
+            $wurl = "";
+        return $wurl;
+    }
+
+    protected function getChannelMetaInfo($ch, $chname){
+        $cpid = $ch->getXCPID();
+        $flag = $this->getFlagIcon( $ch );
+        $newlyAdded = $ch->isNewlyAdded( self::NEWLY_ADDED_CHANNEL_TIMEFRAME ) ? ' <span class="newlyAdded">NEW</span>' : "";
+        if ( $cpid !== ""){
+            $classes = uniqueIDTools::getInstance()->getMatchingCSSClasses( $cpid, '_small');
+            $wurl = $this->getWikipediaPageURL( $cpid );
+            if ($wurl !== "")
+                $wurl = '<a href="'. $wurl . '" target="_blank">'.$this->pageFragments->getWikipediaIcon( 'Look it up on Wikipedia', $this->parent->getRelPath() ).'</a>' . "\n";
+        }
+        else{
+            $classes = "";
+            $cpid = "No ID.";
+            $wurl = "";
+        }
+        $chmetainfo =
+            '<div class="channel_illustration '. $classes.
+            '" title="'.$cpid.'">'.
+            "</div>\n".
+            '<div class="channel_details"><p><b>'. $chname . '</b><br/><br/>' .  $wurl.' '.$flag . $ch->getReadableServiceType() . ' ' .
+            $this->pageFragments->getScrambledIcon( $ch->getCAID(), $this->parent->getRelPath() ) . ' ' .  $newlyAdded .
+            "</p></div>\n";
+        return $chmetainfo;
+    }
+
+    protected function collectStatisticsOfSource( $types, $encstatus ){
+        $results = array();
+        $total = 0;
+        foreach ($types as $type){
+            $results[$type] = array();
+            $results[$type]["enc"] = array();
+            $rowtotal = 0;
+            foreach ($encstatus as $isencrypted){
+                $results[$type]["enc"][$isencrypted] = $this->collectNumberOfChannelsOfSourceSection( $type, $isencrypted);
+                $rowtotal += $results[$type]["enc"][$isencrypted];
+            }
+            $results[$type]["rowtotal"] = $rowtotal;
+            $total += $rowtotal;
+        }
+        $results["total"] = $total;
+        return $results;
+    }
+
+    private function collectNumberOfChannelsOfSourceSection( $type, $encrypted = false){
+        $result = $this->db->query( $this->getCustomChannelListSQL( $type, $encrypted, "", "COUNT(*) AS number" ) );
+        $info = $result->fetch(PDO::FETCH_ASSOC);
+        return $info["number"];
+    }
+
+    protected function getPopupContent($curChan){
+        return $curChan->getName(). " \n".
+            ($curChan->isSatelliteSource() ?
+                "Type: DVB-S"    . ( $curChan->onS2SatTransponder()   ? "2"        : ""           ) ." \n".
+                "Polarisation: " . ( $curChan->belongsToSatVertical() ? "Vertical" : "Horizontal" ) ." \n".
+                "Band: "         . ( $curChan->belongsToSatHighBand() ? "High"     : "Low"        ) ." \n".
+                "FEC: "          . $curChan->getFECOfSatTransponder()                          ." \n"
+            : "" ).
+            "Modulation: "        . $curChan->getModulation() ." \n".
+            "Frequency: "         . $curChan->getReadableFrequency() ." \n".
+            "Symbolrate: "        . $curChan->getSymbolrate() ." \n".
+            "Audio PID: "         . $curChan->getAudioPID() ." \n".
+            "Video PID: "         . $curChan->getVideoPID() ." \n".
+            "Teletext PID: "      . $curChan->getTeletextPID() ." \n".
+            "Encryption state: "  . (($curChan->getCAID() == "0") ? "not encrypted" : "encrypted (" . $curChan->getCAID() . ")" )." \n".
+            "SID: "               . $curChan->getSID() . " (Hex: " . str_pad(strtoupper(dechex($curChan->getSID())), 4, "0", STR_PAD_LEFT) . ") \n".
+            "NID: "               . $curChan->getNID() ." \n".
+            "TID: "               . $curChan->getTID() ." \n".
+            "Date added: "        . date("D, d M Y H:i:s", $curChan->getXTimestampAdded() ) . " \n".
+            "Date last changed: " . date("D, d M Y H:i:s", $curChan->getXLastChanged()    ) . " \n".
+            "Date last seen: "    . date("D, d M Y H:i:s", $curChan->getXLastConfirmed()  ) . " \n".
+            "CPID draft: "        . htmlspecialchars( $curChan->getXCPID() ) . " \n".
+            "VDR internal ID: "   . htmlspecialchars( $curChan->getUniqueID() ) . "".
+            "";
+    }
+
+    protected function getFlagIcon( $ch ){
+        return $this->pageFragments->getFlagIcon( $ch->getXLabelRegion(), $this->parent->getRelPath());
     }
 }
 ?>

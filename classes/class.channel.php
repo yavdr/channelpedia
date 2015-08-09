@@ -216,6 +216,18 @@ class channel extends transponderParameters{
         return $this->params["x_xmltv_id"];
     }
 
+    public function getVideoPID(){
+        return $this->params["vpid"];
+    }
+
+    public function getAudioPID(){
+        return $this->params["apid"];
+    }
+
+    public function getTeletextPID(){
+        return $this->params["tpid"];
+    }
+
     public function hasVideoPID(){
         return ($this->params["vpid"] !== '0');
     }
@@ -243,6 +255,16 @@ class channel extends transponderParameters{
             return $parts[0];
         else
             return "";
+    }
+
+    /*
+    public function isOutdated(){
+        return $this->getXLastConfirmed() < $this->parent->getLastConfirmedTimestamp();
+    }
+    */
+
+    public function isNewlyAdded( $timeframe ){
+        return ( time() - $this->getXTimestampAdded()) < $timeframe;
     }
 
     //FIXME temp

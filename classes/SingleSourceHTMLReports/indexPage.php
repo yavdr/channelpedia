@@ -38,7 +38,7 @@ class indexPage extends singleSourceHTMLReportBase{
         //$this->appendToBody('<p> This source is being provided by: ' . $userconfig["visibleName"] . '</p>'."\n");
         $this->appendToBody('<ul class="singleSourceMainMenu">');
         $this->appendToBody('<li><p class="caption">Statistics</p>');
-        $this->collectStatisticsOfSource();
+        $this->getHTMLTableWithStatisticsOfSource();
         $this->appendToBody('</li>');
         foreach ($this->linklist as $linkarray){
             $description = ( $linkarray[2] !== "" ? '<span>'.$linkarray[2] .'</span>' : '');
@@ -53,32 +53,23 @@ class indexPage extends singleSourceHTMLReportBase{
         $this->addToOverviewAndSave( $this->parent->getPureSource(), "index.html");
     }
 
-    private function collectStatisticsOfSource(){
+    private function getHTMLTableWithStatisticsOfSource(){
         $types = array( "TV", "Radio", "Data");
-        $fta = array ( false, true);
+        $encstatus = array ( false, true);
         $total = 0;
+        $results = $this->collectStatisticsOfSource( $types, $encstatus );
         $this->appendToBody('<table class="sourcestats"><tr><th>Number of channels</th><th>FTA</th><th>encrypted</th><th>Sum</th></tr>');
         foreach ($types as $type){
             $this->appendToBody("<tr><td>$type</td>");
             $rowtotal = 0;
-            foreach ($fta as $isencrypted){
-                $count = $this->collectNumberOfChannelsOfSourceSection( $type, $isencrypted);
-                $this->appendToBody("<td>$count</td>");
-                $rowtotal += $count;
+            foreach ($encstatus as $isencrypted){
+                $this->appendToBody("<td>" . $results[$type]["enc"][$isencrypted] . "</td>");
             }
-            $this->appendToBody("<td>$rowtotal</td></tr>");
-            $total += $rowtotal;
+            $this->appendToBody("<td>".$results[$type]["rowtotal"]."</td></tr>");
         }
-        $this->appendToBody("<tr><td>Summary</td><td></td><td></td><td>$total</td></tr>");
+        $this->appendToBody("<tr><td>Summary</td><td></td><td></td><td>".$results["total"]."</td></tr>");
         $this->appendToBody("<tr><td>Last updated</td><td colspan='3'> ".$this->parent->getUpdateDate()."</td></tr>");
         $this->appendToBody("</table>");
     }
-
-    private function collectNumberOfChannelsOfSourceSection( $type, $encrypted = false){
-        $result = $this->db->query( $this->getCustomChannelListSQL( $type, $encrypted, "", "COUNT(*) AS number" ) );
-        $info = $result->fetch(PDO::FETCH_ASSOC);
-        return $info["number"];
-    }
-
 }
 ?>
