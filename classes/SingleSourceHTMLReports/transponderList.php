@@ -76,8 +76,8 @@ class transponderList extends singleSourceHTMLReportBase{
                     $flaglist[] = $flag;
                 $scramblestate = $this->pageFragments->getScrambledIcon( $ch->getCAID(), $this->parent->getRelPath() );
                 if ( $scramblestate == "") $scramblestate = "FTA";
-                $channelNameSegments = explode(',', $curChan->getName());
-                $chname = htmlspecialchars( count($channelNameSegments) > 0 ? $channelNameSegments[0] : $curChan->getName() );
+                $channelNameSegments = explode(',', $ch->getName());
+                $chname = htmlspecialchars( count($channelNameSegments) > 0 ? $channelNameSegments[0] : $ch->getName() );
                 $channels[] =
                     '<div class="' . ( $scramblestate == "FTA" ? "fta":"scrambled").'"><div title="'.$this->getPopupContent( $ch ).'" class="single_channel">'.
                     $this->getChannelMetaInfo( $ch, $chname ).
