@@ -46,7 +46,7 @@ class IrelandEssentials  extends ruleBase {
                 "outputSortPriority" => 1,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeHDTV,
-                "customwhere" => " AND (UPPER(name) LIKE 'RTE%' OR UPPER(name) LIKE 'TV3' OR UPPER(name) LIKE 'TG4' OR UPPER(name) LIKE 'OIREACHTAS TV')"
+                "customwhere" => " AND (UPPER(name) LIKE 'RTÉ%' OR UPPER(name) LIKE 'TV3' OR UPPER(name) LIKE 'TG4' OR UPPER(name) LIKE 'OIREACHTAS TV')"
             ),
 
             array(
@@ -54,7 +54,7 @@ class IrelandEssentials  extends ruleBase {
                 "outputSortPriority" => 1,
                 "caidMode" => self::caidModeScrambled,
                 "mediaType" => self::mediaTypeSDTV,
-                "customwhere" => " AND (UPPER(name) LIKE 'RTE%' OR UPPER(name) LIKE 'TV3' OR UPPER(name) LIKE 'TG4' OR UPPER(name) LIKE 'OIREACHTAS TV')"
+                "customwhere" => " AND (UPPER(name) LIKE 'RTÉ%' OR UPPER(name) LIKE 'TV3' OR UPPER(name) LIKE 'TG4' OR UPPER(name) LIKE 'OIREACHTAS TV')"
             ),
 
             array(
@@ -72,7 +72,7 @@ class IrelandEssentials  extends ruleBase {
                 "languageOverrule"=>"",
                 "caidMode" => self::caidModeFTA,
                 "mediaType" => self::mediaTypeRadio,
-                "customwhere" => " AND (upper(name) LIKE 'RTE %' OR upper(name) LIKE '%IRELAND%') "
+                "customwhere" => " AND (upper(name) LIKE 'RTÉ %' OR upper(name) LIKE '%IRELAND%') "
             ),
 
         );
