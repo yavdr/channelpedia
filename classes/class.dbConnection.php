@@ -95,7 +95,7 @@ class dbConnection {
             if ($quote) $value = $this->quote( $value );
             $where[] = "$key = ". $value;
         }
-        if ( count($where > 0)){
+        if ( count($where) > 0){
             $where_string  = " WHERE " . implode( " AND ", $where);
         }
         return $where_string;
