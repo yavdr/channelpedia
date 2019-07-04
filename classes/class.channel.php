@@ -108,14 +108,9 @@ class channel extends transponderParameters{
         $check1 = (substr( $this->params["source"], 0, 1) === "S");
         $check2 = (stristr( $this->params["parameter"], "S") !== false);
         //TODO: Also check for presence of H or V
-        if ($check1 !== $check2){
-            if ($check1 === true){
-                throw new Exception("A satellite channel should have an S in parameters: '". $this->params["parameter"]."'. Is this obsolete VDR 1.6 syntax? " . $this->params["name"] . " " . $this->channelstring);
-                //$check1 = false;
-            }
-            //IPTV channels might have an S in the parameter field
-//            else
-//                $this->markChannelAsInvalid("Channel parameters misleadingly indicate a satellite channel: '". $this->params["parameter"]."'");
+        //Caution: DVB-T2 can have source T + parameter S1, this is also possible for IPTV
+        if ($check1 && !$check2){
+            throw new Exception("A satellite channel should have an S in parameters: '". $this->params["parameter"]."'. Is this obsolete VDR 1.6 syntax? " . $this->params["name"] . " " . $this->channelstring);
         }
         $this->isCheckedSatelliteSource = $check1;
     }
